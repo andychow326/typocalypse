@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://cbq3sws0ryo0y"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_ewlrn"]
+[ext_resource type="PackedScene" uid="uid://be5eerth46isv" path="res://scenes/web_socket_client.tscn" id="2_34jte"]
+[ext_resource type="PackedScene" uid="uid://dhje63qf4sssv" path="res://scenes/menus/lobby_menu.tscn" id="3_yvi4m"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_ewlrn")
+
+[node name="WebSocketClient" parent="." instance=ExtResource("2_34jte")]
+
+[node name="LobbyMenu" parent="." instance=ExtResource("3_yvi4m")]
+
+[connection signal="connected_to_server" from="WebSocketClient" to="." method="_on_web_socket_client_connected_to_server"]
+[connection signal="connection_closed" from="WebSocketClient" to="." method="_on_web_socket_client_connection_closed"]
+[connection signal="message_received" from="WebSocketClient" to="." method="_on_web_socket_client_message_received"]
+[connection signal="player_name_changed" from="LobbyMenu" to="." method="_on_player_name_changed"]
