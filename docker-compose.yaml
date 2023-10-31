@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   redis:
-    image: redis:7.2
+    image: redis/redis-stack:7.2.0-v5
     ports:
       - 6379:6379
   
