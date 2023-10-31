@@ -8,7 +8,7 @@ export function getRedisConnection() {
 
 export enum RedisBucketKey {
   session = "session",
-  username = "username",
+  user = "user",
 }
 
 export function getRedisBucketKey(

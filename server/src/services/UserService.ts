@@ -6,6 +6,7 @@ import {
 } from "../redis";
 import { randomBytes, randomUUID } from "crypto";
 import { SESSION_EXPIRATION_SECONDS } from "../constants";
+import { User } from "../types";
 
 interface UserSession {
   sessionId: string;
@@ -27,7 +28,7 @@ class UserService {
         .multi()
         .expire(key, SESSION_EXPIRATION_SECONDS)
         .expire(
-          getRedisBucketKey(RedisBucketKey.username, userId),
+          getRedisBucketKey(RedisBucketKey.user, userId),
           SESSION_EXPIRATION_SECONDS
         )
         .exec();
@@ -62,17 +63,39 @@ class UserService {
   }
 
   async changeUsername(userId: string, name: string) {
-    const key = getRedisBucketKey(RedisBucketKey.username, userId);
-    await this.redis.set(key, name, "EX", SESSION_EXPIRATION_SECONDS);
+    const key = getRedisBucketKey(RedisBucketKey.user, userId);
+    const userJson = await this.redis.call("JSON.GET", key, ".");
+    if (userJson == null) {
+      const data: User = {
+        id: userId,
+        name: name,
+      };
+      await this.redis
+        .multi()
+        .call("JSON.SET", key, "$", JSON.stringify(data))
+        .expire(key, SESSION_EXPIRATION_SECONDS)
+        .exec();
+    } else {
+      await this.redis
+        .multi()
+        .call("JSON.SET", key, ".name", JSON.stringify(name))
+        .expire(key, SESSION_EXPIRATION_SECONDS)
+        .exec();
+    }
   }
 
-  async getUsernameByUserId(userId: string): Promise<string | null> {
-    const key = getRedisBucketKey(RedisBucketKey.username, userId);
-    const username = await this.redis.get(key);
-    if (username != null) {
-      await this.redis.expire(key, SESSION_EXPIRATION_SECONDS);
+  async getUserByUserId(userId: string): Promise<User | null> {
+    const key = getRedisBucketKey(RedisBucketKey.user, userId);
+    const data = await this.redis
+      .multi()
+      .call("JSON.GET", key, ".")
+      .expire(key, SESSION_EXPIRATION_SECONDS)
+      .exec();
+    if (data == null) {
+      return null;
     }
-    return username;
+    const user: User = JSON.parse(data[0][1] as any);
+    return user;
   }
 }
 

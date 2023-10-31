@@ -22,10 +22,10 @@ class GameLogicController {
     channel: string,
     message: GameMessageFromClient
   ): Promise<void> {
-    const username = await this.userService.getUsernameByUserId(userId);
+    const user = await this.userService.getUserByUserId(userId);
     const responseMessage: GameMessageFromServer = {
       ...message,
-      user: { id: userId, name: username ?? "" },
+      user: { id: userId, name: user?.name ?? "" },
     };
     const messageString = this.gameMessageToString(responseMessage);
     if (type === "allChannelsBySubscriberId") {
@@ -42,7 +42,7 @@ class GameLogicController {
   ): Promise<{ message: GameMessageFromServer; sessionId: string }> {
     const { sessionId: finalSessionId, userId } =
       await this.userService.getOrCreateUserSession(sessionId);
-    const username = await this.userService.getUsernameByUserId(userId);
+    const user = await this.userService.getUserByUserId(userId);
     return {
       sessionId: finalSessionId,
       message: {
@@ -52,7 +52,7 @@ class GameLogicController {
         },
         user: {
           id: userId,
-          name: username ?? "",
+          name: user?.name ?? "",
         },
       },
     };
