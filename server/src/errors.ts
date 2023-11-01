@@ -25,3 +25,12 @@ export class SessionNotFoundError extends CustomError {
     });
   }
 }
+
+export class UserNotFoundError extends CustomError {
+  constructor(userId: string) {
+    super("UserNotFoundError", {
+      reason: "user not found",
+      target: { userId: userId },
+    });
+  }
+}

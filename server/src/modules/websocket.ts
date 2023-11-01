@@ -1,7 +1,7 @@
 import Elysia from "elysia";
 import GameLogicController from "../controllers/GameLogicController";
 import { GameMessageFromClientSchema, WebSocketState } from "../types";
-import { SessionNotFoundError } from "../errors";
+import { SessionNotFoundError, UserNotFoundError } from "../errors";
 
 const InitialWebSocketState: WebSocketState = {
   gameLogicController: new GameLogicController(),
@@ -33,7 +33,10 @@ const websocket = (app: Elysia) =>
           onSubscribe: (_channel, message) => ws.send(message),
         });
       } catch (error) {
-        if (error instanceof SessionNotFoundError) {
+        if (
+          error instanceof SessionNotFoundError ||
+          error instanceof UserNotFoundError
+        ) {
           ws.send(error.toJsonString());
           ws.terminate();
         }
