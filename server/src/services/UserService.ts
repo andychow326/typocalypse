@@ -16,8 +16,8 @@ interface UserSession {
 class UserService {
   private redis: Redis;
 
-  constructor() {
-    this.redis = getRedisConnection();
+  constructor(redis?: Redis) {
+    this.redis = redis ?? getRedisConnection();
   }
 
   async getUserIdBySessionId(sessionId: string): Promise<string | null> {

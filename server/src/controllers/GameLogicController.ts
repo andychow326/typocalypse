@@ -1,15 +1,19 @@
+import { Redis } from "ioredis";
 import PubSubService from "../services/PubSubService";
 import UserService from "../services/UserService";
 import { SessionNotFoundError } from "../errors";
 import { GameMessageFromClient, GameMessageFromServer } from "../types";
+import { getRedisConnection } from "../redis";
 
 class GameLogicController {
+  private redis: Redis;
   private pubsubService: PubSubService;
   private userService: UserService;
 
   constructor() {
+    this.redis = getRedisConnection();
     this.pubsubService = new PubSubService();
-    this.userService = new UserService();
+    this.userService = new UserService(this.redis);
   }
 
   gameMessageToString(message: GameMessageFromServer): string {
