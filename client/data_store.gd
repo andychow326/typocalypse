@@ -1,6 +1,13 @@
 extends Node
 
-var storage_session_path = "user://session"
+@export var storage_session_path: String:
+	get:
+		var path = "user://session"
+		if OS.is_debug_build():
+			var debug_vars = get_node("/root/Debug")
+			return path + str(debug_vars.instance_num)
+		return path
+
 
 @export var web_socket_client: WebSocketClient = WebSocketClient.new()
 
