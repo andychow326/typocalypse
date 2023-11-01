@@ -7,5 +7,3 @@
 script = ExtResource("1_ewlrn")
 
 [node name="LobbyMenu" parent="." instance=ExtResource("3_yvi4m")]
-
-[connection signal="player_name_changed" from="LobbyMenu" to="." method="_on_player_name_changed"]

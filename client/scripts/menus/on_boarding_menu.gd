@@ -20,3 +20,7 @@ func _on_join_room_button_pressed():
 
 func _on_player_name_line_edit_text_changed(new_text):
 	DataStore.player_name = new_text
+	DataStore.web_socket_client.send({
+		"event": "rename",
+		"data": { "name": new_text },
+	})

@@ -10,21 +10,15 @@ enum STATE {
 var state := STATE.ON_BOARDING
 
 
-signal player_name_changed(player_name: String)
-
-
 func _on_on_boarding_menu_quick_play_button_pressed():
-	player_name_changed.emit(DataStore.player_name)
-	# TODO: quick play logic
+	pass # TODO: quick play logic
 
 
 func _on_on_boarding_menu_create_room_button_pressed():
-	player_name_changed.emit(DataStore.player_name)
 	state = STATE.WAITING_ROOM
 
 
 func _on_on_boarding_menu_join_room_button_pressed():
-	player_name_changed.emit(DataStore.player_name)
 	state = STATE.ROOM_LIST
 
 
