@@ -9,6 +9,9 @@ export function getRedisConnection() {
 export enum RedisBucketKey {
   session = "session",
   user = "user",
+  room = "room",
+  roomsWaiting = "rooms:waiting",
+  roomsInGame = "rooms:in-game",
 }
 
 export function getRedisBucketKey(

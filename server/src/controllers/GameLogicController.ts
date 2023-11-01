@@ -1,19 +1,26 @@
 import { Redis } from "ioredis";
 import PubSubService from "../services/PubSubService";
 import UserService from "../services/UserService";
-import { SessionNotFoundError } from "../errors";
+import {
+  RoomNotFoundError,
+  SessionNotFoundError,
+  UserNotFoundError,
+} from "../errors";
 import { GameMessageFromClient, GameMessageFromServer } from "../types";
 import { getRedisConnection } from "../redis";
+import RoomService from "../services/RoomService";
 
 class GameLogicController {
   private redis: Redis;
   private pubsubService: PubSubService;
   private userService: UserService;
+  private roomService: RoomService;
 
   constructor() {
     this.redis = getRedisConnection();
     this.pubsubService = new PubSubService();
     this.userService = new UserService(this.redis);
+    this.roomService = new RoomService(this.redis);
   }
 
   gameMessageToString(message: GameMessageFromServer): string {
@@ -75,12 +82,41 @@ class GameLogicController {
     );
   }
 
+  async onPlayerCreateRoom(
+    userId: string,
+    onSubscribe?: (channel: string, message: string) => void,
+    onReply?: (message: string) => void
+  ): Promise<void> {
+    console.log("create");
+    const user = await this.userService.getUserByUserId(userId);
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+    const roomId = await this.roomService.createRoom(user);
+    const message: GameMessageFromServer = {
+      event: "createRoom",
+      data: {
+        roomId: roomId,
+      },
+      user: user,
+    };
+    await this.pubsubService.subscribe(userId, roomId, (channel, message) =>
+      onSubscribe?.(channel, message)
+    );
+    onReply?.(this.gameMessageToString(message));
+  }
+
   async onPlayerJoinRoom(
     userId: string,
     roomId: string,
     message: GameMessageFromClient,
     onSubscribe?: (channel: string, message: string) => void
   ): Promise<void> {
+    const user = await this.userService.getUserByUserId(userId);
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+    await this.roomService.joinRoom(user, roomId);
     await this.pubsubService.subscribe(userId, roomId, (channel, message) =>
       onSubscribe?.(channel, message)
     );
@@ -92,8 +128,51 @@ class GameLogicController {
     roomId: string,
     message: GameMessageFromClient
   ): Promise<void> {
+    const user = await this.userService.getUserByUserId(userId);
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+    await this.roomService.leaveRoom(user, roomId);
     await this.publishGameMessage("singleChannel", userId, roomId, message);
     await this.pubsubService.unsubscribe(userId, roomId);
+  }
+
+  async onPlayerGetWaitingRooms(
+    userId: string,
+    onReply?: (message: string) => void
+  ): Promise<void> {
+    const user = await this.userService.getUserByUserId(userId);
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+    const rooms = await this.roomService.getWaitingRooms();
+    const message: GameMessageFromServer = {
+      event: "getWaitingRooms",
+      data: {
+        rooms: rooms,
+      },
+      user: user,
+    };
+    onReply?.(this.gameMessageToString(message));
+  }
+
+  async onPlayerGetRoomStatus(userId: string, roomId: string): Promise<void> {
+    const user = await this.userService.getUserByUserId(userId);
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+    const room = await this.roomService.getRoomStatus(roomId);
+    if (room == null) {
+      throw new RoomNotFoundError(roomId);
+    }
+    const message: GameMessageFromServer = {
+      event: "getRoomStatus",
+      data: {
+        room: room,
+      },
+      user: user,
+    };
+    await this.pubsubService.publish(roomId, this.gameMessageToString(message));
   }
 
   async onPlayerLeaveGame(sessionId: string | null): Promise<void> {
@@ -103,6 +182,16 @@ class GameLogicController {
     const userId = await this.userService.getUserIdBySessionId(sessionId);
     if (userId == null) {
       return;
+    }
+    const user = await this.userService.getUserByUserId(userId);
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+    if (user.room != null) {
+      await this.onPlayerLeaveRoom(userId, user.room, {
+        event: "leaveRoom",
+        data: { roomId: user.room },
+      });
     }
     await this.pubsubService.unsubscribe(userId);
   }
@@ -119,7 +208,10 @@ class GameLogicController {
   async onPlayerMessage(
     sessionId: string | null,
     message: GameMessageFromClient,
-    options?: { onSubscribe?: (channel: string, message: string) => void }
+    options?: {
+      onSubscribe?: (channel: string, message: string) => void;
+      onReply?: (message: string) => void;
+    }
   ): Promise<void> {
     if (sessionId == null) {
       throw new SessionNotFoundError(sessionId);
@@ -133,6 +225,13 @@ class GameLogicController {
     if (message.event === "rename") {
       await this.onPlayerRename(userId, message.data.name, message);
     }
+    if (message.event === "createRoom") {
+      await this.onPlayerCreateRoom(
+        userId,
+        options?.onSubscribe,
+        options?.onReply
+      );
+    }
     if (message.event === "joinRoom") {
       await this.onPlayerJoinRoom(
         userId,
@@ -143,6 +242,12 @@ class GameLogicController {
     }
     if (message.event === "leaveRoom") {
       await this.onPlayerLeaveRoom(userId, message.data.roomId, message);
+    }
+    if (message.event === "getWaitingRooms") {
+      await this.onPlayerGetWaitingRooms(userId, options?.onReply);
+    }
+    if (message.event === "getRoomStatus") {
+      await this.onPlayerGetRoomStatus(userId, message.data.roomId);
     }
     if (message.event === "input") {
       await this.onPlayerInput(userId, message);

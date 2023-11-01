@@ -13,7 +13,7 @@ class CustomError extends Error {
   }
 
   toJsonString(): string {
-    return JSON.stringify(this.errorMessage);
+    return JSON.stringify({ event: "error", ...this.errorMessage });
   }
 }
 
@@ -31,6 +31,15 @@ export class UserNotFoundError extends CustomError {
     super("UserNotFoundError", {
       reason: "user not found",
       target: { userId: userId },
+    });
+  }
+}
+
+export class RoomNotFoundError extends CustomError {
+  constructor(roomId: string) {
+    super("RoomNotFoundError", {
+      reason: "room not found",
+      target: { roomId: roomId },
     });
   }
 }

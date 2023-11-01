@@ -1,7 +1,11 @@
 import Elysia from "elysia";
 import GameLogicController from "../controllers/GameLogicController";
 import { GameMessageFromClientSchema, WebSocketState } from "../types";
-import { SessionNotFoundError, UserNotFoundError } from "../errors";
+import {
+  RoomNotFoundError,
+  SessionNotFoundError,
+  UserNotFoundError,
+} from "../errors";
 
 const InitialWebSocketState: WebSocketState = {
   gameLogicController: new GameLogicController(),
@@ -31,6 +35,7 @@ const websocket = (app: Elysia) =>
       try {
         await gameLogicController.onPlayerMessage(sessionId, message, {
           onSubscribe: (_channel, message) => ws.send(message),
+          onReply: (message) => ws.send(message),
         });
       } catch (error) {
         if (
@@ -39,6 +44,8 @@ const websocket = (app: Elysia) =>
         ) {
           ws.send(error.toJsonString());
           ws.terminate();
+        } else if (error instanceof RoomNotFoundError) {
+          ws.send(error.toJsonString());
         }
       }
     },
