@@ -10,7 +10,7 @@ import { User } from "../types";
 
 interface UserSession {
   sessionId: string;
-  userId: string;
+  user: User;
 }
 
 class UserService {
@@ -45,10 +45,18 @@ class UserService {
     return sessionId;
   }
 
+  async createUserByUserId(userId: string): Promise<User> {
+    const key = getRedisBucketKey(RedisBucketKey.user, userId);
+    const user: User = { id: userId, name: "" };
+    await this.redis.call("JSON.SET", key, "$", JSON.stringify(user));
+    return user;
+  }
+
   async createUserSession(): Promise<UserSession> {
     const userId = randomUUID();
     const sessionId = await this.createUserSessionIdByUserId(userId);
-    return { sessionId, userId };
+    const user = await this.createUserByUserId(userId);
+    return { sessionId, user };
   }
 
   async getOrCreateUserSession(sessionId: string | null): Promise<UserSession> {
@@ -59,7 +67,11 @@ class UserService {
     if (userId == null) {
       return this.createUserSession();
     }
-    return { sessionId, userId };
+    const user = await this.getUserByUserId(userId);
+    if (user == null) {
+      return this.createUserSession();
+    }
+    return { sessionId, user };
   }
 
   async changeUsername(userId: string, name: string) {

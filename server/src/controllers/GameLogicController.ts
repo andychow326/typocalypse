@@ -44,9 +44,8 @@ class GameLogicController {
   async onPlayerJoinGame(
     sessionId: string | null
   ): Promise<{ message: GameMessageFromServer; sessionId: string }> {
-    const { sessionId: finalSessionId, userId } =
+    const { sessionId: finalSessionId, user } =
       await this.userService.getOrCreateUserSession(sessionId);
-    const user = await this.userService.getUserByUserId(userId);
     return {
       sessionId: finalSessionId,
       message: {
@@ -55,8 +54,8 @@ class GameLogicController {
           sessionId: finalSessionId,
         },
         user: {
-          id: userId,
-          name: user?.name ?? "",
+          id: user.id,
+          name: user.name,
         },
       },
     };
