@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://ccaf1462sygk1"]
+
+[ext_resource type="Script" path="res://scripts/menus/waiting_room_player.gd" id="1_dvxcs"]
+
+[node name="WaitingRoomPlayer" type="PanelContainer"]
+script = ExtResource("1_dvxcs")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="PlayerNameLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16

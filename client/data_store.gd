@@ -22,3 +22,4 @@ extends Node
 		var file = FileAccess.open(storage_session_path, FileAccess.WRITE)
 		file.store_var(value)
 
+@export var room_id: String = ""

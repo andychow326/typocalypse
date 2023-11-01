@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://bw7ao7mg8lac4"]
+
+[ext_resource type="Script" path="res://scripts/menus/room_list_item.gd" id="1_cw442"]
+
+[node name="RoomListItem" type="PanelContainer"]
+script = ExtResource("1_cw442")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="RoomIDLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "ROOM "
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="RoomCapacityLabel" type="Label" parent="MarginContainer/HBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "3/4"
+
+[node name="JoinRoomButton" type="Button" parent="MarginContainer/HBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Join"
+
+[connection signal="pressed" from="MarginContainer/HBoxContainer/HBoxContainer/JoinRoomButton" to="." method="_on_join_room_button_pressed"]

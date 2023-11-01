@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dhje63qf4sssv"]
+[gd_scene load_steps=6 format=3 uid="uid://dhje63qf4sssv"]
 
 [ext_resource type="PackedScene" uid="uid://ca2k5fkwnlvdr" path="res://scenes/menus/on_boarding_menu.tscn" id="1_nnccw"]
 [ext_resource type="Script" path="res://scripts/menus/lobby_menu.gd" id="1_v5t1r"]
 [ext_resource type="PackedScene" uid="uid://4yj8qpkw5uv7" path="res://scenes/menus/room_list_menu.tscn" id="3_5ame2"]
 [ext_resource type="PackedScene" uid="uid://bnadp5oi0dvsy" path="res://scenes/menus/waiting_room_menu.tscn" id="4_modle"]
+[ext_resource type="PackedScene" uid="uid://ccaf1462sygk1" path="res://scenes/menus/waiting_room_player.tscn" id="5_1mxpy"]
 
 [node name="LobbyMenu" type="Control"]
 layout_mode = 3
@@ -22,8 +23,10 @@ layout_mode = 1
 
 [node name="WaitingRoomMenu" parent="." instance=ExtResource("4_modle")]
 layout_mode = 1
+player_scene = ExtResource("5_1mxpy")
 
 [connection signal="create_room_button_pressed" from="OnBoardingMenu" to="." method="_on_on_boarding_menu_create_room_button_pressed"]
 [connection signal="join_room_button_pressed" from="OnBoardingMenu" to="." method="_on_on_boarding_menu_join_room_button_pressed"]
 [connection signal="quick_play_button_pressed" from="OnBoardingMenu" to="." method="_on_on_boarding_menu_quick_play_button_pressed"]
 [connection signal="back_button_pressed" from="RoomListMenu" to="." method="_on_room_list_menu_back_button_pressed"]
+[connection signal="back_button_pressed" from="WaitingRoomMenu" to="." method="_on_waiting_room_menu_back_button_pressed"]

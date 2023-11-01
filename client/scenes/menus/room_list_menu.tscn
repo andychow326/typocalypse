@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://4yj8qpkw5uv7"]
+[gd_scene load_steps=3 format=3 uid="uid://4yj8qpkw5uv7"]
 
 [ext_resource type="Script" path="res://scripts/menus/room_list_menu.gd" id="1_1npol"]
+[ext_resource type="PackedScene" uid="uid://bw7ao7mg8lac4" path="res://scenes/menus/room_list_item.tscn" id="2_4bmkm"]
 
 [node name="RoomListMenu" type="Control"]
 layout_mode = 3
@@ -10,6 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_1npol")
+room_list_item_scene = ExtResource("2_4bmkm")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -93,38 +95,5 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/PanelContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 4
-
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/PanelContainer/MarginContainer"]
-layout_mode = 2
-
-[node name="RoomIDLabel" type="Label" parent="VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/PanelContainer/MarginContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 16
-text = "ROOM 123"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/PanelContainer/MarginContainer/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="RoomCapacityLabel" type="Label" parent="VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "3/4"
-
-[node name="JoinRoomButton" type="Button" parent="VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(48, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "Join"
-
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

@@ -10,12 +10,28 @@ enum STATE {
 var state := STATE.ON_BOARDING
 
 
+func _ready():
+	DataStore.web_socket_client.message_received.connect(_on_web_socket_client_message_received)
+
+
+func _on_web_socket_client_message_received(message):
+	if typeof(message) != TYPE_DICTIONARY:
+		return
+	match message.event:
+		"createRoom":
+			DataStore.room_id = message.data.roomId
+			state = STATE.WAITING_ROOM
+		"joinRoom":
+			DataStore.room_id = message.data.roomId
+			state = STATE.WAITING_ROOM
+
+
 func _on_on_boarding_menu_quick_play_button_pressed():
 	pass # TODO: quick play logic
 
 
 func _on_on_boarding_menu_create_room_button_pressed():
-	state = STATE.WAITING_ROOM
+	DataStore.web_socket_client.send({"event": "createRoom"})
 
 
 func _on_on_boarding_menu_join_room_button_pressed():
@@ -23,6 +39,10 @@ func _on_on_boarding_menu_join_room_button_pressed():
 
 
 func _on_room_list_menu_back_button_pressed():
+	state = STATE.ON_BOARDING
+
+
+func _on_waiting_room_menu_back_button_pressed():
 	state = STATE.ON_BOARDING
 
 
