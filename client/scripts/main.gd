@@ -10,7 +10,7 @@ func _ready():
 
 
 func start_client():
-	DataStore.web_socket_client.connect_to_url(Config.SERVER_URL + "/ws?sessionId=" + DataStore.sessionId)
+	DataStore.web_socket_client.connect_to_url(Config.SERVER_URL + "/ws?sessionId=" + DataStore.session_id)
 
 
 func restart_client():
@@ -32,7 +32,7 @@ func _on_web_socket_client_message_received(message):
 		return
 	match message.event:
 		"renewSession":
-			DataStore.sessionId = message.data.sessionId
+			DataStore.session_id = message.data.sessionId
 			restart_client()
 		"validSession":
 			DataStore.player_name = message.user.name
