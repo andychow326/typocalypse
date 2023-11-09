@@ -20,8 +20,8 @@ func _on_web_socket_client_message_received(message):
 		return
 	match message.event:
 		"getWaitingRooms":
+			clear_waiting_rooms()
 			for room in message.data.rooms:
-				clear_waiting_rooms()
 				var room_node = room_list_item_scene.instantiate()
 				room_node.from_dict(room)
 				waiting_room_list_container.add_child(room_node)
