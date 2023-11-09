@@ -53,8 +53,20 @@ class RoomService {
     return room;
   }
 
+  async createRoomId(): Promise<string> {
+    while (true) {
+      const roomId = randomInt(100000, 999999).toString();
+      const isRoomIdExists = await this.redis.exists(
+        getRedisBucketKey(RedisBucketKey.room, roomId)
+      );
+      if (!isRoomIdExists) {
+        return roomId;
+      }
+    }
+  }
+
   async createRoom(user: User): Promise<string> {
-    const roomId = randomInt(100000, 999999).toString();
+    const roomId = await this.createRoomId();
     const data: Room = {
       id: roomId,
       state: "waiting",
