@@ -74,7 +74,6 @@ class PubSubService {
 
   async publish(channel: string, message: string) {
     await this.publisher.publish(channel, message);
-    console.log(Object.keys(this.channels));
   }
 
   findChannelsBySubscriberId(subscriberId: string): string[] {

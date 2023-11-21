@@ -87,7 +87,6 @@ class GameLogicController {
     onSubscribe?: (channel: string, message: string) => void,
     onReply?: (message: string) => void
   ): Promise<void> {
-    console.log("create");
     const user = await this.userService.getUserByUserId(userId);
     if (user == null) {
       throw new UserNotFoundError(userId);
