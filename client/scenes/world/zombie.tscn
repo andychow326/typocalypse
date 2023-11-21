@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://kspnqxcg2srx"]
+
+[ext_resource type="PackedScene" uid="uid://dluwqd7gpibdt" path="res://blender_meshes/zombie.blend" id="1_7ms5u"]
+
+[node name="Zombie" type="Node3D"]
+
+[node name="ZombieBody" parent="." instance=ExtResource("1_7ms5u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0239648, 0, 0.12789)
+
+[node name="Skeleton3D" parent="ZombieBody/Armature" index="0"]
+bones/0/rotation = Quaternion(0.00801192, -1.61564e-27, -1.43471e-18, 0.999968)
+bones/1/rotation = Quaternion(0.0748208, -0.458598, -0.830484, 0.307225)
+bones/2/position = Vector3(0.281416, -0.11948, -0.0159783)
+bones/2/rotation = Quaternion(0.046121, 0.0365254, 0.98307, -0.173531)
+bones/3/rotation = Quaternion(0.17639, 0.442104, 0.825692, 0.30276)
+bones/4/position = Vector3(-0.293478, -0.117165, -0.0367932)
+bones/4/rotation = Quaternion(-0.0371622, -0.0123455, 0.987109, 0.155182)
+
+[editable path="ZombieBody"]

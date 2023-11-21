@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://bxqu51ckbq1cb"]
+
+[ext_resource type="PackedScene" uid="uid://dp1jlktbv8ml5" path="res://scenes/world/player.tscn" id="1_avj56"]
+[ext_resource type="PackedScene" uid="uid://kspnqxcg2srx" path="res://scenes/world/zombie.tscn" id="2_0ie8q"]
+[ext_resource type="PackedScene" uid="uid://br14qk22pvb0f" path="res://scenes/world/building.tscn" id="3_wtr6q"]
+[ext_resource type="PackedScene" uid="uid://8owrun0i42u" path="res://scenes/world/building_tall.tscn" id="4_pb1ji"]
+
+[sub_resource type="Environment" id="Environment_5tdxp"]
+tonemap_mode = 2
+
+[node name="World" type="Node3D"]
+
+[node name="Stage" type="Node3D" parent="."]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -34)
+use_collision = true
+size = Vector3(80, 1, 120)
+
+[node name="Building" parent="Stage" instance=ExtResource("3_wtr6q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.7206, 0, -20.2213)
+
+[node name="Building2" parent="Stage" instance=ExtResource("3_wtr6q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.4477, -1.90735e-06, -19.5924)
+
+[node name="BuildingTall" parent="Stage" instance=ExtResource("4_pb1ji")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.9685, -3.8147e-06, -72.2126)
+
+[node name="Building3" parent="Stage" instance=ExtResource("3_wtr6q")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 18.9848, 0, -30.4341)
+
+[node name="BuildingTall2" parent="Stage" instance=ExtResource("4_pb1ji")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.8159, 0, -51.7816)
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_5tdxp")
+
+[node name="Player" parent="." instance=ExtResource("1_avj56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0818024, -9.53674e-07, 12.7693)
+
+[node name="Zombie" parent="." instance=ExtResource("2_0ie8q")]

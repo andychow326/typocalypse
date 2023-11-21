@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://8owrun0i42u"]
+
+[ext_resource type="PackedScene" uid="uid://dqk55r533l0ww" path="res://blender_meshes/building-tall.blend" id="1_o8rx0"]
+
+[node name="BuildingTall" type="Node3D"]
+
+[node name="BuildingTall" parent="." instance=ExtResource("1_o8rx0")]
+
+[editable path="BuildingTall"]
