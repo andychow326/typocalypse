@@ -155,7 +155,11 @@ class GameLogicController {
     onReply?.(this.gameMessageToString(message));
   }
 
-  async onPlayerGetRoomStatus(userId: string, roomId: string): Promise<void> {
+  async onPlayerGetRoomStatus(
+    userId: string,
+    roomId: string,
+    onReply?: (message: string) => void
+  ): Promise<void> {
     const user = await this.userService.getUserByUserId(userId);
     if (user == null) {
       throw new UserNotFoundError(userId);
@@ -171,7 +175,7 @@ class GameLogicController {
       },
       user: user,
     };
-    await this.pubsubService.publish(roomId, this.gameMessageToString(message));
+    onReply?.(this.gameMessageToString(message));
   }
 
   async onPlayerLeaveGame(sessionId: string | null): Promise<void> {
@@ -246,7 +250,11 @@ class GameLogicController {
       await this.onPlayerGetWaitingRooms(userId, options?.onReply);
     }
     if (message.event === "getRoomStatus") {
-      await this.onPlayerGetRoomStatus(userId, message.data.roomId);
+      await this.onPlayerGetRoomStatus(
+        userId,
+        message.data.roomId,
+        options?.onReply
+      );
     }
     if (message.event === "input") {
       await this.onPlayerInput(userId, message);
