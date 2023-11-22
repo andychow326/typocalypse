@@ -53,6 +53,15 @@ class RoomService {
     return room;
   }
 
+  async updateRoomStatus(roomId: string, room: Room) {
+    await this.redis.call(
+      "JSON.SET",
+      getRedisBucketKey(RedisBucketKey.room, roomId),
+      "$",
+      JSON.stringify(room)
+    );
+  }
+
   async createRoomId(): Promise<string> {
     while (true) {
       const roomId = randomInt(100000, 999999).toString();
