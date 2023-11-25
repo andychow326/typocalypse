@@ -7,7 +7,6 @@ extends Control
 var player_list_container = $VBoxContainer/PlayerListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
 @onready
 var start_button = $VBoxContainer/StartButton
-var timer = Timer.new()
 
 
 signal back_button_pressed()
@@ -22,7 +21,11 @@ func _on_web_socket_client_message_received(message):
 	if typeof(message) != TYPE_DICTIONARY:
 		return
 	match message.event:
+		"joinRoom":
+			await get_tree().create_timer(0.5).timeout
+			fetch_room_status()
 		"leaveRoom":
+			await get_tree().create_timer(0.5).timeout
 			fetch_room_status()
 		"getRoomStatus":
 			reset_room_status()
@@ -65,15 +68,7 @@ func _on_visibility_changed():
 		return
 	if visible:
 		fetch_room_status()
-		timer.timeout.connect(fetch_room_status)
-		timer.wait_time = 5
-		timer.one_shot = false
-		add_child(timer)
-		timer.start()
 	if not visible:
-		timer.stop()
-		remove_child(timer)
-		timer.timeout.disconnect(fetch_room_status)
 		reset_room_status()
 		start_button.visible = false
 
