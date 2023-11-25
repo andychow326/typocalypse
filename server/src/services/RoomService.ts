@@ -195,15 +195,17 @@ class RoomService {
         JSON.stringify(room)
       );
     });
-    await pipe
-      .del(
-        deletableRoomIds.map((roomId) =>
-          getRedisBucketKey(RedisBucketKey.room, roomId)
+    if (deletableRoomIds.length > 0) {
+      pipe = pipe
+        .del(
+          deletableRoomIds.map((roomId) =>
+            getRedisBucketKey(RedisBucketKey.room, roomId)
+          )
         )
-      )
-      .srem(RedisBucketKey.roomsWaiting, ...deletableRoomIds)
-      .srem(RedisBucketKey.roomsInGame, ...deletableRoomIds)
-      .exec();
+        .srem(RedisBucketKey.roomsWaiting, ...deletableRoomIds)
+        .srem(RedisBucketKey.roomsInGame, ...deletableRoomIds);
+    }
+    await pipe.exec();
   }
 }
 
