@@ -5,6 +5,8 @@ extends Control
 
 @onready
 var player_list_container = $VBoxContainer/PlayerListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
+@onready
+var start_button = $VBoxContainer/StartButton
 var timer = Timer.new()
 
 
@@ -13,6 +15,7 @@ signal back_button_pressed()
 
 func _ready():
 	DataStore.web_socket_client.message_received.connect(_on_web_socket_client_message_received)
+	start_button.visible = false
 
 
 func _on_web_socket_client_message_received(message):
@@ -25,6 +28,11 @@ func _on_web_socket_client_message_received(message):
 			reset_room_status()
 			var room = message.data.room
 			var host_user = room.users[room.hostId]
+			var current_user = message.user
+			if host_user.id == current_user.id:
+				start_button.visible = true
+			else:
+				start_button.visible = false
 			room.users.erase(host_user.id)
 			var player_node = player_scene.instantiate()
 			player_node.from_dict(host_user)
@@ -67,6 +75,7 @@ func _on_visibility_changed():
 		remove_child(timer)
 		timer.timeout.disconnect(fetch_room_status)
 		reset_room_status()
+		start_button.visible = false
 
 
 func _on_back_button_pressed():
