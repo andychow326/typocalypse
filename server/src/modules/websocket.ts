@@ -2,6 +2,7 @@ import Elysia from "elysia";
 import GameLogicController from "../controllers/GameLogicController";
 import { GameMessageFromClientSchema, WebSocketState } from "../types";
 import {
+  InputLengthNoMatchedError,
   RoomNotFoundError,
   SessionNotFoundError,
   UserNotFoundError,
@@ -47,6 +48,7 @@ const websocket = (app: Elysia) =>
           ws.terminate();
         } else if (
           error instanceof RoomNotFoundError ||
+          error instanceof InputLengthNoMatchedError ||
           error instanceof UserNotRoomHostError
         ) {
           ws.send(error.toJsonString());

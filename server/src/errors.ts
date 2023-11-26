@@ -52,3 +52,12 @@ export class UserNotRoomHostError extends CustomError {
     });
   }
 }
+
+export class InputLengthNoMatchedError extends CustomError {
+  constructor(input: string, expectedLength: number) {
+    super("InputLengthNoMatchedError", {
+      reason: "input lenght too long",
+      target: { input: input, expectedLength: expectedLength },
+    });
+  }
+}

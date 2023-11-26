@@ -211,13 +211,20 @@ class GameLogicController {
     await this.publishGameMessage("singleChannel", userId, roomId, message);
   }
 
-  async onPlayerInput(userId: string, message: GameMessageFromClient) {
-    await this.publishGameMessage(
-      "allChannelsBySubscriberId",
-      userId,
-      userId,
-      message
-    );
+  async onPlayerInput(
+    userId: string,
+    input: string,
+    message: GameMessageFromClient
+  ) {
+    const user = await this.userService.getUserByUserId(userId);
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+    if (user.room == null) {
+      throw new RoomNotFoundError(user.room ?? "");
+    }
+    await this.gameService.handleGameInput(userId, user.room, input);
+    await this.publishGameMessage("singleChannel", userId, user.room, message);
   }
 
   async onPlayerMessage(
@@ -272,7 +279,7 @@ class GameLogicController {
       await this.onPlayerStartGame(userId, message.data.roomId, message);
     }
     if (message.event === "input") {
-      await this.onPlayerInput(userId, message);
+      await this.onPlayerInput(userId, message.data.key, message);
     }
   }
 }

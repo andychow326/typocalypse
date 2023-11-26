@@ -5,7 +5,11 @@ import {
   getRedisConnection,
 } from "../redis";
 import RoomService from "./RoomService";
-import { RoomNotFoundError, UserNotRoomHostError } from "../errors";
+import {
+  InputLengthNoMatchedError,
+  RoomNotFoundError,
+  UserNotRoomHostError,
+} from "../errors";
 import { randomWords } from "../utils/random";
 import { RoomWord } from "../types";
 
@@ -65,6 +69,23 @@ class GameService {
       .srem(RedisBucketKey.roomsWaiting, roomId)
       .sadd(RedisBucketKey.roomsInGame, roomId)
       .exec();
+  }
+
+  async handleGameInput(userId: string, roomId: string, input: string) {
+    if (input.length !== 1) {
+      throw new InputLengthNoMatchedError(input, 1);
+    }
+    const room = await this.roomService.getRoomStatus(roomId);
+    if (room == null || room.state !== "in-game") {
+      throw new RoomNotFoundError(roomId);
+    }
+
+    await this.redis.call(
+      "TS.ADD",
+      getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId),
+      "*",
+      input.charCodeAt(0)
+    );
   }
 }
 
