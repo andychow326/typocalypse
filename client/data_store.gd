@@ -11,6 +11,7 @@ extends Node
 
 @export var web_socket_client: WebSocketClient = WebSocketClient.new()
 
+@export var player_id: String
 @export var player_name: String = ""
 @export var session_id: String:
 	get:
