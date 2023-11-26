@@ -39,11 +39,12 @@ func _on_web_socket_client_message_received(message):
 			else:
 				start_button.visible = false
 				start_button.disabled = true
-			room.users.erase(host_user.id)
 			var player_node = player_scene.instantiate()
 			player_node.from_dict(host_user)
 			player_list_container.add_child(player_node)
 			for user in room.users.values():
+				if user.id == host_user.id:
+					continue
 				player_node = player_scene.instantiate()
 				player_node.from_dict(user)
 				player_list_container.add_child(player_node)
