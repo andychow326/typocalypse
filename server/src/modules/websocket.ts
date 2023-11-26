@@ -46,6 +46,8 @@ const websocket = (app: Elysia) =>
           ws.terminate();
         } else if (error instanceof RoomNotFoundError) {
           ws.send(error.toJsonString());
+        } else {
+          console.error(error);
         }
       }
     },
