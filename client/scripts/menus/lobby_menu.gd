@@ -24,6 +24,8 @@ func _on_web_socket_client_message_received(message):
 		"joinRoom":
 			DataStore.room_id = message.data.roomId
 			state = STATE.WAITING_ROOM
+		"startGame":
+			state = STATE.ON_BOARDING
 
 
 func _on_on_boarding_menu_quick_play_button_pressed():

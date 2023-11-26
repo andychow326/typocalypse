@@ -15,6 +15,7 @@ signal back_button_pressed()
 func _ready():
 	DataStore.web_socket_client.message_received.connect(_on_web_socket_client_message_received)
 	start_button.visible = false
+	start_button.disabled = true
 
 
 func _on_web_socket_client_message_received(message):
@@ -34,8 +35,10 @@ func _on_web_socket_client_message_received(message):
 			var current_user = message.user
 			if host_user.id == current_user.id:
 				start_button.visible = true
+				start_button.disabled = false
 			else:
 				start_button.visible = false
+				start_button.disabled = true
 			room.users.erase(host_user.id)
 			var player_node = player_scene.instantiate()
 			player_node.from_dict(host_user)
@@ -71,6 +74,7 @@ func _on_visibility_changed():
 	if not visible:
 		reset_room_status()
 		start_button.visible = false
+		start_button.disabled = true
 
 
 func _on_back_button_pressed():
@@ -81,3 +85,13 @@ func _on_back_button_pressed():
 		}
 	})
 	back_button_pressed.emit()
+
+
+func _on_start_button_pressed():
+	start_button.disabled = true
+	DataStore.web_socket_client.send({
+		"event": "startGame",
+		"data": {
+			"roomId": DataStore.room_id
+		}
+	})

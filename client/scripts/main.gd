@@ -63,3 +63,5 @@ func _on_web_socket_client_message_received(message):
 		"validSession":
 			DataStore.player_name = message.user.name
 			$LobbyMenu/OnBoardingMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerNameLineEdit.text = message.user.name
+		"startGame":
+			state = STATE.GAME_WORLD
