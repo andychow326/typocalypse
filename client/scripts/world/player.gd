@@ -1,6 +1,21 @@
 extends CharacterBody3D
 
 
+@export var player_id: String
+@export var player_name: String
+
+
+func from_dict(dict: Dictionary):
+	player_id = dict.id
+	player_name = dict.name
+
+
+func _ready():
+	look_at(Vector3(0, 0, 0))
+	if DataStore.player_id == player_id:
+		$Head/Camera3D.current = true
+
+
 func _input(event):
 	if not get_parent().visible or not event is InputEventKey or not event.is_pressed():
 		return
