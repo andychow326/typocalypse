@@ -5,7 +5,6 @@ extends Control
 
 @onready
 var waiting_room_list_container = $VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
-var timer = Timer.new()
 
 
 signal back_button_pressed()
@@ -44,17 +43,15 @@ func _on_visibility_changed():
 		return
 	if visible:
 		fetch_waiting_rooms()
-		timer.timeout.connect(fetch_waiting_rooms)
-		timer.wait_time = 5
-		timer.one_shot = false
-		add_child(timer)
-		timer.start()
+		$RoomListUpdateTimer.start()
 	if not visible:
-		timer.stop()
-		remove_child(timer)
-		timer.timeout.disconnect(fetch_waiting_rooms)
+		$RoomListUpdateTimer.stop()
 		clear_waiting_rooms()
 
 
 func _on_back_button_pressed():
 	back_button_pressed.emit()
+
+
+func _on_room_list_update_timer_timeout():
+	fetch_waiting_rooms()
