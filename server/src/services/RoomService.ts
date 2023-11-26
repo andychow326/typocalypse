@@ -196,6 +196,22 @@ class RoomService {
       );
     });
     if (deletableRoomIds.length > 0) {
+      let inputHistoryPipe = this.redis.multi();
+      deletableRoomIds.forEach((roomId) => {
+        inputHistoryPipe = inputHistoryPipe
+          .smembers(getRedisBucketKey(RedisBucketKey.inputHistory, roomId))
+          .del(getRedisBucketKey(RedisBucketKey.inputHistory, roomId));
+      });
+      const inputHistoryPipeResult = await inputHistoryPipe.exec();
+      if (inputHistoryPipeResult != null) {
+        const inputHistoryIds = inputHistoryPipeResult.flatMap(
+          (result) => result[1] as string[]
+        );
+        if (inputHistoryIds.length > 0) {
+          pipe = pipe.del(inputHistoryIds);
+        }
+      }
+
       pipe = pipe
         .del(
           deletableRoomIds.map((roomId) =>

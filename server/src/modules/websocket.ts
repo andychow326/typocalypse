@@ -5,6 +5,7 @@ import {
   RoomNotFoundError,
   SessionNotFoundError,
   UserNotFoundError,
+  UserNotRoomHostError,
 } from "../errors";
 
 const InitialWebSocketState: WebSocketState = {
@@ -44,7 +45,10 @@ const websocket = (app: Elysia) =>
         ) {
           ws.send(error.toJsonString());
           ws.terminate();
-        } else if (error instanceof RoomNotFoundError) {
+        } else if (
+          error instanceof RoomNotFoundError ||
+          error instanceof UserNotRoomHostError
+        ) {
           ws.send(error.toJsonString());
         } else {
           console.error(error);

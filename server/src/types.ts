@@ -26,6 +26,7 @@ export const GameMessageFromClientSchema = t.Union([
       t.Literal("joinRoom"),
       t.Literal("leaveRoom"),
       t.Literal("getRoomStatus"),
+      t.Literal("startGame"),
     ]),
     data: t.Object({
       roomId: t.String(),
@@ -46,13 +47,22 @@ export type User = {
   room?: string;
 };
 
+export type RoomWord = {
+  userId: string;
+  word: string;
+};
+
 export type Room = {
   id: string;
   state: "waiting" | "in-game";
+  round?: number;
+  roundDurationSeconds?: number;
+  roundWaitDurationSeconds?: number;
   hostId: string;
   users: {
     [userId: string]: User;
   };
+  words?: RoomWord[];
 };
 
 export type GameMessageFromServer = (

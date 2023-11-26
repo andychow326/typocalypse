@@ -43,3 +43,12 @@ export class RoomNotFoundError extends CustomError {
     });
   }
 }
+
+export class UserNotRoomHostError extends CustomError {
+  constructor(userId: string) {
+    super("UserNotRoomHostError", {
+      reason: "user is not room host",
+      target: { userId: userId },
+    });
+  }
+}

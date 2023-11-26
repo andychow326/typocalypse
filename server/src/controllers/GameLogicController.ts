@@ -9,18 +9,21 @@ import {
 import { GameMessageFromClient, GameMessageFromServer } from "../types";
 import { getRedisConnection } from "../redis";
 import RoomService from "../services/RoomService";
+import GameService from "../services/GameService";
 
 class GameLogicController {
   private redis: Redis;
   private pubsubService: PubSubService;
   private userService: UserService;
   private roomService: RoomService;
+  private gameService: GameService;
 
   constructor() {
     this.redis = getRedisConnection();
     this.pubsubService = new PubSubService();
     this.userService = new UserService(this.redis);
     this.roomService = new RoomService(this.redis);
+    this.gameService = new GameService(this.redis);
   }
 
   gameMessageToString(message: GameMessageFromServer): string {
@@ -199,6 +202,15 @@ class GameLogicController {
     await this.pubsubService.unsubscribe(userId);
   }
 
+  async onPlayerStartGame(
+    userId: string,
+    roomId: string,
+    message: GameMessageFromClient
+  ) {
+    await this.gameService.initializeGameRound(userId, roomId);
+    await this.publishGameMessage("singleChannel", userId, roomId, message);
+  }
+
   async onPlayerInput(userId: string, message: GameMessageFromClient) {
     await this.publishGameMessage(
       "allChannelsBySubscriberId",
@@ -255,6 +267,9 @@ class GameLogicController {
         message.data.roomId,
         options?.onReply
       );
+    }
+    if (message.event === "startGame") {
+      await this.onPlayerStartGame(userId, message.data.roomId, message);
     }
     if (message.event === "input") {
       await this.onPlayerInput(userId, message);
