@@ -16,7 +16,7 @@ export enum RedisBucketKey {
 
 export function getRedisBucketKey(
   bucketKey: RedisBucketKey,
-  key: string
+  ...keys: string[]
 ): string {
-  return `${bucketKey}:${key}`;
+  return `${bucketKey}:${keys.join(":")}`;
 }
