@@ -1,7 +1,23 @@
 extends Node
 
 
+enum STATE {
+	LOBBY_MENU,
+	GAME_WORLD,
+}
+
+var state := STATE.LOBBY_MENU
 var web_socket_connection_closed_count := 0
+
+
+func _process(_delta):
+	match state:
+		STATE.LOBBY_MENU:
+			$LobbyMenu.visible = true
+			$World.visible = false
+		STATE.GAME_WORLD:
+			$LobbyMenu.visible = false
+			$World.visible = true
 
 
 func _ready():
