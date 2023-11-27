@@ -1,6 +1,6 @@
 .PHONY: setup
 setup:
-	cp config_development.gd config.gd
+	cp config_local.gd config.gd
 
 .PHONY: start
 start:
