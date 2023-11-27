@@ -1,5 +1,7 @@
 extends Node
 
+const WebSocketClient = preload("res://scripts/web_socket_client.gd")
+
 @export var storage_session_path: String:
 	get:
 		var path = "user://session"
