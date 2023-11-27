@@ -37,7 +37,6 @@ func _on_web_socket_client_message_received(message):
 			for user in message.data.room.users.values():
 				var player_node = player_scene.instantiate()
 				player_node.position = player_positions[position_index]
-				player_node.look_at(Vector3(-10, 0, 0))
 				player_node.from_dict(user)
 				$PlayerContainer.add_child(player_node)
 				position_index += 1
