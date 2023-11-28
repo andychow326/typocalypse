@@ -1,0 +1,60 @@
+ingress:
+  class: nginx
+  tlsSecretName: wildcard-typocalypse-online-tls
+
+redis:
+  image: redis/redis-stack-server:7.2.0-v6
+  volume:
+    storageClassName: local-path
+    storageSize: 1Gi
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: region
+                operator: In
+                values:
+                  - asia-tokyo
+              - key: node-type
+                operator: In
+                values:
+                  - master
+  resources:
+    requests:
+      cpu: "100m"
+      memory: 128Mi
+    limits:
+      cpu: "200m"
+      memory: 1256Mi
+
+server:
+  host: api-dev.typocalypse.online
+  image: andychow326/typocalypse-server
+  replicas: 2
+  env:
+    SESSION_EXPIRATION_SECONDS: 86400
+    ROOM_EXPIRATION_SECONDS: 86400
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: region
+                operator: In
+                values:
+                  - asia-tokyo
+
+client:
+  host: dev.typocalypse.online
+  image: andychow326/typocalypse-client
+  replicas: 1
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: region
+                operator: In
+                values:
+                  - asia-tokyo

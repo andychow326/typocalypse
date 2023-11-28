@@ -60,3 +60,27 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/typocalypse-server:git-${{ github.sha }}
+
+  deploy:
+    if: ${{ (github.ref_name == 'master' || github.ref_name == 'production') && github.event_name == 'push' }}
+    name: Deploy
+    runs-on: ubuntu-22.04
+    needs: [build-and-push-docker-images]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+      - name: Set k8s context
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Deploy (development)
+        if: github.ref_name == 'master'
+        run: |
+          make -C deploy upgrade DEPLOY_ENV=dev
+      - name: Deploy (production)
+        if: github.ref_name == 'production'
+        run: |
+          make -C deploy upgrade DEPLOY_ENV=prod

@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.class | quote }}
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "Cross-Origin-Opener-Policy: same-origin";
+      more_set_headers "Cross-Origin-Embedder-Policy: require-corp";
+    # Websocket settings
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  labels:
+    app: ingress
+spec:
+  rules:
+    - host: {{ .Values.server.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: server
+                port:
+                  number: 3000
+    - host: {{ .Values.client.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: client
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - {{ .Values.server.host }}
+        - {{ .Values.client.host }}
+      secretName: {{ .Values.ingress.tlsSecretName }}

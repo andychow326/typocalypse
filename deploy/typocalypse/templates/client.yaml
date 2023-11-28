@@ -1,0 +1,60 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: client
+  labels:
+    app: client
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: client
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: client
+  labels:
+    app: client
+spec:
+  replicas: {{ .Values.client.replicas }}
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: {{ .Values.client.image }}:{{ .Values.git.hash }}
+          resources:
+            {{- .Values.client.resources | toYaml | nindent 12 }}
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+      affinity:
+        {{- .Values.server.affinity | toYaml | nindent 8 }}

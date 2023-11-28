@@ -1,0 +1,67 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: server
+  labels:
+    app: server
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: server
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: server
+  labels:
+    app: server
+spec:
+  replicas: {{ .Values.server.replicas }}
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+        - name: server
+          image: {{ .Values.server.image }}:{{ .Values.git.hash }}
+          resources:
+            {{- .Values.server.resources | toYaml | nindent 12 }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REDIS_URL
+              value: {{ printf "redis://%s.%s.svc.cluster.local" "redis" .Release.Namespace }}
+            - name: SESSION_EXPIRATION_SECONDS
+              value: {{ .Values.server.env.SESSION_EXPIRATION_SECONDS | quote }}
+            - name: ROOM_EXPIRATION_SECONDS
+              value: {{ .Values.server.env.ROOM_EXPIRATION_SECONDS | quote }}
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+      affinity:
+        {{- .Values.server.affinity | toYaml | nindent 8 }}
