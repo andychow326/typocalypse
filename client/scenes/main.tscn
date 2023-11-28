@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cbq3sws0ryo0y"]
+[gd_scene load_steps=6 format=3 uid="uid://cbq3sws0ryo0y"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_ewlrn"]
 [ext_resource type="PackedScene" uid="uid://bxqu51ckbq1cb" path="res://scenes/world/world.tscn" id="3_5elts"]
 [ext_resource type="PackedScene" uid="uid://dhje63qf4sssv" path="res://scenes/menus/lobby_menu.tscn" id="3_yvi4m"]
 [ext_resource type="PackedScene" uid="uid://dp1jlktbv8ml5" path="res://scenes/world/player.tscn" id="4_igpmj"]
+[ext_resource type="PackedScene" uid="uid://kspnqxcg2srx" path="res://scenes/world/zombie.tscn" id="5_sjskl"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_ewlrn")
@@ -12,3 +13,4 @@ script = ExtResource("1_ewlrn")
 
 [node name="World" parent="." instance=ExtResource("3_5elts")]
 player_scene = ExtResource("4_igpmj")
+zombie_scene = ExtResource("5_sjskl")

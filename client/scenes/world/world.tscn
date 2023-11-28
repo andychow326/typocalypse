@@ -1,12 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://bxqu51ckbq1cb"]
+[gd_scene load_steps=5 format=3 uid="uid://bxqu51ckbq1cb"]
 
 [ext_resource type="Script" path="res://scripts/world/world.gd" id="1_35jya"]
-[ext_resource type="PackedScene" uid="uid://kspnqxcg2srx" path="res://scenes/world/zombie.tscn" id="2_0ie8q"]
 [ext_resource type="PackedScene" uid="uid://br14qk22pvb0f" path="res://scenes/world/building.tscn" id="3_wtr6q"]
 [ext_resource type="PackedScene" uid="uid://8owrun0i42u" path="res://scenes/world/building_tall.tscn" id="4_pb1ji"]
 
 [sub_resource type="Environment" id="Environment_5tdxp"]
-tonemap_mode = 2
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_35jya")
@@ -38,9 +36,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.8159, 0, -51.7816)
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
 environment = SubResource("Environment_5tdxp")
 
-[node name="Zombie" parent="." instance=ExtResource("2_0ie8q")]
-
 [node name="PlayerContainer" type="Node3D" parent="."]
+
+[node name="ZombieContainer" type="Node3D" parent="."]
 
 [node name="RemainingTimeLabel" type="Label" parent="."]
 anchors_preset = 5

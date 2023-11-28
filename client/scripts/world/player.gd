@@ -5,6 +5,9 @@ extends CharacterBody3D
 @export var player_name: String
 
 
+signal player_inputted_key(player_id, key)
+
+
 func from_dict(dict: Dictionary):
 	player_id = dict.id
 	player_name = dict.name
@@ -32,3 +35,4 @@ func _input(event):
 				"key": key_label
 			}
 		})
+		player_inputted_key.emit(player_id, key_label)
