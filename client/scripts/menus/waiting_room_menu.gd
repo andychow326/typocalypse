@@ -71,9 +71,11 @@ func fetch_room_status():
 func _on_visibility_changed():
 	if not is_node_ready():
 		return
-	if visible:
+	var parent = get_parent()
+	var should_fetch_room_status = visible and parent.visible
+	if should_fetch_room_status:
 		fetch_room_status()
-	if not visible:
+	if not should_fetch_room_status:
 		reset_room_status()
 		start_button.visible = false
 		start_button.disabled = true
