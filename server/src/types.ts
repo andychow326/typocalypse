@@ -99,3 +99,18 @@ export type GameMessageFromServer = (
 ) & {
   user: User;
 };
+
+export type GameMessageFromWorker =
+  | {
+      event: "startGame";
+      data: {
+        room: Room;
+      };
+    }
+  | {
+      event: "remainingTime";
+      data: {
+        type: "waitForRoundStart" | "round";
+        remainingTime: number;
+      };
+    };
