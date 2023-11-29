@@ -29,6 +29,7 @@ func _on_web_socket_client_message_received(message):
 func clear_waiting_rooms():
 	var children = waiting_room_list_container.get_children()
 	for child in children:
+		child.queue_free()
 		waiting_room_list_container.remove_child(child)
 
 

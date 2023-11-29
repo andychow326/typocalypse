@@ -53,6 +53,7 @@ func _on_web_socket_client_message_received(message):
 func reset_room_status():
 	var children = player_list_container.get_children()
 	for child in children:
+		child.queue_free()
 		player_list_container.remove_child(child)
 
 
