@@ -11,7 +11,7 @@ import {
   UserNotRoomHostError,
 } from "../errors";
 import { randomWords } from "../utils/random";
-import { RoomWord } from "../types";
+import { Room, RoomWord } from "../types";
 
 class GameService {
   private redis: Redis;
@@ -53,18 +53,21 @@ class GameService {
         );
     }
 
-    room.state = "in-game";
-    room.round = 1;
-    room.roundDurationSeconds = 20;
-    room.roundWaitDurationSeconds = 3;
-    room.words = roomWords;
+    const updatedRoom: Room = {
+      ...room,
+      state: "in-game",
+      round: 1,
+      roundDurationSeconds: 20,
+      roundWaitDurationSeconds: 3,
+      words: roomWords,
+    };
 
     await pipe
       .call(
         "JSON.SET",
         getRedisBucketKey(RedisBucketKey.room, roomId),
         "$",
-        JSON.stringify(room)
+        JSON.stringify(updatedRoom)
       )
       .srem(RedisBucketKey.roomsWaiting, roomId)
       .sadd(RedisBucketKey.roomsInGame, roomId)

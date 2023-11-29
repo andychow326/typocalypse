@@ -52,18 +52,29 @@ export type RoomWord = {
   word: string;
 };
 
-export type Room = {
+export type RoomWaiting = {
   id: string;
-  state: "waiting" | "in-game";
-  round?: number;
-  roundDurationSeconds?: number;
-  roundWaitDurationSeconds?: number;
+  state: "waiting";
   hostId: string;
   users: {
     [userId: string]: User;
   };
-  words?: RoomWord[];
 };
+
+export type RoomInGame = {
+  id: string;
+  state: "in-game";
+  round: number;
+  roundDurationSeconds: number;
+  roundWaitDurationSeconds: number;
+  hostId: string;
+  users: {
+    [userId: string]: User;
+  };
+  words: RoomWord[];
+};
+
+export type Room = RoomWaiting | RoomInGame;
 
 export type GameMessageFromServer = (
   | GameMessageFromClient
