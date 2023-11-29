@@ -129,7 +129,10 @@ class RoomService {
       .exec();
   }
 
-  async leaveRoom(user: User, roomId: string): Promise<void> {
+  async leaveRoom(
+    user: User,
+    roomId: string
+  ): Promise<{ deletedRoomIds: string[] }> {
     let pipe = this.redis.multi();
     if (user.room != null && user.room !== roomId) {
       pipe = pipe.call(
@@ -151,13 +154,15 @@ class RoomService {
       );
     await pipe.exec();
     if (user.room != null && user.room !== roomId) {
-      await this.finalizeRooms(user.room, roomId);
+      return await this.finalizeRooms(user.room, roomId);
     } else {
-      await this.finalizeRooms(roomId);
+      return await this.finalizeRooms(roomId);
     }
   }
 
-  async finalizeRooms(...roomIds: string[]): Promise<void> {
+  async finalizeRooms(
+    ...roomIds: string[]
+  ): Promise<{ deletedRoomIds: string[] }> {
     let pipe = this.redis.multi();
     roomIds.forEach((roomId) => {
       pipe = pipe.call(
@@ -168,7 +173,7 @@ class RoomService {
     });
     const rooms = await pipe.exec();
     if (rooms == null) {
-      return;
+      return { deletedRoomIds: [] };
     }
     let updatableRooms: Room[] = [];
     let deletableRoomIds: string[] = [];
@@ -222,6 +227,8 @@ class RoomService {
         .srem(RedisBucketKey.roomsInGame, ...deletableRoomIds);
     }
     await pipe.exec();
+
+    return { deletedRoomIds: deletableRoomIds };
   }
 }
 

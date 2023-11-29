@@ -22,13 +22,10 @@ class GameService {
     this.roomService = new RoomService(this.redis);
   }
 
-  async initializeGameRound(userId: string, roomId: string) {
+  async initializeGameRound(roomId: string) {
     const room = await this.roomService.getRoomStatus(roomId);
     if (room == null) {
       throw new RoomNotFoundError(roomId);
-    }
-    if (room.hostId !== userId) {
-      throw new UserNotRoomHostError(userId);
     }
 
     let pipe = this.redis.multi();

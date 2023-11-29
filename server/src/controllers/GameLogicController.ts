@@ -5,6 +5,7 @@ import {
   RoomNotFoundError,
   SessionNotFoundError,
   UserNotFoundError,
+  UserNotRoomHostError,
 } from "../errors";
 import { GameMessageFromClient, GameMessageFromServer } from "../types";
 import { getRedisConnection } from "../redis";
@@ -17,6 +18,7 @@ class GameLogicController {
   private userService: UserService;
   private roomService: RoomService;
   private gameService: GameService;
+  private activeWorkers: Array<{ roomId: string; worker: Worker }> = [];
 
   constructor() {
     this.redis = getRedisConnection();
@@ -134,7 +136,14 @@ class GameLogicController {
     if (user == null) {
       throw new UserNotFoundError(userId);
     }
-    await this.roomService.leaveRoom(user, roomId);
+    const { deletedRoomIds } = await this.roomService.leaveRoom(user, roomId);
+    const deleteableWorkers = this.activeWorkers
+      .filter((item) => deletedRoomIds.includes(item.roomId))
+      .map((item) => item.worker);
+    deleteableWorkers.forEach((worker) => worker.terminate());
+    this.activeWorkers = this.activeWorkers.filter(
+      (item) => !deletedRoomIds.includes(item.roomId)
+    );
     await this.publishGameMessage("singleChannel", userId, roomId, message);
     await this.pubsubService.unsubscribe(userId, roomId);
   }
@@ -205,10 +214,26 @@ class GameLogicController {
   async onPlayerStartGame(
     userId: string,
     roomId: string,
-    message: GameMessageFromClient
+    _message: GameMessageFromClient
   ) {
-    await this.gameService.initializeGameRound(userId, roomId);
-    await this.publishGameMessage("singleChannel", userId, roomId, message);
+    const room = await this.roomService.getRoomStatus(roomId);
+    if (room == null) {
+      throw new RoomNotFoundError(roomId);
+    }
+    if (room.hostId !== userId) {
+      throw new UserNotRoomHostError(userId);
+    }
+
+    const worker = new Worker("./src/workers/GameLoopWorker.ts", {
+      ref: true,
+      env: { ROOM_ID: roomId },
+    });
+    worker.addEventListener("close", () => {
+      this.activeWorkers = this.activeWorkers.filter(
+        (item) => item.roomId !== roomId
+      );
+    });
+    this.activeWorkers.push({ roomId: roomId, worker: worker });
   }
 
   async onPlayerInput(
