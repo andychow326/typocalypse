@@ -32,4 +32,4 @@ The server will start on http://localhost:3000
 make -C client start
 ```
 
-The client will start on http://localhost:3000
+The client will start on http://localhost:8000
