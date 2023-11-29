@@ -64,11 +64,4 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 20
 text = "READY"
 
-[node name="RoundStartTimer" type="Timer" parent="."]
-one_shot = true
-
-[node name="RemainingTimeTimer" type="Timer" parent="."]
-one_shot = true
-
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
-[connection signal="timeout" from="RoundStartTimer" to="." method="_on_round_start_timer_timeout"]

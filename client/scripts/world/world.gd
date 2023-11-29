@@ -25,23 +25,19 @@ func _ready():
 	DataStore.web_socket_client.message_received.connect(_on_web_socket_client_message_received)
 
 
-func _process(_delta):
-	$RemainingTimeLabel.text = "%.1f" % $RemainingTimeTimer.time_left
-	if not int($RoundStartTimer.time_left) == 0:
-		$RoundStartLabel.text = "%.f" % $RoundStartTimer.time_left
-
-
 func _on_web_socket_client_message_received(message):
 	if typeof(message) != TYPE_DICTIONARY:
 		return
 	match message.event:
-		"getRoomStatus":
-			if not visible:
-				return
+		"remainingTime":
+			if message.data.type == "waitForRoundStart":
+				$RoundStartLabel.text = "%.f" % (float(message.data.remainingTime) / 1000 + 1)
+			if message.data.type == "round":
+				$RoundStartLabel.visible = false
+				$RemainingTimeLabel.visible = true
+				$RemainingTimeLabel.text = "%.1f" % (float(message.data.remainingTime) / 1000)
+		"startGame":
 			reset_player_container()
-
-			$RoundStartTimer.wait_time = message.data.room.roundWaitDurationSeconds + 0.5
-			$RemainingTimeTimer.wait_time = message.data.room.roundDurationSeconds
 
 			var words: Array = []
 			for word in message.data.room.words:
@@ -79,7 +75,6 @@ func _on_web_socket_client_message_received(message):
 
 			$RoundStartLabel.text = "READY"
 			await get_tree().create_timer(1).timeout
-			$RoundStartTimer.start()
 
 
 func reset_player_container():
@@ -96,30 +91,10 @@ func reset_zombie_container():
 		$ZombieContainer.remove_child(child)
 
 
-func fetch_room_status():
-	if not visible:
-		return
-	DataStore.web_socket_client.send({
-		"event": "getRoomStatus",
-		"data": {
-			"roomId": DataStore.room_id
-		}
-	})
-
-
 func _on_visibility_changed():
 	if visible:
 		$RoundStartLabel.visible = true
 		$RemainingTimeLabel.visible = false
-	if not visible:
-		$RoundStartTimer.stop()
-		$RemainingTimeTimer.stop()
-
-
-func _on_round_start_timer_timeout():
-	$RoundStartLabel.visible = false
-	$RemainingTimeLabel.visible = true
-	$RemainingTimeTimer.start()
 
 
 func reset_active_zombies(indexs: Array):
