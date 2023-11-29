@@ -7,6 +7,9 @@ import {
 import { randomInt } from "crypto";
 import { Room, User } from "../types";
 import { ROOM_EXPIRATION_SECONDS } from "../constants";
+import { getLogger } from "../logger";
+
+const logger = getLogger("RoomService");
 
 class RoomService {
   private redis: Redis;
@@ -104,6 +107,7 @@ class RoomService {
         ROOM_EXPIRATION_SECONDS
       )
       .exec();
+    logger.debug({ userId: user.id, roomId }, "create room");
     return roomId;
   }
 
@@ -127,6 +131,7 @@ class RoomService {
         ROOM_EXPIRATION_SECONDS
       )
       .exec();
+    logger.debug({ userId: user.id, roomId }, "join room");
   }
 
   async leaveRoom(
@@ -153,6 +158,7 @@ class RoomService {
         ".room"
       );
     await pipe.exec();
+    logger.debug({ userId: user.id, roomId }, "leave room");
     if (user.room != null && user.room !== roomId) {
       return await this.finalizeRooms(user.room, roomId);
     } else {
@@ -185,10 +191,13 @@ class RoomService {
       const room: Room = JSON.parse(roomJson as any);
       const userIds = Object.keys(room.users);
       if (userIds.length > 0) {
-        room.hostId = userIds[0];
+        const newHostId = userIds[0];
+        room.hostId = newHostId;
+        logger.debug({ roomId: room.id, newHostId }, "room host update");
         updatableRooms.push(room);
         return;
       }
+      logger.debug({ roomId: room.id }, "delete empty room");
       deletableRoomIds.push(room.id);
     });
     pipe = this.redis.multi();

@@ -11,6 +11,9 @@ import { GameMessageFromClient, GameMessageFromServer } from "../types";
 import { getRedisConnection } from "../redis";
 import RoomService from "../services/RoomService";
 import GameService from "../services/GameService";
+import { getLogger } from "../logger";
+
+const logger = getLogger("GameLogicController");
 
 class GameLogicController {
   private redis: Redis;
@@ -228,10 +231,15 @@ class GameLogicController {
       ref: true,
       env: { ROOM_ID: roomId },
     });
+    logger.info(
+      { userId, roomId, threadId: worker.threadId },
+      "instantiate new game loop worker"
+    );
     worker.addEventListener("close", () => {
       this.activeWorkers = this.activeWorkers.filter(
         (item) => item.roomId !== roomId
       );
+      logger.info({ roomId }, "game loop worker closed");
     });
     this.activeWorkers.push({ roomId: roomId, worker: worker });
   }
@@ -268,6 +276,8 @@ class GameLogicController {
     if (userId == null) {
       throw new SessionNotFoundError(sessionId);
     }
+
+    logger.debug(message, "recevie message from user");
 
     if (message.event === "rename") {
       await this.onPlayerRename(userId, message.data.name, message);

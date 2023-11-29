@@ -6,6 +6,9 @@ import { Redis } from "ioredis";
 import { getRedisConnection } from "../redis";
 import { GameMessageFromWorker, RoomInGame } from "../types";
 import { RoomNotFoundError } from "../errors";
+import { getLogger } from "../logger";
+
+const logger = getLogger("GameLoopWorker");
 
 declare var self: Worker;
 
@@ -126,8 +129,8 @@ class GameLoopWorker {
   }
 }
 
-self.onerror = (error) => {
-  console.error(error);
+self.onerror = (ev) => {
+  logger.error(ev.error);
   process.exit();
 };
 

@@ -8,6 +8,9 @@ import {
   UserNotFoundError,
   UserNotRoomHostError,
 } from "../errors";
+import { getLogger } from "../logger";
+
+const logger = getLogger("websocket");
 
 const InitialWebSocketState: WebSocketState = {
   gameLogicController: new GameLogicController(),
@@ -53,7 +56,7 @@ const websocket = (app: Elysia) =>
         ) {
           ws.send(error.toJsonString());
         } else {
-          console.error(error);
+          logger.error(error);
         }
       }
     },

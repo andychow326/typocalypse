@@ -12,6 +12,9 @@ import {
 } from "../errors";
 import { randomWords } from "../utils/random";
 import { Room, RoomWord } from "../types";
+import { getLogger } from "../logger";
+
+const logger = getLogger("GameService");
 
 class GameService {
   private redis: Redis;
@@ -23,6 +26,7 @@ class GameService {
   }
 
   async initializeGameRound(roomId: string) {
+    logger.debug({ roomId: roomId }, "initialize game round");
     const room = await this.roomService.getRoomStatus(roomId);
     if (room == null) {
       throw new RoomNotFoundError(roomId);
@@ -33,6 +37,7 @@ class GameService {
     const roomWords: RoomWord[] = [];
     for (const userId in room.users) {
       const words = randomWords({ count: 4 });
+      logger.debug({ roomId, userId, words }, "gerenate room words");
       words.forEach((word) => {
         roomWords.push({
           userId: userId,
@@ -79,6 +84,8 @@ class GameService {
     if (room == null || room.state !== "in-game") {
       throw new RoomNotFoundError(roomId);
     }
+
+    logger.debug({ roomId, userId, input }, "handle game input");
 
     await this.redis.call(
       "TS.ADD",
