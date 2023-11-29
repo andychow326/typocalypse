@@ -229,7 +229,7 @@ class GameLogicController {
 
     const worker = new Worker("./src/workers/GameLoopWorker.ts", {
       ref: true,
-      env: { ROOM_ID: roomId },
+      env: { ...Bun.env, ROOM_ID: roomId },
     });
     logger.info(
       { userId, roomId, threadId: worker.threadId },
