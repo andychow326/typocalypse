@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://kspnqxcg2srx"]
+[gd_scene load_steps=4 format=3 uid="uid://kspnqxcg2srx"]
 
 [ext_resource type="Script" path="res://scripts/world/zombie.gd" id="1_0fkhx"]
 [ext_resource type="PackedScene" uid="uid://dluwqd7gpibdt" path="res://blender_meshes/zombie.blend" id="1_7ms5u"]
+[ext_resource type="FontFile" uid="uid://djy5hbxhwysyd" path="res://assets/font/VCR_OSD_MONO_1.001.ttf" id="3_yudlc"]
 
 [node name="Zombie" type="Node3D"]
 script = ExtResource("1_0fkhx")
@@ -23,13 +24,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.808655, 0.851094)
 
 [node name="ActiveWordLabel" type="Label3D" parent="WordLabelContainer"]
 modulate = Color(0.882353, 0.0235294, 0.184314, 1)
-font_size = 150
+font = ExtResource("3_yudlc")
+font_size = 160
+outline_size = 0
 horizontal_alignment = 2
 justification_flags = 131
 width = 1000.0
 
 [node name="NonActiveWordLabel" type="Label3D" parent="WordLabelContainer"]
-font_size = 150
+font = ExtResource("3_yudlc")
+font_size = 160
+outline_size = 0
 horizontal_alignment = 0
 justification_flags = 131
 width = 1000.0
