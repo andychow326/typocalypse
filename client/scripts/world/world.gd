@@ -29,6 +29,10 @@ func _on_web_socket_client_message_received(message):
 	if typeof(message) != TYPE_DICTIONARY:
 		return
 	match message.event:
+		"input":
+			var player_id = message.user.id
+			var key = message.data.key
+			on_player_inputted_key(player_id, key)
 		"remainingTime":
 			if message.data.type == "waitForRoundStart":
 				$RoundStartLabel.text = "%.f" % (float(message.data.remainingTime) / 1000 + 1)
@@ -69,7 +73,6 @@ func _on_web_socket_client_message_received(message):
 				var player_node = player_scene.instantiate()
 				player_node.position = player_positions[position_index]
 				player_node.from_dict(user)
-				player_node.player_inputted_key.connect(_on_player_inputted_key)
 				$PlayerContainer.add_child(player_node)
 				position_index += 1
 
@@ -103,7 +106,7 @@ func reset_active_zombies(indexs: Array):
 		node.set_active("")
 
 
-func _on_player_inputted_key(player_id: String, key: String):
+func on_player_inputted_key(player_id: String, key: String):
 	player_active_inputs[player_id] += key
 	var potential_target_zombies: Array = player_tries[player_id].get_potential_candidates(player_active_inputs[player_id])
 	potential_target_zombies = potential_target_zombies.filter(
