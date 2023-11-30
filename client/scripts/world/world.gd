@@ -126,13 +126,12 @@ func _on_player_inputted_key(player_id: String, key: String):
 			dead_zombies[zombie.zombie_id] = zombie
 			player_active_inputs[player_id] = ""
 
-			reset_active_zombies(
-				last_potential_target_zombies.filter(
-					func (item: Dictionary): return item.zombie_id != zombie.zombie_id
-				).map(
-					func (item: Dictionary): return item.zombie_id
-				)
-			)
+	var inactive_zombie_ids = last_potential_target_zombies.filter(
+		func (item1: Dictionary): return not potential_target_zombies.any(
+			func (item2: Dictionary): return item1.zombie_id == item2.zombie_id
+		)
+	).map(func (item: Dictionary): return item.zombie_id)
+	reset_active_zombies(inactive_zombie_ids)
 	last_potential_target_zombies = potential_target_zombies.filter(
 		func (zombie: Dictionary): return not dead_zombies.has(zombie.zombie_id)
 	)
