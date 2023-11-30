@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://4yj8qpkw5uv7"]
+[gd_scene load_steps=6 format=3 uid="uid://4yj8qpkw5uv7"]
 
 [ext_resource type="Script" path="res://scripts/menus/room_list_menu.gd" id="1_1npol"]
 [ext_resource type="PackedScene" uid="uid://bw7ao7mg8lac4" path="res://scenes/menus/room_list_item.tscn" id="2_4bmkm"]
+[ext_resource type="Theme" uid="uid://bcxinudc32lvt" path="res://assets/main_menu/button.tres" id="3_66daj"]
+[ext_resource type="Theme" uid="uid://bod1xtt36j7s6" path="res://assets/main_menu/pixelated_font.tres" id="4_ppbsl"]
+[ext_resource type="StyleBox" uid="uid://sh13v0iog1jv" path="res://assets/main_menu/panel_container.tres" id="5_1kbtg"]
 
 [node name="RoomListMenu" type="Control"]
 layout_mode = 3
@@ -31,17 +34,20 @@ theme_override_constants/separation = 12
 [node name="BackButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
+theme = ExtResource("3_66daj")
 text = "← Back"
 alignment = 0
 
 [node name="CustomRoomContainer" type="PanelContainer" parent="VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("4_ppbsl")
+theme_override_styles/panel = ExtResource("5_1kbtg")
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/CustomRoomContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
+theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
+theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 16
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/CustomRoomContainer/MarginContainer"]
@@ -57,7 +63,7 @@ horizontal_alignment = 1
 layout_mode = 2
 
 [node name="RoomIDLineEdit" type="LineEdit" parent="VBoxContainer/CustomRoomContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
+custom_minimum_size = Vector2(180, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 placeholder_text = "Enter the room id"
@@ -70,6 +76,8 @@ text = "Join"
 
 [node name="RoomListContainer" type="PanelContainer" parent="VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("4_ppbsl")
+theme_override_styles/panel = ExtResource("5_1kbtg")
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/RoomListContainer"]
 layout_mode = 2
