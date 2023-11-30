@@ -1,0 +1,6 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://bod1xtt36j7s6"]
+
+[ext_resource type="FontFile" uid="uid://c1kbjeg1wo7ec" path="res://assets/font/pixelated.ttf" id="1_r8gm4"]
+
+[resource]
+default_font = ExtResource("1_r8gm4")
