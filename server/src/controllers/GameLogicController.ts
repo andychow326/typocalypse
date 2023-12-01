@@ -76,25 +76,13 @@ class GameLogicController {
     };
   }
 
-  async onPlayerRename(
-    userId: string,
-    name: string,
-    message: GameMessageFromClient
-  ): Promise<void> {
-    await this.userService.changeUsername(userId, name);
-    await this.publishGameMessage(
-      "allChannelsBySubscriberId",
-      userId,
-      userId,
-      message
-    );
-  }
-
   async onPlayerCreateRoom(
     userId: string,
+    name: string,
     onSubscribe?: (channel: string, message: string) => void,
     onReply?: (message: string) => void
   ): Promise<void> {
+    await this.userService.changeUsername(userId, name);
     const user = await this.userService.getUserByUserId(userId);
     if (user == null) {
       throw new UserNotFoundError(userId);
@@ -115,10 +103,12 @@ class GameLogicController {
 
   async onPlayerJoinRoom(
     userId: string,
+    name: string,
     roomId: string,
     message: GameMessageFromClient,
     onSubscribe?: (channel: string, message: string) => void
   ): Promise<void> {
+    await this.userService.changeUsername(userId, name);
     const user = await this.userService.getUserByUserId(userId);
     if (user == null) {
       throw new UserNotFoundError(userId);
@@ -279,12 +269,10 @@ class GameLogicController {
 
     logger.debug(message, "recevie message from user");
 
-    if (message.event === "rename") {
-      await this.onPlayerRename(userId, message.data.name, message);
-    }
     if (message.event === "createRoom") {
       await this.onPlayerCreateRoom(
         userId,
+        message.data.name,
         options?.onSubscribe,
         options?.onReply
       );
@@ -292,6 +280,7 @@ class GameLogicController {
     if (message.event === "joinRoom") {
       await this.onPlayerJoinRoom(
         userId,
+        message.data.name,
         message.data.roomId,
         message,
         options?.onSubscribe

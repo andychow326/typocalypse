@@ -13,17 +13,23 @@ export const GameMessageFromClientSchema = t.Union([
     }),
   }),
   t.Object({
-    event: t.Literal("rename"),
+    event: t.Literal("createRoom"),
     data: t.Object({
       name: t.String(),
     }),
   }),
   t.Object({
-    event: t.Union([t.Literal("createRoom"), t.Literal("getWaitingRooms")]),
+    event: t.Literal("joinRoom"),
+    data: t.Object({
+      name: t.String(),
+      roomId: t.String(),
+    }),
+  }),
+  t.Object({
+    event: t.Literal("getWaitingRooms"),
   }),
   t.Object({
     event: t.Union([
-      t.Literal("joinRoom"),
       t.Literal("leaveRoom"),
       t.Literal("getRoomStatus"),
       t.Literal("startGame"),
