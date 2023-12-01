@@ -8,6 +8,7 @@ import { randomInt } from "crypto";
 import { Room, User } from "../types";
 import { ROOM_EXPIRATION_SECONDS } from "../constants";
 import { getLogger } from "../logger";
+import { RoomNotFoundError } from "../errors";
 
 const logger = getLogger("RoomService");
 
@@ -112,6 +113,10 @@ class RoomService {
   }
 
   async joinRoom(user: User, roomId: string): Promise<void> {
+    const room = await this.getRoomStatus(roomId);
+    if (room == null) {
+      throw new RoomNotFoundError(roomId);
+    }
     await this.redis
       .multi()
       .call(
