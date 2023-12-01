@@ -1,0 +1,50 @@
+[gd_scene load_steps=5 format=3 uid="uid://cfxrggopn46bv"]
+
+[ext_resource type="Theme" uid="uid://bod1xtt36j7s6" path="res://assets/main_menu/pixelated_font.tres" id="1_0r4gr"]
+[ext_resource type="StyleBox" uid="uid://sh13v0iog1jv" path="res://assets/main_menu/panel_container.tres" id="2_ioi7o"]
+[ext_resource type="Texture2D" uid="uid://c82ug0t0i47be" path="res://assets/main_menu/error_icon.svg" id="3_nvkii"]
+[ext_resource type="Script" path="res://scripts/error/error_dialog.gd" id="3_qaqei"]
+
+[node name="ErrorDialog" type="PanelContainer"]
+offset_right = 330.0
+offset_bottom = 106.0
+theme = ExtResource("1_0r4gr")
+theme_override_styles/panel = ExtResource("2_ioi7o")
+script = ExtResource("3_qaqei")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 24
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BoxContainer" type="BoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+
+[node name="Sprite2D" type="Sprite2D" parent="MarginContainer/HBoxContainer/BoxContainer"]
+scale = Vector2(1.75, 1.75)
+texture = ExtResource("3_nvkii")
+centered = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 20
+text = "Error"
+
+[node name="Content" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+autowrap_mode = 3
