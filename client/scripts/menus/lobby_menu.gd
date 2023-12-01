@@ -29,7 +29,12 @@ func _on_web_socket_client_message_received(message):
 
 
 func _on_on_boarding_menu_quick_play_button_pressed():
-	pass # TODO: quick play logic
+	DataStore.web_socket_client.send({
+		"event": "quickPlay",
+		"data": {
+			"name": DataStore.player_name,
+		}
+	})
 
 
 func _on_on_boarding_menu_create_room_button_pressed():
