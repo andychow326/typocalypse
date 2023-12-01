@@ -38,7 +38,7 @@ class GameLogicController {
   async publishGameMessage(
     userId: string,
     channel: string,
-    message: GameMessageFromClient
+    message: GameMessageFromClient | GameMessageFromServer
   ): Promise<void> {
     const user = await this.userService.getUserByUserId(userId);
     const responseMessage: GameMessageFromServer = {
@@ -72,8 +72,7 @@ class GameLogicController {
   async onPlayerCreateRoom(
     userId: string,
     name: string,
-    onSubscribe?: (channel: string, message: string) => void,
-    onReply?: (message: string) => void
+    onSubscribe?: (channel: string, message: string) => void
   ): Promise<void> {
     await this.userService.changeUsername(userId, name);
     const user = await this.userService.getUserByUserId(userId);
@@ -91,7 +90,7 @@ class GameLogicController {
     await this.pubsubService.subscribe(userId, roomId, (channel, message) =>
       onSubscribe?.(channel, message)
     );
-    onReply?.(this.gameMessageToString(message));
+    await this.publishGameMessage(userId, roomId, message);
   }
 
   async onPlayerJoinRoom(
@@ -266,8 +265,7 @@ class GameLogicController {
       await this.onPlayerCreateRoom(
         userId,
         message.data.name,
-        options?.onSubscribe,
-        options?.onReply
+        options?.onSubscribe
       );
     }
     if (message.event === "joinRoom") {
