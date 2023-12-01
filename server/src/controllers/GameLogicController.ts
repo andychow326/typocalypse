@@ -112,6 +112,35 @@ class GameLogicController {
     await this.publishGameMessage(userId, roomId, message);
   }
 
+  async onPlayerQuickPlay(
+    userId: string,
+    name: string,
+    onSubscribe?: (channel: string, message: string) => void
+  ): Promise<void> {
+    const waitingRooms = await this.roomService.getWaitingRooms();
+    if (waitingRooms.length === 0) {
+      return await this.onPlayerCreateRoom(userId, name, onSubscribe);
+    }
+
+    const waitingRoomsSorted = waitingRooms.toSorted(
+      (a, b) => Object.keys(b.users).length - Object.keys(a.users).length
+    );
+    const room = waitingRoomsSorted[0];
+    return await this.onPlayerJoinRoom(
+      userId,
+      name,
+      room.id,
+      {
+        event: "joinRoom",
+        data: {
+          name: name,
+          roomId: room.id,
+        },
+      },
+      onSubscribe
+    );
+  }
+
   async onPlayerLeaveRoom(
     userId: string,
     roomId: string,
@@ -274,6 +303,13 @@ class GameLogicController {
         message.data.name,
         message.data.roomId,
         message,
+        options?.onSubscribe
+      );
+    }
+    if (message.event === "quickPlay") {
+      await this.onPlayerQuickPlay(
+        userId,
+        message.data.name,
         options?.onSubscribe
       );
     }

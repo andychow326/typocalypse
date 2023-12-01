@@ -13,7 +13,7 @@ export const GameMessageFromClientSchema = t.Union([
     }),
   }),
   t.Object({
-    event: t.Literal("createRoom"),
+    event: t.Union([t.Literal("createRoom"), t.Literal("quickPlay")]),
     data: t.Object({
       name: t.String(),
     }),
