@@ -6,6 +6,9 @@ extends PanelContainer
 @export var player_counts: int
 
 
+signal on_join_room_button_pressed(room_id: String)
+
+
 func from_dict(dict: Dictionary):
 	room_id = dict.id
 	capacity = 4
@@ -16,10 +19,4 @@ func from_dict(dict: Dictionary):
 
 
 func _on_join_room_button_pressed():
-	DataStore.web_socket_client.send({
-		"event": "joinRoom",
-		"data": {
-			"roomId": room_id,
-		}
-	})
-	
+	on_join_room_button_pressed.emit(room_id)

@@ -109,4 +109,5 @@ size_flags_horizontal = 3
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/CustomRoomContainer/MarginContainer/VBoxContainer/HBoxContainer/JoinRoomButton" to="." method="_on_join_room_button_pressed"]
 [connection signal="timeout" from="RoomListUpdateTimer" to="." method="_on_room_list_update_timer_timeout"]

@@ -23,7 +23,17 @@ func _on_web_socket_client_message_received(message):
 			for room in message.data.rooms:
 				var room_node = room_list_item_scene.instantiate()
 				room_node.from_dict(room)
+				room_node.on_join_room_button_pressed.connect(join_room)
 				waiting_room_list_container.add_child(room_node)
+
+
+func join_room(room_id: String):
+	DataStore.web_socket_client.send({
+		"event": "joinRoom",
+		"data": {
+			"roomId": room_id,
+		}
+	})
 
 
 func clear_waiting_rooms():
@@ -56,3 +66,8 @@ func _on_back_button_pressed():
 
 func _on_room_list_update_timer_timeout():
 	fetch_waiting_rooms()
+
+
+func _on_join_room_button_pressed():
+	var room_id = $VBoxContainer/CustomRoomContainer/MarginContainer/VBoxContainer/HBoxContainer/RoomIDLineEdit.text
+	join_room(room_id)
