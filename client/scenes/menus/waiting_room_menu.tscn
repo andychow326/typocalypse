@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bnadp5oi0dvsy"]
+[gd_scene load_steps=6 format=3 uid="uid://bnadp5oi0dvsy"]
 
 [ext_resource type="Script" path="res://scripts/menus/waiting_room_menu.gd" id="1_clupq"]
 [ext_resource type="Theme" uid="uid://bcxinudc32lvt" path="res://assets/main_menu/button.tres" id="2_l2wdt"]
 [ext_resource type="StyleBox" uid="uid://sh13v0iog1jv" path="res://assets/main_menu/panel_container.tres" id="3_8cqx4"]
 [ext_resource type="Theme" uid="uid://bod1xtt36j7s6" path="res://assets/main_menu/pixelated_font.tres" id="3_cqegg"]
+[ext_resource type="Texture2D" uid="uid://h0x34d23k63d" path="res://assets/main_menu/arrow_left_solid.svg" id="3_wcmt6"]
 
 [node name="WaitingRoomMenu" type="Control"]
 layout_mode = 3
@@ -36,8 +37,8 @@ custom_minimum_size = Vector2(60, 30)
 layout_mode = 2
 size_flags_horizontal = 0
 theme = ExtResource("2_l2wdt")
-text = "← Back"
-alignment = 0
+text = "Back"
+icon = ExtResource("3_wcmt6")
 
 [node name="PlayerListContainer" type="PanelContainer" parent="VBoxContainer"]
 layout_mode = 2
