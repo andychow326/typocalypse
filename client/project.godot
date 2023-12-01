@@ -24,8 +24,6 @@ Debug="res://debug.gd"
 
 window/size/viewport_width=1024
 window/size/viewport_height=768
-window/size/window_width_override=1280
-window/size/window_height_override=960
 window/stretch/mode="viewport"
 
 [rendering]
