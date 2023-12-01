@@ -36,7 +36,6 @@ class GameLogicController {
   }
 
   async publishGameMessage(
-    type: "singleChannel" | "allChannelsBySubscriberId",
     userId: string,
     channel: string,
     message: GameMessageFromClient
@@ -47,12 +46,6 @@ class GameLogicController {
       user: { id: userId, name: user?.name ?? "" },
     };
     const messageString = this.gameMessageToString(responseMessage);
-    if (type === "allChannelsBySubscriberId") {
-      return await this.pubsubService.publishToAllChannelsBySubscriberId(
-        channel,
-        messageString
-      );
-    }
     return await this.pubsubService.publish(channel, messageString);
   }
 
@@ -117,7 +110,7 @@ class GameLogicController {
     await this.pubsubService.subscribe(userId, roomId, (channel, message) =>
       onSubscribe?.(channel, message)
     );
-    await this.publishGameMessage("singleChannel", userId, roomId, message);
+    await this.publishGameMessage(userId, roomId, message);
   }
 
   async onPlayerLeaveRoom(
@@ -137,7 +130,7 @@ class GameLogicController {
     this.activeWorkers = this.activeWorkers.filter(
       (item) => !deletedRoomIds.includes(item.roomId)
     );
-    await this.publishGameMessage("singleChannel", userId, roomId, message);
+    await this.publishGameMessage(userId, roomId, message);
     await this.pubsubService.unsubscribe(userId, roomId);
   }
 
@@ -247,7 +240,7 @@ class GameLogicController {
       throw new RoomNotFoundError(user.room ?? "");
     }
     await this.gameService.handleGameInput(userId, user.room, input);
-    await this.publishGameMessage("singleChannel", userId, user.room, message);
+    await this.publishGameMessage(userId, user.room, message);
   }
 
   async onPlayerMessage(
