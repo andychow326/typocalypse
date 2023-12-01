@@ -46,17 +46,10 @@ texture = ExtResource("2_7moxt")
 expand_margin_left = 4.0
 region_rect = Rect2(113, 81, 30, 14)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i2k0f"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0, 0, 0, 0.6)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-corner_detail = 5
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_es880"]
+texture = ExtResource("2_7moxt")
+expand_margin_left = 4.0
+region_rect = Rect2(113, 113, 30, 14)
 
 [resource]
 Button/colors/font_color = Color(0.875, 0.875, 0.875, 1)
@@ -81,4 +74,4 @@ Button/styles/disabled = SubResource("StyleBoxFlat_o6ty4")
 Button/styles/focus = SubResource("StyleBoxFlat_jiql0")
 Button/styles/hover = SubResource("StyleBoxTexture_q3fv0")
 Button/styles/normal = SubResource("StyleBoxTexture_jlsmt")
-Button/styles/pressed = SubResource("StyleBoxFlat_i2k0f")
+Button/styles/pressed = SubResource("StyleBoxTexture_es880")
