@@ -33,7 +33,12 @@ func _on_on_boarding_menu_quick_play_button_pressed():
 
 
 func _on_on_boarding_menu_create_room_button_pressed():
-	DataStore.web_socket_client.send({"event": "createRoom"})
+	DataStore.web_socket_client.send({
+		"event": "createRoom",
+		"data": {
+			"name": DataStore.player_name,
+		}
+	})
 
 
 func _on_on_boarding_menu_join_room_button_pressed():

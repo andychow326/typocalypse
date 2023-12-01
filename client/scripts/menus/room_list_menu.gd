@@ -31,6 +31,7 @@ func join_room(room_id: String):
 	DataStore.web_socket_client.send({
 		"event": "joinRoom",
 		"data": {
+			"name": DataStore.player_name,
 			"roomId": room_id,
 		}
 	})
