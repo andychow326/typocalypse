@@ -17,6 +17,7 @@ var player_tries: Dictionary
 var player_active_inputs: Dictionary
 var dead_zombies: Dictionary
 var last_potential_target_zombies: Array
+var game_stated: bool
 
 
 func _ready():
@@ -30,13 +31,17 @@ func _on_web_socket_client_message_received(message):
 		return
 	match message.event:
 		"input":
+			if not game_stated:
+				return
 			var player_id = message.user.id
 			var key = message.data.key
 			on_player_inputted_key(player_id, key)
 		"remainingTime":
 			if message.data.type == "waitForRoundStart":
+				game_stated = false
 				$RoundStartLabel.text = "%.f" % (float(message.data.remainingTime) / 1000 + 1)
 			if message.data.type == "round":
+				game_stated = true
 				$RoundStartLabel.visible = false
 				$RemainingTimeLabel.visible = true
 				$RemainingTimeLabel.text = "%.1f" % (float(message.data.remainingTime) / 1000)
