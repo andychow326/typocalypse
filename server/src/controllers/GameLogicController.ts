@@ -12,6 +12,7 @@ import { getRedisConnection } from "../redis";
 import RoomService from "../services/RoomService";
 import GameService from "../services/GameService";
 import { getLogger } from "../logger";
+import GameLoopWorker from "../workers/GameLoopWorker";
 
 const logger = getLogger("GameLogicController");
 
@@ -21,7 +22,6 @@ class GameLogicController {
   private userService: UserService;
   private roomService: RoomService;
   private gameService: GameService;
-  private activeWorkers: Array<{ roomId: string; worker: Worker }> = [];
 
   constructor() {
     this.redis = getRedisConnection();
@@ -157,17 +157,7 @@ class GameLogicController {
     if (user == null) {
       throw new UserNotFoundError(userId);
     }
-    const { deletedRoomIds } = await this.roomService.leaveRoom(user, roomId);
-    if (deletedRoomIds.length > 0) {
-      const deleteableWorkers = this.activeWorkers
-        .filter((item) => deletedRoomIds.includes(item.roomId))
-        .map((item) => item.worker);
-      deleteableWorkers.forEach((worker) => worker.terminate());
-      this.activeWorkers = this.activeWorkers.filter(
-        (item) => !deletedRoomIds.includes(item.roomId)
-      );
-      Bun.gc(true);
-    }
+    await this.roomService.leaveRoom(user, roomId);
     await this.publishGameMessage(userId, roomId, message);
     await this.pubsubService.unsubscribe(userId, roomId);
   }
@@ -248,21 +238,9 @@ class GameLogicController {
       throw new UserNotRoomHostError(userId);
     }
 
-    const worker = new Worker("./src/workers/GameLoopWorker.ts", {
-      ref: true,
-      env: { ...Bun.env, ROOM_ID: roomId },
-    });
-    logger.info(
-      { userId, roomId, threadId: worker.threadId },
-      "instantiate new game loop worker"
-    );
-    worker.addEventListener("close", () => {
-      this.activeWorkers = this.activeWorkers.filter(
-        (item) => item.roomId !== roomId
-      );
-      logger.info({ roomId }, "game loop worker closed");
-    });
-    this.activeWorkers.push({ roomId: roomId, worker: worker });
+    const worker = new GameLoopWorker(roomId);
+    worker.start();
+    logger.info({ userId, roomId }, "instantiate new game loop worker");
   }
 
   async onPlayerInput(

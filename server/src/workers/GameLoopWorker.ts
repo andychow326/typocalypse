@@ -11,14 +11,6 @@ import { delay } from "../utils/promise";
 
 const logger = getLogger("GameLoopWorker");
 
-declare var self: Worker;
-
-declare module "bun" {
-  interface Env {
-    ROOM_ID: string;
-  }
-}
-
 const DEFAULT_SIMULATION_INTERVAL = 1000 / 60; // 60fps (16.66ms)
 
 type SimulationCallback = (deltaTime: number) => Promise<void>;
@@ -73,6 +65,14 @@ class GameLoopWorker {
     }
   }
 
+  async heartbeat() {
+    try {
+      await this.getRoom();
+    } catch (error) {
+      this.terminate();
+    }
+  }
+
   async sendRoundRemainingTime() {
     if (
       this.clock.elapsedTime <=
@@ -111,6 +111,7 @@ class GameLoopWorker {
     this.clock.start();
     this.setSimulationInterval(this.gameLoop.bind(this));
     this.clock.setInterval(this.sendRoundRemainingTime.bind(this), 100);
+    this.clock.setInterval(this.heartbeat.bind(this), 5000);
   }
 
   async start() {
@@ -128,12 +129,14 @@ class GameLoopWorker {
     await delay(3000);
     this.startRound();
   }
+
+  terminate() {
+    this.clock.stop();
+    this.clock.clear();
+    clearInterval(this.simulationInterval);
+
+    logger.info({ roomId: this.roomId }, "game loop worker closed");
+  }
 }
 
-self.onerror = (ev) => {
-  logger.error(ev.error);
-  process.exit();
-};
-
-const worker = new GameLoopWorker(Bun.env.ROOM_ID);
-worker.start();
+export default GameLoopWorker;
