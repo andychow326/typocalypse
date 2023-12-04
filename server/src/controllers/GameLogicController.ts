@@ -158,13 +158,16 @@ class GameLogicController {
       throw new UserNotFoundError(userId);
     }
     const { deletedRoomIds } = await this.roomService.leaveRoom(user, roomId);
-    const deleteableWorkers = this.activeWorkers
-      .filter((item) => deletedRoomIds.includes(item.roomId))
-      .map((item) => item.worker);
-    deleteableWorkers.forEach((worker) => worker.terminate());
-    this.activeWorkers = this.activeWorkers.filter(
-      (item) => !deletedRoomIds.includes(item.roomId)
-    );
+    if (deletedRoomIds.length > 0) {
+      const deleteableWorkers = this.activeWorkers
+        .filter((item) => deletedRoomIds.includes(item.roomId))
+        .map((item) => item.worker);
+      deleteableWorkers.forEach((worker) => worker.terminate());
+      this.activeWorkers = this.activeWorkers.filter(
+        (item) => !deletedRoomIds.includes(item.roomId)
+      );
+      Bun.gc(true);
+    }
     await this.publishGameMessage(userId, roomId, message);
     await this.pubsubService.unsubscribe(userId, roomId);
   }
