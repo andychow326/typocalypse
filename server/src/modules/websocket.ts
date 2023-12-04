@@ -3,6 +3,7 @@ import GameLogicController from "../controllers/GameLogicController";
 import { GameMessageFromClientSchema, WebSocketState } from "../types";
 import {
   InputLengthNoMatchedError,
+  RoomAlreadyFullError,
   RoomNotFoundError,
   SessionNotFoundError,
   UserNotFoundError,
@@ -52,7 +53,8 @@ const websocket = (app: Elysia) =>
         } else if (
           error instanceof RoomNotFoundError ||
           error instanceof InputLengthNoMatchedError ||
-          error instanceof UserNotRoomHostError
+          error instanceof UserNotRoomHostError ||
+          error instanceof RoomAlreadyFullError
         ) {
           ws.send(error.toJsonString());
         } else {

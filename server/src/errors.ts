@@ -61,3 +61,12 @@ export class InputLengthNoMatchedError extends CustomError {
     });
   }
 }
+
+export class RoomAlreadyFullError extends CustomError {
+  constructor(roomId: string) {
+    super("RoomAlreadyFullError", {
+      reason: "room already full",
+      target: { roomId: roomId },
+    });
+  }
+}

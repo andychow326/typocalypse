@@ -125,20 +125,27 @@ class GameLogicController {
     const waitingRoomsSorted = waitingRooms.toSorted(
       (a, b) => Object.keys(b.users).length - Object.keys(a.users).length
     );
-    const room = waitingRoomsSorted[0];
-    return await this.onPlayerJoinRoom(
-      userId,
-      name,
-      room.id,
-      {
-        event: "joinRoom",
-        data: {
-          name: name,
-          roomId: room.id,
-        },
-      },
-      onSubscribe
-    );
+    for (const room of waitingRoomsSorted) {
+      try {
+        return await this.onPlayerJoinRoom(
+          userId,
+          name,
+          room.id,
+          {
+            event: "joinRoom",
+            data: {
+              name: name,
+              roomId: room.id,
+            },
+          },
+          onSubscribe
+        );
+      } catch (error) {
+        continue;
+      }
+    }
+
+    return await this.onPlayerCreateRoom(userId, name, onSubscribe);
   }
 
   async onPlayerLeaveRoom(

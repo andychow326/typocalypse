@@ -8,7 +8,7 @@ import { randomInt } from "crypto";
 import { Room, User } from "../types";
 import { ROOM_EXPIRATION_SECONDS } from "../constants";
 import { getLogger } from "../logger";
-import { RoomNotFoundError } from "../errors";
+import { RoomAlreadyFullError, RoomNotFoundError } from "../errors";
 
 const logger = getLogger("RoomService");
 
@@ -116,6 +116,9 @@ class RoomService {
     const room = await this.getRoomStatus(roomId);
     if (room == null) {
       throw new RoomNotFoundError(roomId);
+    }
+    if (Object.keys(room.users).length === 4) {
+      throw new RoomAlreadyFullError(roomId);
     }
     await this.redis
       .multi()
