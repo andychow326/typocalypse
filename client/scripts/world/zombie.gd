@@ -9,6 +9,8 @@ extends Node3D
 func from_dict(dict: Dictionary):
 	target_player_id = dict.target_player_id
 	word_label = dict.label
+	if DataStore.player_id != target_player_id:
+		$WordLabelContainer/ActiveWordLabel.modulate = Color.CORAL
 	$WordLabelContainer/ActiveWordLabel.text = ""
 	$WordLabelContainer/NonActiveWordLabel.text = dict.label
 	if $WordLabelContainer/ActiveWordLabel.font == null:
