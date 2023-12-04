@@ -7,6 +7,7 @@ import { getRedisConnection } from "../redis";
 import { GameMessageFromWorker, RoomInGame } from "../types";
 import { RoomNotFoundError } from "../errors";
 import { getLogger } from "../logger";
+import { delay } from "../utils/promise";
 
 const logger = getLogger("GameLoopWorker");
 
@@ -124,7 +125,7 @@ class GameLoopWorker {
       },
     };
     await this.publishGameMessage(startGameMessage);
-
+    await delay(3000);
     this.startRound();
   }
 }
