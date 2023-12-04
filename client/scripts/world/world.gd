@@ -39,7 +39,7 @@ func _on_web_socket_client_message_received(message):
 		"remainingTime":
 			if message.data.type == "waitForRoundStart":
 				game_stated = false
-				$RoundStartLabel.text = "%.f" % (float(message.data.remainingTime) / 1000 + 1)
+				$RoundStartLabel.text = "%.f" % (float(message.data.remainingTime + 500) / 1000)
 			if message.data.type == "round":
 				game_stated = true
 				$RoundStartLabel.visible = false
