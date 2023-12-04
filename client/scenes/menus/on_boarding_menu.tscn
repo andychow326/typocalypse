@@ -76,6 +76,28 @@ theme_override_font_sizes/font_size = 18
 text = "JOIN
 ROOM"
 
+[node name="Title" type="RichTextLabel" parent="."]
+custom_minimum_size = Vector2(640, 140)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -339.5
+offset_top = 90.0
+offset_right = 339.5
+offset_bottom = 230.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.643137, 0.870588, 0.898039, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 0
+theme_override_fonts/normal_font = ExtResource("3_eg5oe")
+theme_override_font_sizes/normal_font_size = 120
+text = "TYPOCALYPSE"
+
 [connection signal="text_changed" from="PanelContainer/MarginContainer/VBoxContainer/PlayerNameLineEdit" to="." method="_on_player_name_line_edit_text_changed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/QuickPlayButton" to="." method="_on_quick_play_button_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CreateRoomButton" to="." method="_on_create_room_button_pressed"]
