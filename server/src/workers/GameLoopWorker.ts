@@ -73,6 +73,10 @@ class GameLoopWorker {
     }
   }
 
+  async ping() {
+    await this.publishGameMessage({ event: "ping" });
+  }
+
   async sendRoundRemainingTime() {
     if (
       this.clock.elapsedTime <=
@@ -112,6 +116,7 @@ class GameLoopWorker {
     this.setSimulationInterval(this.gameLoop.bind(this));
     this.clock.setInterval(this.sendRoundRemainingTime.bind(this), 100);
     this.clock.setInterval(this.heartbeat.bind(this), 5000);
+    this.clock.setInterval(this.ping.bind(this), 5000);
   }
 
   async start() {

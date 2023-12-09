@@ -107,6 +107,7 @@ export type GameMessageFromServer = (
 };
 
 export type GameMessageFromWorker =
+  | { event: "ping" }
   | {
       event: "startGame";
       data: {
