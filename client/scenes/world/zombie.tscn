@@ -8,16 +8,16 @@
 script = ExtResource("1_0fkhx")
 
 [node name="ZombieBody" parent="." instance=ExtResource("1_7ms5u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0239648, 0, 0.12789)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.024, 0.889, 0.128)
 
 [node name="Skeleton3D" parent="ZombieBody/Armature" index="0"]
-bones/0/rotation = Quaternion(0.00801192, -1.61564e-27, -1.43471e-18, 0.999968)
-bones/1/rotation = Quaternion(0.0748208, -0.458598, -0.830484, 0.307225)
-bones/2/position = Vector3(0.281416, -0.11948, -0.0159783)
-bones/2/rotation = Quaternion(0.046121, 0.0365254, 0.98307, -0.173531)
-bones/3/rotation = Quaternion(0.17639, 0.442104, 0.825692, 0.30276)
-bones/4/position = Vector3(-0.293478, -0.117165, -0.0367932)
-bones/4/rotation = Quaternion(-0.0371622, -0.0123455, 0.987109, 0.155182)
+bones/0/rotation = Quaternion(0.0131858, -1.12461e-27, -1.43476e-18, 0.999911)
+bones/1/rotation = Quaternion(0.0587974, -0.500871, -0.805679, 0.310729)
+bones/2/position = Vector3(0.281416, -0.119749, -0.0367765)
+bones/2/rotation = Quaternion(0.0293263, -0.0575896, 0.982061, -0.177144)
+bones/3/rotation = Quaternion(0.17936, 0.433961, 0.83, 0.30101)
+bones/4/position = Vector3(-0.293478, -0.11363, 0.0286077)
+bones/4/rotation = Quaternion(-0.0541645, 0.0973444, 0.982376, 0.150096)
 
 [node name="WordLabelContainer" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.808655, 0.851094)

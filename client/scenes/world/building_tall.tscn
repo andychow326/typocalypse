@@ -17,7 +17,7 @@ _surfaces = [{
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xtgyj"]
 albedo_color = Color(0, 0, 0, 1)
 grow = true
-grow_amount = 0.03
+grow_amount = 0.005
 
 [node name="BuildingTall" type="Node3D"]
 
