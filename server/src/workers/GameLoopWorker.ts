@@ -15,6 +15,13 @@ const DEFAULT_SIMULATION_INTERVAL = 1000 / 60; // 60fps (16.66ms)
 
 type SimulationCallback = (deltaTime: number) => Promise<void>;
 
+interface GameLoopWorkerOptions {
+  redis?: Redis;
+  pubsubService?: PubSubService;
+  gameService?: GameService;
+  roomService?: RoomService;
+}
+
 class GameLoopWorker {
   private roomId: string;
   private currentRoomData!: RoomInGame;
@@ -27,13 +34,13 @@ class GameLoopWorker {
   private gameService: GameService;
   private roomService: RoomService;
 
-  constructor(roomId: string) {
+  constructor(roomId: string, options?: GameLoopWorkerOptions) {
     this.roomId = roomId;
-    this.redis = getRedisConnection();
+    this.redis = options?.redis ?? getRedisConnection();
     this.clock = new ClockTimer();
-    this.pubsubService = new PubSubService();
-    this.gameService = new GameService(this.redis);
-    this.roomService = new RoomService(this.redis);
+    this.pubsubService = options?.pubsubService ?? new PubSubService();
+    this.gameService = options?.gameService ?? new GameService(this.redis);
+    this.roomService = options?.roomService ?? new RoomService(this.redis);
   }
 
   async getRoom(): Promise<RoomInGame> {
