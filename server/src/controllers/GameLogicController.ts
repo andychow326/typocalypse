@@ -238,7 +238,12 @@ class GameLogicController {
       throw new UserNotRoomHostError(userId);
     }
 
-    const worker = new GameLoopWorker(roomId);
+    const worker = new GameLoopWorker(roomId, {
+      redis: this.redis,
+      pubsubService: this.pubsubService,
+      gameService: this.gameService,
+      roomService: this.roomService,
+    });
     worker.start();
     logger.info({ userId, roomId }, "instantiate new game loop worker");
   }
