@@ -168,9 +168,9 @@ class RoomService {
     await pipe.exec();
     logger.debug({ userId: user.id, roomId }, "leave room");
     if (user.room != null && user.room !== roomId) {
-      return await this.finalizeRooms(user.room, roomId);
+      return this.finalizeRooms(user.room, roomId);
     } else {
-      return await this.finalizeRooms(roomId);
+      return this.finalizeRooms(roomId);
     }
   }
 

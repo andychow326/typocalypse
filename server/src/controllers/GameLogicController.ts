@@ -46,7 +46,7 @@ class GameLogicController {
       user: { id: userId, name: user?.name ?? "" },
     };
     const messageString = this.gameMessageToString(responseMessage);
-    return await this.pubsubService.publish(channel, messageString);
+    return this.pubsubService.publish(channel, messageString);
   }
 
   async onPlayerJoinGame(
@@ -119,7 +119,7 @@ class GameLogicController {
   ): Promise<void> {
     const waitingRooms = await this.roomService.getWaitingRooms();
     if (waitingRooms.length === 0) {
-      return await this.onPlayerCreateRoom(userId, name, onSubscribe);
+      return this.onPlayerCreateRoom(userId, name, onSubscribe);
     }
 
     const waitingRoomsSorted = waitingRooms.toSorted(
@@ -127,7 +127,7 @@ class GameLogicController {
     );
     for (const room of waitingRoomsSorted) {
       try {
-        return await this.onPlayerJoinRoom(
+        return this.onPlayerJoinRoom(
           userId,
           name,
           room.id,
@@ -145,7 +145,7 @@ class GameLogicController {
       }
     }
 
-    return await this.onPlayerCreateRoom(userId, name, onSubscribe);
+    return this.onPlayerCreateRoom(userId, name, onSubscribe);
   }
 
   async onPlayerLeaveRoom(
