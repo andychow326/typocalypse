@@ -67,6 +67,9 @@ material = SubResource("StandardMaterial3D_bm44r")
 [node name="Building" parent="Stage" instance=ExtResource("3_wtr6q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.7206, 0, -20.2213)
 
+[node name="Outline" parent="Stage/Building/building-with-door/Cube" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
 [node name="Building2" parent="Stage" instance=ExtResource("3_wtr6q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.4477, -1.90735e-06, -19.5924)
 
