@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://i0nxfaylr1k3"]
+
+[ext_resource type="PackedScene" uid="uid://cy3ifyklj7arj" path="res://blender_meshes/fence.glb" id="1_wafm0"]
+[ext_resource type="Texture2D" uid="uid://t3gpgpmm117a" path="res://assets/textures/colormap-fence.png" id="2_cc44y"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_04smv"]
+albedo_texture = ExtResource("2_cc44y")
+
+[node name="fence" instance=ExtResource("1_wafm0")]
+
+[node name="fence2" parent="." index="0"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+surface_material_override/0 = SubResource("StandardMaterial3D_04smv")
