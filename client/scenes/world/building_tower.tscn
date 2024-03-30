@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://dp2scibkmmlyl"]
+
+[ext_resource type="PackedScene" uid="uid://cwym3fmg2eygg" path="res://blender_meshes/building-tower.glb" id="1_8turj"]
+[ext_resource type="Texture2D" uid="uid://bh5fjxl3y7i4g" path="res://assets/textures/colormap.png" id="2_mrxby"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14w1t"]
+albedo_texture = ExtResource("2_mrxby")
+
+[node name="building-tower" instance=ExtResource("1_8turj")]
+
+[node name="building-sample-tower-b2" parent="." index="0"]
+transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, 0, 0, 0)
+surface_material_override/0 = SubResource("StandardMaterial3D_14w1t")
