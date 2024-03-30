@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://cyf17woq3gpsp"]
+
+[ext_resource type="Texture2D" uid="uid://c6o2x7af570m0" path="res://assets/textures/crowd-shadow3.png" id="1_li4c5"]
+
+[node name="shadow" type="Node3D"]
+transform = Transform3D(0.99988, 0, 0.0154805, 0, 1, 0, -0.0154805, 0, 0.99988, 0, 0, 0)
+
+[node name="SubViewport" type="SubViewport" parent="."]
+transparent_bg = true
+
+[node name="TextureRect" type="TextureRect" parent="SubViewport"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(2.99994, 0, -0.0191636, 0, 2, 0, 0.0191636, 0, 2.99994, 0, 5, 0)
+texture = ExtResource("1_li4c5")
