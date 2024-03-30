@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://dqimm74soafer"]
+
+[ext_resource type="PackedScene" uid="uid://bl26neih2hy7l" path="res://blender_meshes/building-house-a.glb" id="1_did11"]
+[ext_resource type="Texture2D" uid="uid://bh5fjxl3y7i4g" path="res://assets/textures/colormap.png" id="2_dkf27"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s7glt"]
+albedo_texture = ExtResource("2_dkf27")
+
+[node name="building-house-a" instance=ExtResource("1_did11")]
+
+[node name="building-sample-house-b2" parent="." index="0"]
+transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, 0, 0, 0)
+surface_material_override/0 = SubResource("StandardMaterial3D_s7glt")
