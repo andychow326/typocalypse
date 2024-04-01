@@ -59,7 +59,7 @@ class UserService {
     return { sessionId, user };
   }
 
-  async getOrCreateUserSession(sessionId: string | null): Promise<UserSession> {
+  async getOrCreateUserSession(sessionId?: string): Promise<UserSession> {
     if (sessionId == null) {
       return this.createUserSession();
     }

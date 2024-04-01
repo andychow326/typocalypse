@@ -50,7 +50,7 @@ class GameLogicController {
   }
 
   async onPlayerJoinGame(
-    sessionId: string | null
+    sessionId?: string
   ): Promise<{ message: GameMessageFromServer; sessionId: string }> {
     const { sessionId: finalSessionId, user } =
       await this.userService.getOrCreateUserSession(sessionId);
@@ -204,7 +204,7 @@ class GameLogicController {
     onReply?.(this.gameMessageToString(message));
   }
 
-  async onPlayerLeaveGame(sessionId: string | null): Promise<void> {
+  async onPlayerLeaveGame(sessionId?: string): Promise<void> {
     if (sessionId == null) {
       return;
     }
@@ -265,8 +265,8 @@ class GameLogicController {
   }
 
   async onPlayerMessage(
-    sessionId: string | null,
     message: GameMessageFromClient,
+    sessionId?: string,
     options?: {
       onSubscribe?: (channel: string, message: string) => void;
       onReply?: (message: string) => void;

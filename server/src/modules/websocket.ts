@@ -39,7 +39,7 @@ const websocket = (app: Elysia) =>
 
       const sessionId = ws.data.query.sessionId;
       try {
-        await gameLogicController.onPlayerMessage(sessionId, message, {
+        await gameLogicController.onPlayerMessage(message, sessionId, {
           onSubscribe: (_channel, message) => ws.send(message),
           onReply: (message) => ws.send(message),
         });

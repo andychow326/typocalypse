@@ -18,7 +18,7 @@ class CustomError extends Error {
 }
 
 export class SessionNotFoundError extends CustomError {
-  constructor(sessionId: string | null) {
+  constructor(sessionId?: string) {
     super("SessionNotFoundError", {
       reason: "session not found",
       target: { sessionId: sessionId },
