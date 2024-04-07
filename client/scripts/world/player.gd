@@ -4,6 +4,8 @@ extends CharacterBody3D
 @export var player_id: String
 @export var player_name: String
 
+var bullet = load("res://scenes/world/bullet.tscn")
+var instance
 
 func from_dict(dict: Dictionary):
 	player_id = dict.id

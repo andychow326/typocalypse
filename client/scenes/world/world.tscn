@@ -63,6 +63,7 @@ size = Vector3(80, 1, 120)
 material = SubResource("StandardMaterial3D_bm44r")
 
 [node name="Road" type="Node3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
 
 [node name="Road" parent="Stage/Road" instance=ExtResource("4_pparu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.3645, 9.53674e-07, -7.77823)
@@ -185,6 +186,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6355, 9.53674e-07, -5.7782
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6355, 9.53674e-07, -7.77823)
 
 [node name="Tree" type="Node3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
 
 [node name="PineFall" parent="Stage/Tree" instance=ExtResource("5_qbgek")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.1043, 1.90735e-06, -51.1377)
@@ -211,18 +213,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.1807, 1.90735e-06, -48.208
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8957, 1.90735e-06, -42.1377)
 
 [node name="Building1" parent="Stage" instance=ExtResource("6_6g7fk")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 0, -16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, -16)
 
 [node name="Building2" parent="Stage" instance=ExtResource("6_6g7fk")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, -16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -16)
 
 [node name="Building3" parent="Stage" instance=ExtResource("6_yy6p6")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 13.5174, 0, -33.2147)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 15.5174, 0, -33.2147)
 
 [node name="Tower" parent="Stage" instance=ExtResource("7_pqw5t")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.4563, 0, -33.267)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.4563, 0, -33.267)
 
 [node name="Fence" type="Node3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
 
 [node name="Fence" parent="Stage/Fence" instance=ExtResource("8_b0i1q")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 22.1634, 0, -7.43795)
@@ -315,6 +318,7 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -28.83
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -28.8366, 0, -43.4379)
 
 [node name="Shadow" type="Node3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
 
 [node name="Shadow" parent="Stage/Shadow" instance=ExtResource("9_g83yv")]
 transform = Transform3D(0.99988, 0, 0.0154805, 0, 1, 0, -0.0154805, 0, 0.99988, -0.0137169, -1.90735e-06, -21.0172)

@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3 uid="uid://bxs0aa3yrmoxj"]
+
+[ext_resource type="PackedScene" uid="uid://231s4yxt8x15" path="res://blender_meshes/rifle.glb" id="1_xmluu"]
+
+[sub_resource type="Animation" id="Animation_wypcg"]
+resource_name = "Shoot"
+length = 0.1
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Node:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.01, 0.1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0.05), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_f0b0s"]
+_data = {
+"Shoot": SubResource("Animation_wypcg")
+}
+
+[node name="rifle" instance=ExtResource("1_xmluu")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="1"]
+libraries = {
+"": SubResource("AnimationLibrary_f0b0s")
+}
+
+[node name="RayCast3D" type="RayCast3D" parent="." index="2"]
+transform = Transform3D(0.979542, 0, 0, 0, 0.979542, 0, 0, 0, 0.979542, 0, 0, -0.479517)
+target_position = Vector3(0, 0, -1)
