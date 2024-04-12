@@ -23,7 +23,9 @@ var bullet = load("res://scenes/world/bullet.tscn")
 var bullet_instance
 var gun_instance
 
+
 func _ready():
+	$UI/HitRect.visible = false
 	$RoundStartLabel.visible = false
 	$RemainingTimeLabel.visible = false
 	DataStore.web_socket_client.message_received.connect(_on_web_socket_client_message_received)
@@ -50,21 +52,22 @@ func _on_web_socket_client_message_received(message):
 				$RemainingTimeLabel.text = "%.1f" % (float(message.data.remainingTime) / 1000)
 		"startGame":
 			reset_player_container()
-
+			
 			var words: Array = []
-			for word in message.data.room.words:
+			for zombie in message.data.room.zombies:
+				print(zombie)
 				var zombie_node = zombie_scene.instantiate()
-				zombie_node.position = Vector3(randf_range(-10, 10), 0, randf_range(0, -5))
+				zombie_node.position = Vector3(zombie.position.x, zombie.position.y, zombie.position.z)
 				zombie_node.from_dict({
-					"label": word.word,
-					"target_player_id": word.userId
+					"label": zombie.word,
+					"target_player_id": zombie.userId
 				})
 				var word_item = {"zombie_id": len(words)}
-				word_item.merge(word)
+				word_item.merge({"userId": zombie.userId, "word": zombie.word})
 				words.append(word_item)
 				$ZombieContainer.add_child(zombie_node)
 
-			var position_index = 0
+			var index = 0
 			for user in message.data.room.users.values():
 				var user_words = words.filter(
 					func (word: Dictionary): return word.userId == user.id,
@@ -80,10 +83,11 @@ func _on_web_socket_client_message_received(message):
 
 				var player_node = player_scene.instantiate()
 				gun_animation = player_node.get_node("Head/Camera3D/Rifle/AnimationPlayer")
-				player_node.position = player_positions[position_index]
+				player_node.position = player_positions[index]
 				player_node.from_dict(user)
+				player_node.player_hit.connect(_on_player_hit)
 				$PlayerContainer.add_child(player_node)
-				position_index += 1
+				index += 1
 
 			$RoundStartLabel.text = "READY"
 			await get_tree().create_timer(1).timeout
@@ -158,7 +162,6 @@ func on_player_inputted_key(player_id: String, key: String):
 		
 		var zombie_angle = atan2((node.position.x - player_node.position.x), (node.position.z - player_node.position.z))
 		var face_angle = atan2(player_node.position.x, player_node.position.z)
-		print(zombie_angle, " ", zombie_angle + PI)
 		if (zombie_angle < 0):
 			if (zombie_angle + PI) >= 0.35:
 				bullet_instance.rotate_object_local(Vector3.UP, 0 - face_angle - 0.03)
@@ -176,6 +179,7 @@ func on_player_inputted_key(player_id: String, key: String):
 	
 		if zombie.word == player_active_inputs[player_id]:
 			dead_zombies[zombie.zombie_id] = zombie
+			node.killed()
 			player_active_inputs[player_id] = ""
 
 	var inactive_zombie_ids = last_potential_target_zombies.filter(
@@ -187,3 +191,25 @@ func on_player_inputted_key(player_id: String, key: String):
 	last_potential_target_zombies = potential_target_zombies.filter(
 		func (zombie: Dictionary): return not dead_zombies.has(zombie.zombie_id)
 	)
+
+func _physics_process(delta):
+	if not game_stated:
+		return
+		
+	var zombie_child = $ZombieContainer.get_children()
+	var player_child = $PlayerContainer.get_children()
+	var index = 0
+	for zombie in zombie_child:
+		for player in player_child:
+			if player.player_id == zombie.target_player_id:
+				zombie.move_to_player(delta, game_stated, player)
+				break
+			pass
+		pass
+	
+	
+func _on_player_hit():
+	print("Player hit from world scene")
+	$UI/HitRect.visible = true
+	await get_tree().create_timer(0.1).timeout
+	$UI/HitRect.visible = false
