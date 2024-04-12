@@ -10,8 +10,8 @@ import {
   RoomNotFoundError,
   UserNotRoomHostError,
 } from "../errors";
-import { randomWords } from "../utils/random";
-import { Room, RoomWord } from "../types";
+import { randomWords, randomPositions } from "../utils/random";
+import { Room, RoomWord, RoomZombie } from "../types";
 import { getLogger } from "../logger";
 
 const logger = getLogger("GameService");
@@ -34,16 +34,19 @@ class GameService {
 
     let pipe = this.redis.multi();
 
-    const roomWords: RoomWord[] = [];
+    const roomZombies: RoomZombie[] = [];
     for (const userId in room.users) {
       const words = randomWords({ count: 4 });
-      logger.debug({ roomId, userId, words }, "gerenate room words");
-      words.forEach((word) => {
-        roomWords.push({
+      const positions = randomPositions(words.length);
+      logger.debug({ roomId, userId, words }, "gerenate room words and zombies");
+      for (let i = 0; i < words.length; i++) {
+        roomZombies.push({
           userId: userId,
-          word: word,
+          word: words[i],
+          position: positions[i],
         });
-      });
+      }
+
       pipe = pipe
         .call(
           "TS.CREATE",
@@ -61,7 +64,7 @@ class GameService {
       round: 1,
       roundDurationSeconds: 20,
       roundWaitDurationSeconds: 3,
-      words: roomWords,
+      zombies: roomZombies,
     };
 
     await pipe

@@ -58,6 +58,16 @@ export type RoomWord = {
   word: string;
 };
 
+export type RoomZombie = {
+  userId: string;
+  word: string;
+  position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+}
+
 export type RoomWaiting = {
   id: string;
   state: "waiting";
@@ -77,7 +87,7 @@ export type RoomInGame = {
   users: {
     [userId: string]: User;
   };
-  words: RoomWord[];
+  zombies: RoomZombie[];
 };
 
 export type Room = RoomWaiting | RoomInGame;
@@ -85,23 +95,23 @@ export type Room = RoomWaiting | RoomInGame;
 export type GameMessageFromServer = (
   | GameMessageFromClient
   | {
-      event: "createRoom";
-      data: {
-        roomId: string;
-      };
-    }
+    event: "createRoom";
+    data: {
+      roomId: string;
+    };
+  }
   | {
-      event: "getWaitingRooms";
-      data: {
-        rooms: Room[];
-      };
-    }
+    event: "getWaitingRooms";
+    data: {
+      rooms: Room[];
+    };
+  }
   | {
-      event: "getRoomStatus";
-      data: {
-        room: Room;
-      };
-    }
+    event: "getRoomStatus";
+    data: {
+      room: Room;
+    };
+  }
 ) & {
   user: User;
 };
@@ -109,15 +119,15 @@ export type GameMessageFromServer = (
 export type GameMessageFromWorker =
   | { event: "ping" }
   | {
-      event: "startGame";
-      data: {
-        room: Room;
-      };
-    }
-  | {
-      event: "remainingTime";
-      data: {
-        type: "waitForRoundStart" | "round";
-        remainingTime: number;
-      };
+    event: "startGame";
+    data: {
+      room: Room;
     };
+  }
+  | {
+    event: "remainingTime";
+    data: {
+      type: "waitForRoundStart" | "round";
+      remainingTime: number;
+    };
+  };
