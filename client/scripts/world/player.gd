@@ -7,6 +7,8 @@ extends CharacterBody3D
 var bullet = load("res://scenes/world/bullet.tscn")
 var instance
 
+signal player_hit
+
 func from_dict(dict: Dictionary):
 	player_id = dict.id
 	player_name = dict.name
@@ -34,3 +36,7 @@ func _input(event):
 				"key": key_label
 			}
 		})
+
+func hit():
+	print("Player hit received in player scene")
+	emit_signal("player_hit")
