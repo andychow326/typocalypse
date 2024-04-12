@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/world/bullet.gd" id="1_4ptya"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_n4k0h"]
-size = Vector3(0.09, 0.09, 0.9)
+size = Vector3(0.1, 0.1, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uhh71"]
 albedo_color = Color(0.666667, 0.396078, 0.278431, 1)
@@ -36,7 +36,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_uhh71")
 target_position = Vector3(0, 0, -0.3)
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.526968)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.555116)
 material_override = SubResource("StandardMaterial3D_w0bgs")
 emitting = false
 one_shot = true
