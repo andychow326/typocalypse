@@ -33,3 +33,23 @@ make -C client start
 ```
 
 The client will start on http://localhost:8000
+
+### Formatter and Linter
+
+You can format your code using the following commands:
+
+```bash
+make -C server format
+make -C client format
+# or
+make format
+```
+
+Before pushing your code, please pass the lint check:
+
+```bash
+make -C server ci
+make -C client ci
+# or
+make ci
+```
