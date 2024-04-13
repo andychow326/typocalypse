@@ -209,7 +209,6 @@ func _physics_process(delta):
 	
 	
 func _on_player_hit():
-	print("Player hit from world scene")
 	$UI/HitRect.visible = true
 	await get_tree().create_timer(0.1).timeout
 	$UI/HitRect.visible = false

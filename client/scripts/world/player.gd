@@ -38,5 +38,4 @@ func _input(event):
 		})
 
 func hit():
-	print("Player hit received in player scene")
 	emit_signal("player_hit")
