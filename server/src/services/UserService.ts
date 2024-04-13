@@ -1,10 +1,10 @@
 import Redis from "ioredis";
+import { randomBytes, randomUUID } from "crypto";
 import {
   RedisBucketKey,
   getRedisBucketKey,
-  getRedisConnection,
+  getRedisConnection
 } from "../redis";
-import { randomBytes, randomUUID } from "crypto";
 import { SESSION_EXPIRATION_SECONDS } from "../constants";
 import { User } from "../types";
 
@@ -29,7 +29,7 @@ class UserService {
         .expire(key, SESSION_EXPIRATION_SECONDS)
         .expire(
           getRedisBucketKey(RedisBucketKey.user, userId),
-          SESSION_EXPIRATION_SECONDS,
+          SESSION_EXPIRATION_SECONDS
         )
         .exec();
     }
@@ -80,7 +80,7 @@ class UserService {
     if (userJson == null) {
       const data: User = {
         id: userId,
-        name: name,
+        name
       };
       await this.redis
         .multi()
@@ -106,7 +106,7 @@ class UserService {
     if (data == null) {
       return null;
     }
-    const user: User = JSON.parse(data[0][1] as any);
+    const user: User = JSON.parse(data[0][1] as string);
     return user;
   }
 }

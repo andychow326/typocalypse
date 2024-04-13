@@ -1,8 +1,8 @@
 import ClockTimer from "@gamestdio/timer";
+import { Redis } from "ioredis";
 import PubSubService from "../services/PubSubService";
 import GameService from "../services/GameService";
 import RoomService from "../services/RoomService";
-import { Redis } from "ioredis";
 import { getRedisConnection } from "../redis";
 import { GameMessageFromWorker, RoomInGame } from "../types";
 import { RoomNotFoundError } from "../errors";
@@ -24,14 +24,19 @@ interface GameLoopWorkerOptions {
 
 class GameLoopWorker {
   private roomId: string;
+
   private currentRoomData!: RoomInGame;
 
   private clock: ClockTimer;
+
   private simulationInterval?: Timer;
 
   private redis: Redis;
+
   private pubsubService: PubSubService;
+
   private gameService: GameService;
+
   private roomService: RoomService;
 
   constructor(roomId: string, options?: GameLoopWorkerOptions) {
@@ -45,7 +50,7 @@ class GameLoopWorker {
 
   async getRoom(): Promise<RoomInGame> {
     const room = await this.roomService.getRoomStatus(this.roomId);
-    if (room == null || room.state != "in-game") {
+    if (room == null || room.state !== "in-game") {
       throw new RoomNotFoundError(this.roomId);
     }
     return room;
@@ -57,7 +62,7 @@ class GameLoopWorker {
 
   setSimulationInterval(
     onTickCallback?: SimulationCallback,
-    interval: number = DEFAULT_SIMULATION_INTERVAL,
+    interval: number = DEFAULT_SIMULATION_INTERVAL
   ) {
     if (this.simulationInterval != null) {
       clearInterval(this.simulationInterval);
@@ -95,8 +100,8 @@ class GameLoopWorker {
           type: "waitForRoundStart",
           remainingTime:
             this.currentRoomData.roundWaitDurationSeconds * 1000 -
-            this.clock.elapsedTime,
-        },
+            this.clock.elapsedTime
+        }
       });
     } else if (
       this.clock.elapsedTime <=
@@ -110,8 +115,8 @@ class GameLoopWorker {
           remainingTime:
             this.currentRoomData.roundWaitDurationSeconds * 1000 +
             this.currentRoomData.roundDurationSeconds * 1000 -
-            this.clock.elapsedTime,
-        },
+            this.clock.elapsedTime
+        }
       });
     }
   }
@@ -134,8 +139,8 @@ class GameLoopWorker {
     const startGameMessage: GameMessageFromWorker = {
       event: "startGame",
       data: {
-        room: room,
-      },
+        room
+      }
     };
     await this.publishGameMessage(startGameMessage);
     await delay(3000);

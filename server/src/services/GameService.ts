@@ -2,13 +2,13 @@ import Redis from "ioredis";
 import {
   RedisBucketKey,
   getRedisBucketKey,
-  getRedisConnection,
+  getRedisConnection
 } from "../redis";
 import RoomService from "./RoomService";
 import {
   InputLengthNoMatchedError,
   RoomNotFoundError,
-  UserNotRoomHostError,
+  UserNotRoomHostError
 } from "../errors";
 import { randomWords, randomPositions } from "../utils/random";
 import { Room, RoomWord, RoomZombie } from "../types";
@@ -18,6 +18,7 @@ const logger = getLogger("GameService");
 
 class GameService {
   private redis: Redis;
+
   private roomService: RoomService;
 
   constructor(redis?: Redis) {
@@ -26,7 +27,7 @@ class GameService {
   }
 
   async initializeGameRound(roomId: string) {
-    logger.debug({ roomId: roomId }, "initialize game round");
+    logger.debug({ roomId }, "initialize game round");
     const room = await this.roomService.getRoomStatus(roomId);
     if (room == null) {
       throw new RoomNotFoundError(roomId);
@@ -35,31 +36,31 @@ class GameService {
     let pipe = this.redis.multi();
 
     const roomZombies: RoomZombie[] = [];
-    for (const userId in room.users) {
+    Object.keys(room.users).forEach((userId) => {
       const words = randomWords({ count: 4 });
       const positions = randomPositions(words.length);
       logger.debug(
         { roomId, userId, words },
-        "gerenate room words and zombies",
+        "gerenate room words and zombies"
       );
-      for (let i = 0; i < words.length; i++) {
+      words.forEach((_, i) => {
         roomZombies.push({
-          userId: userId,
+          userId,
           word: words[i],
-          position: positions[i],
+          position: positions[i]
         });
-      }
+      });
 
       pipe = pipe
         .call(
           "TS.CREATE",
-          getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId),
+          getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId)
         )
         .sadd(
           getRedisBucketKey(RedisBucketKey.inputHistory, roomId),
-          getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId),
+          getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId)
         );
-    }
+    });
 
     const updatedRoom: Room = {
       ...room,
@@ -67,7 +68,7 @@ class GameService {
       round: 1,
       roundDurationSeconds: 20,
       roundWaitDurationSeconds: 3,
-      zombies: roomZombies,
+      zombies: roomZombies
     };
 
     await pipe
@@ -75,7 +76,7 @@ class GameService {
         "JSON.SET",
         getRedisBucketKey(RedisBucketKey.room, roomId),
         "$",
-        JSON.stringify(updatedRoom),
+        JSON.stringify(updatedRoom)
       )
       .srem(RedisBucketKey.roomsWaiting, roomId)
       .sadd(RedisBucketKey.roomsInGame, roomId)
@@ -97,7 +98,7 @@ class GameService {
       "TS.ADD",
       getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId),
       "*",
-      input.charCodeAt(0),
+      input.charCodeAt(0)
     );
   }
 }

@@ -5,7 +5,7 @@ import {
   RoomNotFoundError,
   SessionNotFoundError,
   UserNotFoundError,
-  UserNotRoomHostError,
+  UserNotRoomHostError
 } from "../errors";
 import { GameMessageFromClient, GameMessageFromServer } from "../types";
 import { getRedisConnection } from "../redis";
@@ -18,9 +18,13 @@ const logger = getLogger("GameLogicController");
 
 class GameLogicController {
   private redis: Redis;
+
   private pubsubService: PubSubService;
+
   private userService: UserService;
+
   private roomService: RoomService;
+
   private gameService: GameService;
 
   constructor() {
@@ -38,19 +42,19 @@ class GameLogicController {
   async publishGameMessage(
     userId: string,
     channel: string,
-    message: GameMessageFromClient | GameMessageFromServer,
+    message: GameMessageFromClient | GameMessageFromServer
   ): Promise<void> {
     const user = await this.userService.getUserByUserId(userId);
     const responseMessage: GameMessageFromServer = {
       ...message,
-      user: { id: userId, name: user?.name ?? "" },
+      user: { id: userId, name: user?.name ?? "" }
     };
     const messageString = this.gameMessageToString(responseMessage);
     return this.pubsubService.publish(channel, messageString);
   }
 
   async onPlayerJoinGame(
-    sessionId?: string,
+    sessionId?: string
   ): Promise<{ message: GameMessageFromServer; sessionId: string }> {
     const { sessionId: finalSessionId, user } =
       await this.userService.getOrCreateUserSession(sessionId);
@@ -59,20 +63,20 @@ class GameLogicController {
       message: {
         event: sessionId === finalSessionId ? "validSession" : "renewSession",
         data: {
-          sessionId: finalSessionId,
+          sessionId: finalSessionId
         },
         user: {
           id: user.id,
-          name: user.name,
-        },
-      },
+          name: user.name
+        }
+      }
     };
   }
 
   async onPlayerCreateRoom(
     userId: string,
     name: string,
-    onSubscribe?: (channel: string, message: string) => void,
+    onSubscribe?: (channel: string, message: string) => void
   ): Promise<void> {
     await this.userService.changeUsername(userId, name);
     const user = await this.userService.getUserByUserId(userId);
@@ -83,12 +87,12 @@ class GameLogicController {
     const message: GameMessageFromServer = {
       event: "createRoom",
       data: {
-        roomId: roomId,
+        roomId
       },
-      user: user,
+      user
     };
-    await this.pubsubService.subscribe(userId, roomId, (channel, message) =>
-      onSubscribe?.(channel, message),
+    await this.pubsubService.subscribe(userId, roomId, (channel, msg) =>
+      onSubscribe?.(channel, msg)
     );
     await this.publishGameMessage(userId, roomId, message);
   }
@@ -98,7 +102,7 @@ class GameLogicController {
     name: string,
     roomId: string,
     message: GameMessageFromClient,
-    onSubscribe?: (channel: string, message: string) => void,
+    onSubscribe?: (channel: string, message: string) => void
   ): Promise<void> {
     await this.userService.changeUsername(userId, name);
     const user = await this.userService.getUserByUserId(userId);
@@ -106,8 +110,8 @@ class GameLogicController {
       throw new UserNotFoundError(userId);
     }
     await this.roomService.joinRoom(user, roomId);
-    await this.pubsubService.subscribe(userId, roomId, (channel, message) =>
-      onSubscribe?.(channel, message),
+    await this.pubsubService.subscribe(userId, roomId, (channel, msg) =>
+      onSubscribe?.(channel, msg)
     );
     await this.publishGameMessage(userId, roomId, message);
   }
@@ -115,7 +119,7 @@ class GameLogicController {
   async onPlayerQuickPlay(
     userId: string,
     name: string,
-    onSubscribe?: (channel: string, message: string) => void,
+    onSubscribe?: (channel: string, message: string) => void
   ): Promise<void> {
     const waitingRooms = await this.roomService.getWaitingRooms();
     if (waitingRooms.length === 0) {
@@ -123,25 +127,25 @@ class GameLogicController {
     }
 
     const waitingRoomsSorted = waitingRooms.toSorted(
-      (a, b) => Object.keys(b.users).length - Object.keys(a.users).length,
+      (a, b) => Object.keys(b.users).length - Object.keys(a.users).length
     );
     for (const room of waitingRoomsSorted) {
       try {
-        return this.onPlayerJoinRoom(
+        return await this.onPlayerJoinRoom(
           userId,
           name,
           room.id,
           {
             event: "joinRoom",
             data: {
-              name: name,
-              roomId: room.id,
-            },
+              name,
+              roomId: room.id
+            }
           },
-          onSubscribe,
+          onSubscribe
         );
       } catch (error) {
-        continue;
+        // Ignore
       }
     }
 
@@ -151,7 +155,7 @@ class GameLogicController {
   async onPlayerLeaveRoom(
     userId: string,
     roomId: string,
-    message: GameMessageFromClient,
+    message: GameMessageFromClient
   ): Promise<void> {
     const user = await this.userService.getUserByUserId(userId);
     if (user == null) {
@@ -164,7 +168,7 @@ class GameLogicController {
 
   async onPlayerGetWaitingRooms(
     userId: string,
-    onReply?: (message: string) => void,
+    onReply?: (message: string) => void
   ): Promise<void> {
     const user = await this.userService.getUserByUserId(userId);
     if (user == null) {
@@ -174,9 +178,9 @@ class GameLogicController {
     const message: GameMessageFromServer = {
       event: "getWaitingRooms",
       data: {
-        rooms: rooms,
+        rooms
       },
-      user: user,
+      user
     };
     onReply?.(this.gameMessageToString(message));
   }
@@ -184,7 +188,7 @@ class GameLogicController {
   async onPlayerGetRoomStatus(
     userId: string,
     roomId: string,
-    onReply?: (message: string) => void,
+    onReply?: (message: string) => void
   ): Promise<void> {
     const user = await this.userService.getUserByUserId(userId);
     if (user == null) {
@@ -197,9 +201,9 @@ class GameLogicController {
     const message: GameMessageFromServer = {
       event: "getRoomStatus",
       data: {
-        room: room,
+        room
       },
-      user: user,
+      user
     };
     onReply?.(this.gameMessageToString(message));
   }
@@ -219,7 +223,7 @@ class GameLogicController {
     if (user.room != null) {
       await this.onPlayerLeaveRoom(userId, user.room, {
         event: "leaveRoom",
-        data: { roomId: user.room },
+        data: { roomId: user.room }
       });
     }
     await this.pubsubService.unsubscribe(userId);
@@ -228,7 +232,7 @@ class GameLogicController {
   async onPlayerStartGame(
     userId: string,
     roomId: string,
-    _message: GameMessageFromClient,
+    _message: GameMessageFromClient
   ) {
     const room = await this.roomService.getRoomStatus(roomId);
     if (room == null) {
@@ -242,7 +246,7 @@ class GameLogicController {
       redis: this.redis,
       pubsubService: this.pubsubService,
       gameService: this.gameService,
-      roomService: this.roomService,
+      roomService: this.roomService
     });
     worker.start();
     logger.info({ userId, roomId }, "instantiate new game loop worker");
@@ -251,7 +255,7 @@ class GameLogicController {
   async onPlayerInput(
     userId: string,
     input: string,
-    message: GameMessageFromClient,
+    message: GameMessageFromClient
   ) {
     const user = await this.userService.getUserByUserId(userId);
     if (user == null) {
@@ -270,7 +274,7 @@ class GameLogicController {
     options?: {
       onSubscribe?: (channel: string, message: string) => void;
       onReply?: (message: string) => void;
-    },
+    }
   ): Promise<void> {
     if (sessionId == null) {
       throw new SessionNotFoundError(sessionId);
@@ -287,7 +291,7 @@ class GameLogicController {
       await this.onPlayerCreateRoom(
         userId,
         message.data.name,
-        options?.onSubscribe,
+        options?.onSubscribe
       );
     }
     if (message.event === "joinRoom") {
@@ -296,14 +300,14 @@ class GameLogicController {
         message.data.name,
         message.data.roomId,
         message,
-        options?.onSubscribe,
+        options?.onSubscribe
       );
     }
     if (message.event === "quickPlay") {
       await this.onPlayerQuickPlay(
         userId,
         message.data.name,
-        options?.onSubscribe,
+        options?.onSubscribe
       );
     }
     if (message.event === "leaveRoom") {
@@ -316,7 +320,7 @@ class GameLogicController {
       await this.onPlayerGetRoomStatus(
         userId,
         message.data.roomId,
-        options?.onReply,
+        options?.onReply
       );
     }
     if (message.event === "startGame") {

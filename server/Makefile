@@ -9,3 +9,7 @@ start:
 .PHONY: format
 format:
 	bun run format
+
+.PHONY: ci
+ci:
+	bun run eslint

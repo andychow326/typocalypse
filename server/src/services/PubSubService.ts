@@ -12,7 +12,9 @@ type Channels = {
 
 class PubSubService {
   private subscriber: Redis;
+
   private publisher: Redis;
+
   private channels: Channels;
 
   constructor() {
@@ -31,7 +33,7 @@ class PubSubService {
   async subscribe(
     subscriberId: string,
     channel: string,
-    onMessage: (channel: string, message: string) => void,
+    onMessage: (channel: string, message: string) => void
   ) {
     if (this.channels[channel] == null) {
       this.channels[channel] = { subscribers: [] };
@@ -42,7 +44,7 @@ class PubSubService {
     ) {
       this.channels[channel].subscribers.push({
         id: subscriberId,
-        onMessage: onMessage,
+        onMessage
       });
     }
   }
@@ -51,7 +53,7 @@ class PubSubService {
     if (channel == null) {
       Object.keys(this.channels).forEach((c) => {
         this.channels[c].subscribers = this.channels[c].subscribers.filter(
-          (s) => s.id !== subscriberId,
+          (s) => s.id !== subscriberId
         );
       });
       Object.keys(this.channels).forEach(async (c) => {
@@ -80,14 +82,14 @@ class PubSubService {
     return Object.entries(this.channels)
       .filter(
         ([_key, value]) =>
-          value.subscribers.findIndex((sub) => sub.id === subscriberId) !== -1,
+          value.subscribers.findIndex((sub) => sub.id === subscriberId) !== -1
       )
       .map(([key, _value]) => key);
   }
 
   async publishToAllChannelsBySubscriberId(
     subscriberId: string,
-    message: string,
+    message: string
   ) {
     const channels = this.findChannelsBySubscriberId(subscriberId);
     for (const channel of channels) {
