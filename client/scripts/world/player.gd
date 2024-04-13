@@ -21,7 +21,7 @@ func _ready():
 
 
 func _input(event):
-	if not get_parent().visible or not event is InputEventKey or not event.is_pressed():
+	if not get_parent().visible or not event is InputEventKey or not event.is_pressed() or DataStore.player_id != player_id:
 		return
 
 	if (event.keycode >= 65 and event.keycode <= 90) or event.keycode == 32:
