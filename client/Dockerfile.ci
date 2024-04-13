@@ -1,0 +1,6 @@
+FROM python:3.12.3-alpine
+
+WORKDIR /app
+
+RUN apk add git
+RUN pip3 install git+https://github.com/Scony/godot-gdscript-toolkit.git
