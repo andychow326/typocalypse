@@ -24,9 +24,8 @@ const websocket = (app: Elysia) =>
       const gameLogicController = ws.data.store.gameLogicController;
 
       const requestSessionId = ws.data.query.sessionId;
-      const result = await gameLogicController.onPlayerJoinGame(
-        requestSessionId
-      );
+      const result =
+        await gameLogicController.onPlayerJoinGame(requestSessionId);
 
       if (requestSessionId == null) {
         ws.data.query.sessionId = result.sessionId;

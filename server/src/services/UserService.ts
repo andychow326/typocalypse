@@ -29,7 +29,7 @@ class UserService {
         .expire(key, SESSION_EXPIRATION_SECONDS)
         .expire(
           getRedisBucketKey(RedisBucketKey.user, userId),
-          SESSION_EXPIRATION_SECONDS
+          SESSION_EXPIRATION_SECONDS,
         )
         .exec();
     }

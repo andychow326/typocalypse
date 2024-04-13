@@ -38,7 +38,10 @@ class GameService {
     for (const userId in room.users) {
       const words = randomWords({ count: 4 });
       const positions = randomPositions(words.length);
-      logger.debug({ roomId, userId, words }, "gerenate room words and zombies");
+      logger.debug(
+        { roomId, userId, words },
+        "gerenate room words and zombies",
+      );
       for (let i = 0; i < words.length; i++) {
         roomZombies.push({
           userId: userId,
@@ -50,11 +53,11 @@ class GameService {
       pipe = pipe
         .call(
           "TS.CREATE",
-          getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId)
+          getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId),
         )
         .sadd(
           getRedisBucketKey(RedisBucketKey.inputHistory, roomId),
-          getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId)
+          getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId),
         );
     }
 
@@ -72,7 +75,7 @@ class GameService {
         "JSON.SET",
         getRedisBucketKey(RedisBucketKey.room, roomId),
         "$",
-        JSON.stringify(updatedRoom)
+        JSON.stringify(updatedRoom),
       )
       .srem(RedisBucketKey.roomsWaiting, roomId)
       .sadd(RedisBucketKey.roomsInGame, roomId)
@@ -94,7 +97,7 @@ class GameService {
       "TS.ADD",
       getRedisBucketKey(RedisBucketKey.inputHistory, roomId, userId),
       "*",
-      input.charCodeAt(0)
+      input.charCodeAt(0),
     );
   }
 }

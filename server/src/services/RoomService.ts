@@ -26,7 +26,7 @@ class RoomService {
       pipe = pipe.call(
         "JSON.GET",
         getRedisBucketKey(RedisBucketKey.room, roomId),
-        "."
+        ".",
       );
     });
     const result = await pipe.exec();
@@ -47,7 +47,7 @@ class RoomService {
       .call("JSON.GET", getRedisBucketKey(RedisBucketKey.room, roomId), ".")
       .expire(
         getRedisBucketKey(RedisBucketKey.room, roomId),
-        ROOM_EXPIRATION_SECONDS
+        ROOM_EXPIRATION_SECONDS,
       )
       .exec();
     if (result == null) {
@@ -62,7 +62,7 @@ class RoomService {
       "JSON.SET",
       getRedisBucketKey(RedisBucketKey.room, roomId),
       "$",
-      JSON.stringify(room)
+      JSON.stringify(room),
     );
   }
 
@@ -70,7 +70,7 @@ class RoomService {
     while (true) {
       const roomId = randomInt(100000, 999999).toString();
       const isRoomIdExists = await this.redis.exists(
-        getRedisBucketKey(RedisBucketKey.room, roomId)
+        getRedisBucketKey(RedisBucketKey.room, roomId),
       );
       if (!isRoomIdExists) {
         return roomId;
@@ -94,18 +94,18 @@ class RoomService {
         "JSON.SET",
         getRedisBucketKey(RedisBucketKey.room, roomId),
         "$",
-        JSON.stringify(data)
+        JSON.stringify(data),
       )
       .call(
         "JSON.SET",
         getRedisBucketKey(RedisBucketKey.user, user.id),
         ".room",
-        JSON.stringify(roomId)
+        JSON.stringify(roomId),
       )
       .sadd(RedisBucketKey.roomsWaiting, roomId)
       .expire(
         getRedisBucketKey(RedisBucketKey.room, roomId),
-        ROOM_EXPIRATION_SECONDS
+        ROOM_EXPIRATION_SECONDS,
       )
       .exec();
     logger.debug({ userId: user.id, roomId }, "create room");
@@ -126,17 +126,17 @@ class RoomService {
         "JSON.SET",
         getRedisBucketKey(RedisBucketKey.room, roomId),
         `.users.${user.id}`,
-        JSON.stringify(user)
+        JSON.stringify(user),
       )
       .call(
         "JSON.SET",
         getRedisBucketKey(RedisBucketKey.user, user.id),
         ".room",
-        JSON.stringify(roomId)
+        JSON.stringify(roomId),
       )
       .expire(
         getRedisBucketKey(RedisBucketKey.room, roomId),
-        ROOM_EXPIRATION_SECONDS
+        ROOM_EXPIRATION_SECONDS,
       )
       .exec();
     logger.debug({ userId: user.id, roomId }, "join room");
@@ -144,26 +144,26 @@ class RoomService {
 
   async leaveRoom(
     user: User,
-    roomId: string
+    roomId: string,
   ): Promise<{ deletedRoomIds: string[] }> {
     let pipe = this.redis.multi();
     if (user.room != null && user.room !== roomId) {
       pipe = pipe.call(
         "JSON.DEL",
         getRedisBucketKey(RedisBucketKey.room, user.room),
-        `.users.${user.id}`
+        `.users.${user.id}`,
       );
     }
     pipe = pipe
       .call(
         "JSON.DEL",
         getRedisBucketKey(RedisBucketKey.room, roomId),
-        `.users.${user.id}`
+        `.users.${user.id}`,
       )
       .call(
         "JSON.DEL",
         getRedisBucketKey(RedisBucketKey.user, user.id),
-        ".room"
+        ".room",
       );
     await pipe.exec();
     logger.debug({ userId: user.id, roomId }, "leave room");
@@ -182,7 +182,7 @@ class RoomService {
       pipe = pipe.call(
         "JSON.GET",
         getRedisBucketKey(RedisBucketKey.room, roomId),
-        "."
+        ".",
       );
     });
     const rooms = await pipe.exec();
@@ -214,7 +214,7 @@ class RoomService {
         "JSON.SET",
         getRedisBucketKey(RedisBucketKey.room, room.id),
         "$",
-        JSON.stringify(room)
+        JSON.stringify(room),
       );
     });
     if (deletableRoomIds.length > 0) {
@@ -227,7 +227,7 @@ class RoomService {
       const inputHistoryPipeResult = await inputHistoryPipe.exec();
       if (inputHistoryPipeResult != null) {
         const inputHistoryIds = inputHistoryPipeResult.flatMap(
-          (result) => result[1] as string[]
+          (result) => result[1] as string[],
         );
         if (inputHistoryIds.length > 0) {
           pipe = pipe.del(inputHistoryIds);
@@ -237,8 +237,8 @@ class RoomService {
       pipe = pipe
         .del(
           deletableRoomIds.map((roomId) =>
-            getRedisBucketKey(RedisBucketKey.room, roomId)
-          )
+            getRedisBucketKey(RedisBucketKey.room, roomId),
+          ),
         )
         .srem(RedisBucketKey.roomsWaiting, ...deletableRoomIds)
         .srem(RedisBucketKey.roomsInGame, ...deletableRoomIds);

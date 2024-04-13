@@ -57,7 +57,7 @@ class GameLoopWorker {
 
   setSimulationInterval(
     onTickCallback?: SimulationCallback,
-    interval: number = DEFAULT_SIMULATION_INTERVAL
+    interval: number = DEFAULT_SIMULATION_INTERVAL,
   ) {
     if (this.simulationInterval != null) {
       clearInterval(this.simulationInterval);
