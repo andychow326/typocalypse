@@ -1,15 +1,12 @@
 extends Control
 
-
 @export var player_scene: PackedScene
 
 @onready
 var player_list_container = $VBoxContainer/PlayerListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
-@onready
-var start_button = $VBoxContainer/StartButton
+@onready var start_button = $VBoxContainer/StartButton
 
-
-signal back_button_pressed()
+signal back_button_pressed
 
 
 func _ready():
@@ -60,12 +57,9 @@ func reset_room_status():
 func fetch_room_status():
 	if not visible:
 		return
-	DataStore.web_socket_client.send({
-		"event": "getRoomStatus",
-		"data": {
-			"roomId": DataStore.room_id
-		}
-	})
+	DataStore.web_socket_client.send(
+		{"event": "getRoomStatus", "data": {"roomId": DataStore.room_id}}
+	)
 
 
 func _on_visibility_changed():
@@ -82,20 +76,10 @@ func _on_visibility_changed():
 
 
 func _on_back_button_pressed():
-	DataStore.web_socket_client.send({
-		"event": "leaveRoom",
-		"data": {
-			"roomId": DataStore.room_id
-		}
-	})
+	DataStore.web_socket_client.send({"event": "leaveRoom", "data": {"roomId": DataStore.room_id}})
 	back_button_pressed.emit()
 
 
 func _on_start_button_pressed():
 	start_button.disabled = true
-	DataStore.web_socket_client.send({
-		"event": "startGame",
-		"data": {
-			"roomId": DataStore.room_id
-		}
-	})
+	DataStore.web_socket_client.send({"event": "startGame", "data": {"roomId": DataStore.room_id}})

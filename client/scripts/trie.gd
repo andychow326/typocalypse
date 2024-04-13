@@ -1,7 +1,6 @@
 extends Node
 class_name Trie
 
-
 var root = TrieNode.new()
 
 
@@ -46,7 +45,7 @@ func get_potential_candidates(key: String):
 			return []
 		node = node.children[token]
 
-	return get_potential_candidates_by_node(node, key, func (n: TrieNode): return n.data)
+	return get_potential_candidates_by_node(node, key, func(n: TrieNode): return n.data)
 
 
 class TrieNode:

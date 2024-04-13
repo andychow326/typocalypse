@@ -1,6 +1,5 @@
 extends Node
 
-
 enum STATE {
 	LOBBY_MENU,
 	GAME_WORLD,
@@ -21,7 +20,9 @@ func _process(_delta):
 
 
 func _ready():
-	DataStore.web_socket_client.connected_to_server.connect(_on_web_socket_client_connected_to_server)
+	DataStore.web_socket_client.connected_to_server.connect(
+		_on_web_socket_client_connected_to_server
+	)
 	DataStore.web_socket_client.connection_closed.connect(_on_web_socket_client_connection_closed)
 	DataStore.web_socket_client.message_received.connect(_on_web_socket_client_message_received)
 	add_child(DataStore.web_socket_client)
@@ -29,7 +30,9 @@ func _ready():
 
 
 func start_client():
-	DataStore.web_socket_client.connect_to_url(Config.SERVER_URL + "/ws?sessionId=" + DataStore.session_id)
+	DataStore.web_socket_client.connect_to_url(
+		Config.server_url + "/ws?sessionId=" + DataStore.session_id
+	)
 
 
 func restart_client():
@@ -63,6 +66,8 @@ func _on_web_socket_client_message_received(message):
 		"validSession":
 			DataStore.player_id = message.user.id
 			DataStore.player_name = message.user.name
-			$LobbyMenu/OnBoardingMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerNameLineEdit.text = message.user.name
+			$LobbyMenu/OnBoardingMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerNameLineEdit.text = (
+				message.user.name
+			)
 		"startGame":
 			state = STATE.GAME_WORLD

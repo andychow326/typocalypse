@@ -5,13 +5,11 @@ class_name WebSocketClient
 @export var supported_protocols: PackedStringArray
 var tls_options: TLSOptions = null
 
-
 var socket = WebSocketPeer.new()
 var last_state = WebSocketPeer.STATE_CLOSED
 
-
-signal connected_to_server()
-signal connection_closed()
+signal connected_to_server
+signal connection_closed
 signal message_received(message: Variant)
 
 
@@ -33,7 +31,7 @@ func send(message) -> int:
 		if typeof(message) == TYPE_DICTIONARY:
 			message_to_send = JSON.stringify(message)
 		if Config.DEBUG:
-			print("[DEBUG] Sent message: "+ message_to_send)
+			print("[DEBUG] Sent message: " + message_to_send)
 		return socket.send_text(message_to_send)
 	return socket.send(var_to_bytes(message))
 
