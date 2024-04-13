@@ -10,7 +10,6 @@ const WebSocketClient = preload("res://scripts/web_socket_client.gd")
 			return path + str(debug_vars.instance_num)
 		return path
 
-
 @export var web_socket_client: WebSocketClient = WebSocketClient.new()
 
 @export var player_id: String

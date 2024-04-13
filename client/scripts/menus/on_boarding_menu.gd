@@ -1,9 +1,8 @@
 extends Control
 
-
-signal quick_play_button_pressed()
-signal create_room_button_pressed()
-signal join_room_button_pressed()
+signal quick_play_button_pressed
+signal create_room_button_pressed
+signal join_room_button_pressed
 
 
 func _on_quick_play_button_pressed():

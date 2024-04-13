@@ -1,6 +1,5 @@
 extends PanelContainer
 
-
 @export var id: String
 @export var player_name: String
 

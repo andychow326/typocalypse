@@ -1,13 +1,12 @@
 extends Control
 
+signal back_button_pressed
 
 @export var room_list_item_scene: PackedScene
 
 @onready
+# gdlint: ignore=max-line-length
 var waiting_room_list_container = $VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
-
-
-signal back_button_pressed()
 
 
 func _ready():
@@ -28,13 +27,20 @@ func _on_web_socket_client_message_received(message):
 
 
 func join_room(room_id: String):
-	DataStore.web_socket_client.send({
-		"event": "joinRoom",
-		"data": {
-			"name": DataStore.player_name,
-			"roomId": room_id,
-		}
-	})
+	(
+		DataStore
+		. web_socket_client
+		. send(
+			{
+				"event": "joinRoom",
+				"data":
+				{
+					"name": DataStore.player_name,
+					"roomId": room_id,
+				}
+			}
+		)
+	)
 
 
 func clear_waiting_rooms():
@@ -70,5 +76,8 @@ func _on_room_list_update_timer_timeout():
 
 
 func _on_join_room_button_pressed():
-	var room_id = $VBoxContainer/CustomRoomContainer/MarginContainer/VBoxContainer/HBoxContainer/RoomIDLineEdit.text
+	var room_id = (
+		$VBoxContainer/CustomRoomContainer/MarginContainer/VBoxContainer/HBoxContainer/RoomIDLineEdit
+		. text
+	)
 	join_room(room_id)

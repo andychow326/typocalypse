@@ -1,10 +1,10 @@
 import { Redis } from "ioredis";
+import { randomInt } from "crypto";
 import {
   RedisBucketKey,
   getRedisBucketKey,
-  getRedisConnection,
+  getRedisConnection
 } from "../redis";
-import { randomInt } from "crypto";
 import { Room, User } from "../types";
 import { ROOM_EXPIRATION_SECONDS } from "../constants";
 import { getLogger } from "../logger";
@@ -35,7 +35,7 @@ class RoomService {
     }
     const rooms: Room[] = [];
     roomIds.forEach((_, index) => {
-      const room: Room = JSON.parse(result[index][1] as any);
+      const room: Room = JSON.parse(result[index][1] as string);
       rooms.push(room);
     });
     return rooms;
@@ -53,7 +53,7 @@ class RoomService {
     if (result == null) {
       return null;
     }
-    const room: Room = JSON.parse(result[0][1] as any);
+    const room: Room = JSON.parse(result[0][1] as string);
     return room;
   }
 
@@ -85,8 +85,8 @@ class RoomService {
       state: "waiting",
       hostId: user.id,
       users: {
-        [user.id]: user,
-      },
+        [user.id]: user
+      }
     };
     await this.redis
       .multi()
@@ -169,9 +169,8 @@ class RoomService {
     logger.debug({ userId: user.id, roomId }, "leave room");
     if (user.room != null && user.room !== roomId) {
       return this.finalizeRooms(user.room, roomId);
-    } else {
-      return this.finalizeRooms(roomId);
     }
+    return this.finalizeRooms(roomId);
   }
 
   async finalizeRooms(
@@ -189,14 +188,14 @@ class RoomService {
     if (rooms == null) {
       return { deletedRoomIds: [] };
     }
-    let updatableRooms: Room[] = [];
-    let deletableRoomIds: string[] = [];
+    const updatableRooms: Room[] = [];
+    const deletableRoomIds: string[] = [];
     rooms.forEach((data) => {
       const roomJson = data[1];
       if (roomJson == null) {
         return;
       }
-      const room: Room = JSON.parse(roomJson as any);
+      const room: Room = JSON.parse(roomJson as string);
       const userIds = Object.keys(room.users);
       if (userIds.length > 0) {
         const newHostId = userIds[0];

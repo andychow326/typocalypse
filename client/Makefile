@@ -10,3 +10,12 @@ start:
 		--cors.embedder-policy "require-corp" \
 		--cors.opener-policy "same-origin" \
 		--directory "./build"
+
+.PHONY: format
+format:
+	docker compose run ci-client gdformat .
+
+.PHONY: ci
+ci:
+	docker compose run ci-client gdlint .
+	docker compose run ci-client gdformat --check .

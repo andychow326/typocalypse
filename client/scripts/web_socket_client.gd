@@ -1,18 +1,16 @@
-extends Node
 class_name WebSocketClient
+extends Node
+
+signal connected_to_server
+signal connection_closed
+signal message_received(message: Variant)
 
 @export var handshake_headers: PackedStringArray
 @export var supported_protocols: PackedStringArray
 var tls_options: TLSOptions = null
 
-
 var socket = WebSocketPeer.new()
 var last_state = WebSocketPeer.STATE_CLOSED
-
-
-signal connected_to_server()
-signal connection_closed()
-signal message_received(message: Variant)
 
 
 func connect_to_url(url) -> int:
@@ -32,8 +30,8 @@ func send(message) -> int:
 			message_to_send = message
 		if typeof(message) == TYPE_DICTIONARY:
 			message_to_send = JSON.stringify(message)
-		if Config.DEBUG:
-			print("[DEBUG] Sent message: "+ message_to_send)
+		if Config.debug:
+			print("[DEBUG] Sent message: " + message_to_send)
 		return socket.send_text(message_to_send)
 	return socket.send(var_to_bytes(message))
 
@@ -44,7 +42,7 @@ func get_message() -> Variant:
 	var pkt = socket.get_packet()
 	if socket.was_string_packet():
 		var message = pkt.get_string_from_utf8()
-		if Config.DEBUG:
+		if Config.debug:
 			print("[DEBUG] Received message: " + message)
 		var json = JSON.new()
 		var error = json.parse(message)

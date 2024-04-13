@@ -7,41 +7,36 @@ import {
   RoomNotFoundError,
   SessionNotFoundError,
   UserNotFoundError,
-  UserNotRoomHostError,
+  UserNotRoomHostError
 } from "../errors";
 import { getLogger } from "../logger";
 
 const logger = getLogger("websocket");
 
 const InitialWebSocketState: WebSocketState = {
-  gameLogicController: new GameLogicController(),
+  gameLogicController: new GameLogicController()
 };
 
 const websocket = (app: Elysia) =>
   app.state(InitialWebSocketState).ws("/ws", {
     body: GameMessageFromClientSchema,
     async open(ws) {
-      const gameLogicController = ws.data.store.gameLogicController;
+      const { gameLogicController } = ws.data.store;
 
       const requestSessionId = ws.data.query.sessionId;
-      const result = await gameLogicController.onPlayerJoinGame(
-        requestSessionId
-      );
-
-      if (requestSessionId == null) {
-        ws.data.query.sessionId = result.sessionId;
-      }
+      const result =
+        await gameLogicController.onPlayerJoinGame(requestSessionId);
 
       ws.send(gameLogicController.gameMessageToString(result.message));
     },
     async message(ws, message) {
-      const gameLogicController = ws.data.store.gameLogicController;
+      const { gameLogicController } = ws.data.store;
 
-      const sessionId = ws.data.query.sessionId;
+      const { sessionId } = ws.data.query;
       try {
         await gameLogicController.onPlayerMessage(message, sessionId, {
-          onSubscribe: (_channel, message) => ws.send(message),
-          onReply: (message) => ws.send(message),
+          onSubscribe: (_channel, msg) => ws.send(msg),
+          onReply: (msg) => ws.send(msg)
         });
       } catch (error) {
         if (
@@ -63,10 +58,10 @@ const websocket = (app: Elysia) =>
       }
     },
     async close(ws) {
-      const gameLogicController = ws.data.store.gameLogicController;
-      const sessionId = ws.data.query.sessionId;
+      const { gameLogicController } = ws.data.store;
+      const { sessionId } = ws.data.query;
       await gameLogicController.onPlayerLeaveGame(sessionId);
-    },
+    }
   });
 
 export default websocket;

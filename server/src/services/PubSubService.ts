@@ -12,7 +12,9 @@ type Channels = {
 
 class PubSubService {
   private subscriber: Redis;
+
   private publisher: Redis;
+
   private channels: Channels;
 
   constructor() {
@@ -42,7 +44,7 @@ class PubSubService {
     ) {
       this.channels[channel].subscribers.push({
         id: subscriberId,
-        onMessage: onMessage,
+        onMessage
       });
     }
   }

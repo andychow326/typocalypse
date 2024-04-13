@@ -66,7 +66,7 @@ export type RoomZombie = {
     y: number;
     z: number;
   };
-}
+};
 
 export type RoomWaiting = {
   id: string;

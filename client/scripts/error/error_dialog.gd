@@ -1,6 +1,5 @@
 extends PanelContainer
 
-
 @export var title: String:
 	get:
 		return $MarginContainer/HBoxContainer/VBoxContainer/Title.text

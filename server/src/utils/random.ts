@@ -12,14 +12,16 @@ export function randomWords(options: RandomWordOptions): string[] {
     minLength: options.minLength,
     maxLength: options.maxLength,
     exactly: options.count,
-    wordsPerString: options.wordsPerString,
+    wordsPerString: options.wordsPerString
   });
 }
 
-export function randomPositions(numOfPositions: number): { x: number, y: number, z: number }[] {
-  const positions: { x: number, y: number, z: number }[] = [];
-  for (let i = 0; i < numOfPositions; i++) {
-    const x = Math.random() * (20) - 10;
+export function randomPositions(
+  numOfPositions: number
+): { x: number; y: number; z: number }[] {
+  const positions: { x: number; y: number; z: number }[] = [];
+  for (let i = 0; i < numOfPositions; i += 1) {
+    const x = Math.random() * 20 - 10;
     const y = 0;
     const z = Math.random() * 5 - 5;
     positions.push({ x, y, z });

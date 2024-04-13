@@ -5,4 +5,10 @@ services:
     image: redis/redis-stack:7.2.0-v5
     ports:
       - 6379:6379
-  
+
+  ci-client:
+    build:
+      context: client
+      dockerfile: Dockerfile.ci
+    volumes:
+      - ./client:/app

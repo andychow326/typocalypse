@@ -6,10 +6,10 @@ export function getLogger(name: string): Logger {
   const stream = pinoPretty({ colorize: true });
   const logger = pino(
     {
-      name: name,
+      name,
       level: LOG_LEVEL,
     },
-    stream
+    stream,
   );
   return logger;
 }

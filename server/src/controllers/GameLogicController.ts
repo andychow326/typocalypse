@@ -5,7 +5,7 @@ import {
   RoomNotFoundError,
   SessionNotFoundError,
   UserNotFoundError,
-  UserNotRoomHostError,
+  UserNotRoomHostError
 } from "../errors";
 import { GameMessageFromClient, GameMessageFromServer } from "../types";
 import { getRedisConnection } from "../redis";
@@ -18,9 +18,13 @@ const logger = getLogger("GameLogicController");
 
 class GameLogicController {
   private redis: Redis;
+
   private pubsubService: PubSubService;
+
   private userService: UserService;
+
   private roomService: RoomService;
+
   private gameService: GameService;
 
   constructor() {
@@ -43,7 +47,7 @@ class GameLogicController {
     const user = await this.userService.getUserByUserId(userId);
     const responseMessage: GameMessageFromServer = {
       ...message,
-      user: { id: userId, name: user?.name ?? "" },
+      user: { id: userId, name: user?.name ?? "" }
     };
     const messageString = this.gameMessageToString(responseMessage);
     return this.pubsubService.publish(channel, messageString);
@@ -59,13 +63,13 @@ class GameLogicController {
       message: {
         event: sessionId === finalSessionId ? "validSession" : "renewSession",
         data: {
-          sessionId: finalSessionId,
+          sessionId: finalSessionId
         },
         user: {
           id: user.id,
-          name: user.name,
-        },
-      },
+          name: user.name
+        }
+      }
     };
   }
 
@@ -83,12 +87,12 @@ class GameLogicController {
     const message: GameMessageFromServer = {
       event: "createRoom",
       data: {
-        roomId: roomId,
+        roomId
       },
-      user: user,
+      user
     };
-    await this.pubsubService.subscribe(userId, roomId, (channel, message) =>
-      onSubscribe?.(channel, message)
+    await this.pubsubService.subscribe(userId, roomId, (channel, msg) =>
+      onSubscribe?.(channel, msg)
     );
     await this.publishGameMessage(userId, roomId, message);
   }
@@ -106,8 +110,8 @@ class GameLogicController {
       throw new UserNotFoundError(userId);
     }
     await this.roomService.joinRoom(user, roomId);
-    await this.pubsubService.subscribe(userId, roomId, (channel, message) =>
-      onSubscribe?.(channel, message)
+    await this.pubsubService.subscribe(userId, roomId, (channel, msg) =>
+      onSubscribe?.(channel, msg)
     );
     await this.publishGameMessage(userId, roomId, message);
   }
@@ -127,21 +131,21 @@ class GameLogicController {
     );
     for (const room of waitingRoomsSorted) {
       try {
-        return this.onPlayerJoinRoom(
+        return await this.onPlayerJoinRoom(
           userId,
           name,
           room.id,
           {
             event: "joinRoom",
             data: {
-              name: name,
-              roomId: room.id,
-            },
+              name,
+              roomId: room.id
+            }
           },
           onSubscribe
         );
       } catch (error) {
-        continue;
+        // Ignore
       }
     }
 
@@ -174,9 +178,9 @@ class GameLogicController {
     const message: GameMessageFromServer = {
       event: "getWaitingRooms",
       data: {
-        rooms: rooms,
+        rooms
       },
-      user: user,
+      user
     };
     onReply?.(this.gameMessageToString(message));
   }
@@ -197,9 +201,9 @@ class GameLogicController {
     const message: GameMessageFromServer = {
       event: "getRoomStatus",
       data: {
-        room: room,
+        room
       },
-      user: user,
+      user
     };
     onReply?.(this.gameMessageToString(message));
   }
@@ -219,7 +223,7 @@ class GameLogicController {
     if (user.room != null) {
       await this.onPlayerLeaveRoom(userId, user.room, {
         event: "leaveRoom",
-        data: { roomId: user.room },
+        data: { roomId: user.room }
       });
     }
     await this.pubsubService.unsubscribe(userId);
@@ -242,7 +246,7 @@ class GameLogicController {
       redis: this.redis,
       pubsubService: this.pubsubService,
       gameService: this.gameService,
-      roomService: this.roomService,
+      roomService: this.roomService
     });
     worker.start();
     logger.info({ userId, roomId }, "instantiate new game loop worker");
