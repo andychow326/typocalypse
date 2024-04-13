@@ -13,9 +13,9 @@ start:
 
 .PHONY: format
 format:
-	docker compose run ci-client gdformat .
+	docker compose run --rm ci-client gdformat .
 
 .PHONY: ci
 ci:
-	docker compose run ci-client gdlint .
-	docker compose run ci-client gdformat --check .
+	docker compose run --rm ci-client gdlint .
+	docker compose run --rm ci-client gdformat --check .
