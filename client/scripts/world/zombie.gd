@@ -1,19 +1,19 @@
 extends CharacterBody3D
 
+const SPEED = 2.0
+const ATTACK_RANGE = 3.5
+
 @export var target_player_id: String
 @export var word_label: String
 @export var initial_word_label_container_position: Vector3
 @export var word_finished: bool
 
-@onready var nav_agent = $NavigationAgent3D
-@onready var anim_tree = $AnimationTree
-
 var player_node
 var player_position
 var state_machine
 
-const SPEED = 2.0
-const ATTACK_RANGE = 3.5
+@onready var nav_agent = $NavigationAgent3D
+@onready var anim_tree = $AnimationTree
 
 
 func _ready():

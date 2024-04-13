@@ -1,4 +1,4 @@
 extends Node
 
-@export var SERVER_URL = "wss://api.typocalypse.online"
-@export var DEBUG = false
+@export var server_url = "wss://api.typocalypse.online"
+@export var debug = false

@@ -1,10 +1,10 @@
 extends PanelContainer
 
+signal on_join_room_button_pressed(room_id: String)
+
 @export var room_id: String
 @export var capacity: int
 @export var player_counts: int
-
-signal on_join_room_button_pressed(room_id: String)
 
 
 func from_dict(dict: Dictionary):

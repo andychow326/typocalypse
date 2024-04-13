@@ -1,5 +1,5 @@
-extends Node
 class_name Trie
+extends Node
 
 var root = TrieNode.new()
 

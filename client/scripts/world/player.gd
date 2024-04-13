@@ -1,12 +1,12 @@
 extends CharacterBody3D
 
+signal player_hit
+
 @export var player_id: String
 @export var player_name: String
 
 var bullet = load("res://scenes/world/bullet.tscn")
 var instance
-
-signal player_hit
 
 
 func from_dict(dict: Dictionary):

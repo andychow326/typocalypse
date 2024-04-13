@@ -66,6 +66,7 @@ func _on_web_socket_client_message_received(message):
 		"validSession":
 			DataStore.player_id = message.user.id
 			DataStore.player_name = message.user.name
+			# gdlint: ignore=max-line-length
 			$LobbyMenu/OnBoardingMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerNameLineEdit.text = (
 				message.user.name
 			)

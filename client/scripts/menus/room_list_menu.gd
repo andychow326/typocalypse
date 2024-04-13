@@ -1,11 +1,12 @@
 extends Control
 
+signal back_button_pressed
+
 @export var room_list_item_scene: PackedScene
 
 @onready
+# gdlint: ignore=max-line-length
 var waiting_room_list_container = $VBoxContainer/RoomListContainer/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
-
-signal back_button_pressed
 
 
 func _ready():
