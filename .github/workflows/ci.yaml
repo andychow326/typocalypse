@@ -1,86 +1,36 @@
 name: CI
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 on:
-  push:
-    branches:
-      - master
-jobs:
-  build-and-push-docker-images:
-    name: Build and Push Docker Images
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Install Godot 4.1.2
-        run: |
-          wget https://github.com/godotengine/godot/releases/download/4.1.2-stable/Godot_v4.1.2-stable_linux.x86_64.zip
-          unzip Godot_v4.1.2-stable_linux.x86_64.zip
-          sudo mv Godot_v4.1.2-stable_linux.x86_64 /usr/local/bin/godot
-          sudo chmod a+x /usr/local/bin/godot
-          godot --headless -e --quit
-      - name: Install Blender 3.6.4
-        run: |
-          wget https://mirror.freedif.org/blender/release/Blender3.6/blender-3.6.4-linux-x64.tar.xz
-          tar -xvf blender-3.6.4-linux-x64.tar.xz
-          sudo mv blender-3.6.4-linux-x64 /usr/local/
-          sudo chmod a+x /usr/local/blender-3.6.4-linux-x64/blender
-          echo 'filesystem/import/blender/blender3_path = "/usr/local/blender-3.6.4-linux-x64"' >> ~/.config/godot/editor_settings-4.tres
-      - name: Setup client (development)
-        if: github.ref_name == 'master'
-        run: |
-          cp client/config_development.gd client/config.gd
-      - name: Setup client (production)
-        if: github.ref_name == 'production'
-        run: |
-          cp client/config_production.gd client/config.gd
-      - name: Build client
-        run: |
-          rm client/**/*.import
-          godot --headless --path client --export-release Web build/index.html
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push client
-        uses: docker/build-push-action@v5
-        with:
-          context: client
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/typocalypse-client:git-${{ github.sha }}
-      - name: Build and push server
-        uses: docker/build-push-action@v5
-        with:
-          context: server
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/typocalypse-server:git-${{ github.sha }}
+  workflow_call:
 
-  deploy:
-    if: ${{ (github.ref_name == 'master' || github.ref_name == 'production') && github.event_name == 'push' }}
-    name: Deploy
+jobs:
+  ci-server:
+    name: CI for server
     runs-on: ubuntu-22.04
-    needs: [build-and-push-docker-images]
+    defaults:
+      run:
+        working-directory: ./server
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-      - name: Set k8s context
-        uses: azure/k8s-set-context@v3
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v1
         with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-      - name: Deploy (development)
-        if: github.ref_name == 'master'
-        run: |
-          make -C deploy upgrade DEPLOY_ENV=dev
-      - name: Deploy (production)
-        if: github.ref_name == 'production'
-        run: |
-          make -C deploy upgrade DEPLOY_ENV=prod
+          bun-version: 1.0.36
+      - name: Install dependencies
+        run: bun install
+      - name: Run CI Check
+        run: make ci
+
+  ci-client:
+    name: CI for client
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Godot toolkit
+        uses: Scony/godot-gdscript-toolkit@master
+      - run: gdlint .
+      - run: gdformat --check .
