@@ -4,7 +4,11 @@ import PubSubService from "../services/PubSubService";
 import GameService from "../services/GameService";
 import RoomService from "../services/RoomService";
 import { getRedisConnection } from "../redis";
-import { GameMessageFromWorker, RoomInGame } from "../types";
+import {
+  GameMessageFromClient,
+  GameMessageFromWorker,
+  RoomInGame
+} from "../types";
 import { RoomNotFoundError } from "../errors";
 import { getLogger } from "../logger";
 import { delay } from "../utils/promise";
@@ -51,6 +55,8 @@ class GameLoopWorker {
     this.roomService = options?.roomService ?? new RoomService(this.redis);
     this.onTerminate = options?.onTerminate;
   }
+
+  async onMessage(userId: string, message: GameMessageFromClient) {}
 
   async getRoom(): Promise<RoomInGame> {
     const room = await this.roomService.getRoomStatus(this.roomId);
