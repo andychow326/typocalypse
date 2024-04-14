@@ -11,6 +11,8 @@ const ATTACK_RANGE = 3.5
 var player_node
 var player_position
 var state_machine
+var white = Color("#ffffff")
+var green = Color("#639765")
 
 @onready var nav_agent = $NavigationAgent3D
 @onready var anim_tree = $AnimationTree
@@ -26,66 +28,81 @@ func from_dict(dict: Dictionary):
 	target_player_id = dict.target_player_id
 	word_label = dict.label
 	if DataStore.player_id != target_player_id:
-		$WordLabelContainer/ActiveWordLabel.modulate = Color.CORAL
-	$WordLabelContainer/ActiveWordLabel.text = ""
-	$WordLabelContainer/NonActiveWordLabel.text = dict.label
-	if $WordLabelContainer/ActiveWordLabel.font == null:
-		$WordLabelContainer/ActiveWordLabel.font = SystemFont.new()
-	if $WordLabelContainer/NonActiveWordLabel.font == null:
-		$WordLabelContainer/NonActiveWordLabel.font = SystemFont.new()
-	$WordLabelContainer.position.x += get_non_active_word_label_width() / 2
-	initial_word_label_container_position = $WordLabelContainer.position
-
-
-func get_active_word_label_string_size(s: String = $WordLabelContainer/ActiveWordLabel.text):
-	return (
-		(
-			$WordLabelContainer/ActiveWordLabel
-			. font
-			. get_string_size(
-				s,
-				$WordLabelContainer/ActiveWordLabel.horizontal_alignment,
-				$WordLabelContainer/ActiveWordLabel.width,
-				$WordLabelContainer/ActiveWordLabel.font_size,
-			)
-			. x
+		$WordLabelContainer/SubViewport/RichTextLabel.add_theme_color_override(
+			"default_color", Color.CORAL
 		)
-		* $WordLabelContainer/ActiveWordLabel.pixel_size
+		$WordLabelContainer/Sprite3D.modulate.a = 0.75
+	$WordLabelContainer/SubViewport/RichTextLabel.parse_bbcode(set_center_tags(dict.label))
+	$WordLabelContainer/SubViewport.size = Vector2i(
+		get_active_word_label_string_size(dict.label), $WordLabelContainer/SubViewport.size.y
 	)
-
-
-func get_non_active_word_label_width(s: String = $WordLabelContainer/NonActiveWordLabel.text):
-	return (
-		(
-			$WordLabelContainer/NonActiveWordLabel
-			. font
-			. get_string_size(
-				s,
-				$WordLabelContainer/NonActiveWordLabel.horizontal_alignment,
-				$WordLabelContainer/NonActiveWordLabel.width,
-				$WordLabelContainer/NonActiveWordLabel.font_size,
-			)
-			. x
+	if $WordLabelContainer/SubViewport/RichTextLabel.get_theme_font("normal_font") == null:
+		$WordLabelContainer/SubViewport/RichTextLabel.add_theme_font_override(
+			"normal_font", SystemFont.new()
 		)
-		* $WordLabelContainer/NonActiveWordLabel.pixel_size
-	)
 
 
 func set_active(s: String):
+	var next_character_index = s.length()
 	var non_active_word_label = word_label.trim_prefix(s)
+	var green_text = (
+		get_bbcode_color_tag(green)
+		+ word_label.substr(0, next_character_index)
+		+ get_bbcode_end_color_tag()
+	)
+	var white_text = ""
 	if non_active_word_label != word_label or s == "":
-		$WordLabelContainer/ActiveWordLabel.text = s
-		$WordLabelContainer/NonActiveWordLabel.text = non_active_word_label
-		$WordLabelContainer.position.x = (
-			initial_word_label_container_position.x - get_active_word_label_string_size(s)
+		white_text = (
+			get_bbcode_color_tag(white)
+			+ word_label.substr(
+				next_character_index, word_label.length() - next_character_index + 1
+			)
+			+ get_bbcode_end_color_tag()
 		)
+		$WordLabelContainer/SubViewport/RichTextLabel.parse_bbcode(
+			set_center_tags(green_text + white_text)
+		)
+	else:
+		var default_text = (
+			get_bbcode_color_tag(white)
+			+ word_label.substr(0, word_label.length())
+			+ get_bbcode_end_color_tag()
+		)
+		$WordLabelContainer/SubViewport/RichTextLabel.parse_bbcode(set_center_tags(default_text))
+
+
+func get_active_word_label_string_size(s: String):
+	return (
+		(
+			$WordLabelContainer/SubViewport/RichTextLabel
+			. get_theme_font("normal_font")
+			. get_string_size(
+				s,
+				$WordLabelContainer/SubViewport/RichTextLabel.get_theme_font_size(
+					"normal_font_size"
+				),
+			)
+			. x
+		)
+		* 4
+	)
+
+
+func get_bbcode_color_tag(color: Color) -> String:
+	return "[color=#" + color.to_html(false) + "]"
+
+
+func get_bbcode_end_color_tag() -> String:
+	return "[/color]"
+
+
+func set_center_tags(string_to_center: String):
+	return "[center]" + string_to_center + "[/center]"
 
 
 func move_to_player(amount, game_started: bool, player: CharacterBody3D):
 	player_node = player
 	player_position = player_node.position
-#	$WordLabelContainer.scale.x = global_position.distance_to(player_position) / 20
-#	$WordLabelContainer.scale.y = global_position.distance_to(player_position) / 20
 	velocity = Vector3.ZERO
 
 	match state_machine.get_current_node():
@@ -103,6 +120,25 @@ func move_to_player(amount, game_started: bool, player: CharacterBody3D):
 				),
 				Vector3.UP
 			)
+			if Engine.get_process_frames() % 40 == 0:
+				$WordLabelContainer/SubViewport/RichTextLabel.add_theme_font_size_override(
+					"normal_font_size",
+					(
+						$WordLabelContainer/SubViewport/RichTextLabel.get_theme_font_size(
+							"normal_font_size"
+						)
+						- 1
+					)
+				)
+				$WordLabelContainer/SubViewport.size = Vector2i(
+					$WordLabelContainer/SubViewport.size.x - 1,
+					$WordLabelContainer/SubViewport.size.y
+				)
+			if Engine.get_process_frames() % 80 == 0:
+				$WordLabelContainer/SubViewport.size = Vector2i(
+					$WordLabelContainer/SubViewport.size.x,
+					$WordLabelContainer/SubViewport.size.y - 1
+				)
 		"Attack":
 			look_at(Vector3(player_position.x, 0.5, player_position.z), Vector3.UP)
 		"Death":
