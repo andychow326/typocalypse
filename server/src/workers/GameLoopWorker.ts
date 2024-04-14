@@ -46,6 +46,8 @@ class GameLoopWorker {
 
   private onTerminate?: () => void;
 
+  private clientReadyMap: Record<string, boolean>;
+
   constructor(roomId: string, options?: GameLoopWorkerOptions) {
     this.roomId = roomId;
     this.redis = options?.redis ?? getRedisConnection();
@@ -54,9 +56,18 @@ class GameLoopWorker {
     this.gameService = options?.gameService ?? new GameService(this.redis);
     this.roomService = options?.roomService ?? new RoomService(this.redis);
     this.onTerminate = options?.onTerminate;
+    this.clientReadyMap = {};
   }
 
-  async onMessage(userId: string, message: GameMessageFromClient) {}
+  onClientReady(userId: string) {
+    this.clientReadyMap[userId] = true;
+  }
+
+  async onMessage(userId: string, message: GameMessageFromClient) {
+    if (message.event === "ready") {
+      this.onClientReady(userId);
+    }
+  }
 
   async getRoom(): Promise<RoomInGame> {
     const room = await this.roomService.getRoomStatus(this.roomId);
@@ -133,6 +144,39 @@ class GameLoopWorker {
 
   async gameLoop(_deltaTime: number) {}
 
+  async checkClientReady() {
+    const room = await this.getRoom();
+    this.currentRoomData = room;
+
+    const ready = Object.entries(this.currentRoomData.users)
+      .filter(([userId, _]) => this.clientReadyMap[userId])
+      .map(([_, user]) => user);
+    const notReady = Object.entries(this.currentRoomData.users)
+      .filter(([userId, _]) => !this.clientReadyMap[userId])
+      .map(([_, user]) => user);
+
+    if (notReady.length > 0) {
+      const message: GameMessageFromWorker = {
+        event: "waitingClientGameWorldReady",
+        data: { ready, notReady }
+      };
+      await this.publishGameMessage(message);
+      return false;
+    }
+    return true;
+  }
+
+  async beforeStartRound() {
+    let readyToStart = false;
+    while (!readyToStart) {
+      await delay(500);
+      const clientReady = await this.checkClientReady();
+      readyToStart = clientReady;
+    }
+    await delay(3000);
+    this.startRound();
+  }
+
   startRound() {
     this.clock.start();
     this.setSimulationInterval(this.gameLoop.bind(this));
@@ -153,8 +197,7 @@ class GameLoopWorker {
       }
     };
     await this.publishGameMessage(startGameMessage);
-    await delay(3000);
-    this.startRound();
+    await this.beforeStartRound();
   }
 
   terminate() {
