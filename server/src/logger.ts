@@ -7,9 +7,9 @@ export function getLogger(name: string): Logger {
   const logger = pino(
     {
       name,
-      level: LOG_LEVEL,
+      level: LOG_LEVEL
     },
-    stream,
+    stream
   );
   return logger;
 }

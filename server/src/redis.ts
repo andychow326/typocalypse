@@ -12,7 +12,7 @@ export enum RedisBucketKey {
   room = "room",
   roomsWaiting = "rooms:waiting",
   roomsInGame = "rooms:in-game",
-  inputHistory = "input-history",
+  inputHistory = "input-history"
 }
 
 export function getRedisBucketKey(

@@ -9,41 +9,41 @@ export const GameMessageFromClientSchema = t.Union([
   t.Object({
     event: t.Union([t.Literal("renewSession"), t.Literal("validSession")]),
     data: t.Object({
-      sessionId: t.String(),
-    }),
+      sessionId: t.String()
+    })
   }),
   t.Object({
     event: t.Union([t.Literal("createRoom"), t.Literal("quickPlay")]),
     data: t.Object({
-      name: t.String(),
-    }),
+      name: t.String()
+    })
   }),
   t.Object({
     event: t.Literal("joinRoom"),
     data: t.Object({
       name: t.String(),
-      roomId: t.String(),
-    }),
+      roomId: t.String()
+    })
   }),
   t.Object({
-    event: t.Literal("getWaitingRooms"),
+    event: t.Literal("getWaitingRooms")
   }),
   t.Object({
     event: t.Union([
       t.Literal("leaveRoom"),
       t.Literal("getRoomStatus"),
-      t.Literal("startGame"),
+      t.Literal("startGame")
     ]),
     data: t.Object({
-      roomId: t.String(),
-    }),
+      roomId: t.String()
+    })
   }),
   t.Object({
     event: t.Literal("input"),
     data: t.Object({
-      key: t.String(),
-    }),
-  }),
+      key: t.String()
+    })
+  })
 ]);
 export type GameMessageFromClient = Static<typeof GameMessageFromClientSchema>;
 
@@ -95,23 +95,23 @@ export type Room = RoomWaiting | RoomInGame;
 export type GameMessageFromServer = (
   | GameMessageFromClient
   | {
-    event: "createRoom";
-    data: {
-      roomId: string;
-    };
-  }
+      event: "createRoom";
+      data: {
+        roomId: string;
+      };
+    }
   | {
-    event: "getWaitingRooms";
-    data: {
-      rooms: Room[];
-    };
-  }
+      event: "getWaitingRooms";
+      data: {
+        rooms: Room[];
+      };
+    }
   | {
-    event: "getRoomStatus";
-    data: {
-      room: Room;
-    };
-  }
+      event: "getRoomStatus";
+      data: {
+        room: Room;
+      };
+    }
 ) & {
   user: User;
 };
@@ -119,15 +119,15 @@ export type GameMessageFromServer = (
 export type GameMessageFromWorker =
   | { event: "ping" }
   | {
-    event: "startGame";
-    data: {
-      room: Room;
-    };
-  }
+      event: "startGame";
+      data: {
+        room: Room;
+      };
+    }
   | {
-    event: "remainingTime";
-    data: {
-      type: "waitForRoundStart" | "round";
-      remainingTime: number;
+      event: "remainingTime";
+      data: {
+        type: "waitForRoundStart" | "round";
+        remainingTime: number;
+      };
     };
-  };

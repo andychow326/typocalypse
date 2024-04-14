@@ -4,8 +4,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
-    "eslint": "eslint ./src/**/*.ts",
-    "format": "prettier --list-different --write ./src/**/*.ts"
+    "eslint": "eslint .",
+    "format": "prettier --list-different --write ."
   },
   "dependencies": {
     "@gamestdio/timer": "1.4.1",
