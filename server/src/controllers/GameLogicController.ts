@@ -27,12 +27,15 @@ class GameLogicController {
 
   private gameService: GameService;
 
+  private activeWorkerMap: Record<string, GameLoopWorker>;
+
   constructor() {
     this.redis = getRedisConnection();
     this.pubsubService = new PubSubService();
     this.userService = new UserService(this.redis);
     this.roomService = new RoomService(this.redis);
     this.gameService = new GameService(this.redis);
+    this.activeWorkerMap = {};
   }
 
   gameMessageToString(message: GameMessageFromServer): string {
@@ -246,8 +249,12 @@ class GameLogicController {
       redis: this.redis,
       pubsubService: this.pubsubService,
       gameService: this.gameService,
-      roomService: this.roomService
+      roomService: this.roomService,
+      onTerminate: () => {
+        delete this.activeWorkerMap[roomId];
+      }
     });
+    this.activeWorkerMap[roomId] = worker;
     worker.start();
     logger.info({ userId, roomId }, "instantiate new game loop worker");
   }

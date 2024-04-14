@@ -20,6 +20,7 @@ interface GameLoopWorkerOptions {
   pubsubService?: PubSubService;
   gameService?: GameService;
   roomService?: RoomService;
+  onTerminate?: () => void;
 }
 
 class GameLoopWorker {
@@ -39,6 +40,8 @@ class GameLoopWorker {
 
   private roomService: RoomService;
 
+  private onTerminate?: () => void;
+
   constructor(roomId: string, options?: GameLoopWorkerOptions) {
     this.roomId = roomId;
     this.redis = options?.redis ?? getRedisConnection();
@@ -46,6 +49,7 @@ class GameLoopWorker {
     this.pubsubService = options?.pubsubService ?? new PubSubService();
     this.gameService = options?.gameService ?? new GameService(this.redis);
     this.roomService = options?.roomService ?? new RoomService(this.redis);
+    this.onTerminate = options?.onTerminate;
   }
 
   async getRoom(): Promise<RoomInGame> {
@@ -152,6 +156,7 @@ class GameLoopWorker {
     this.clock.clear();
     clearInterval(this.simulationInterval);
 
+    this.onTerminate?.();
     logger.info({ roomId: this.roomId }, "game loop worker closed");
   }
 }
