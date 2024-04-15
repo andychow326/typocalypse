@@ -37,7 +37,6 @@ offset_right = 77.0
 offset_bottom = 41.0
 theme_override_fonts/font = ExtResource("1_emsti")
 theme_override_font_sizes/font_size = 24
-text = "numb"
 vertical_alignment = 1
 
 [node name="PlayerName" type="Label" parent="Background"]
@@ -48,8 +47,6 @@ offset_right = 189.0
 offset_bottom = 42.0
 theme_override_fonts/font = ExtResource("1_emsti")
 theme_override_font_sizes/font_size = 24
-text = "name
-"
 horizontal_alignment = 2
 vertical_alignment = 1
 
