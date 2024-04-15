@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cbq3sws0ryo0y"]
+[gd_scene load_steps=8 format=3 uid="uid://cbq3sws0ryo0y"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_ewlrn"]
 [ext_resource type="PackedScene" uid="uid://bxqu51ckbq1cb" path="res://scenes/world/world.tscn" id="3_5elts"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dp1jlktbv8ml5" path="res://scenes/world/player.tscn" id="4_igpmj"]
 [ext_resource type="PackedScene" uid="uid://kspnqxcg2srx" path="res://scenes/world/zombie.tscn" id="5_sjskl"]
 [ext_resource type="PackedScene" uid="uid://dps31u17h64m5" path="res://scenes/error/error_dialog_container.tscn" id="6_quks0"]
+[ext_resource type="PackedScene" uid="uid://d4a0d53j508v3" path="res://scenes/modal/modal_container.tscn" id="7_u6qk2"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_ewlrn")
@@ -17,3 +18,10 @@ player_scene = ExtResource("4_igpmj")
 zombie_scene = ExtResource("5_sjskl")
 
 [node name="ErrorDialogContainer" parent="." instance=ExtResource("6_quks0")]
+
+[node name="ModalContainer" parent="." instance=ExtResource("7_u6qk2")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5

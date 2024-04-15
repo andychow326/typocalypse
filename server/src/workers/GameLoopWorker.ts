@@ -145,8 +145,12 @@ class GameLoopWorker {
   async gameLoop(_deltaTime: number) {}
 
   async checkClientReady() {
-    const room = await this.getRoom();
-    this.currentRoomData = room;
+    try {
+      const room = await this.getRoom();
+      this.currentRoomData = room;
+    } catch (error) {
+      return Promise.reject(error);
+    }
 
     const ready = Object.entries(this.currentRoomData.users)
       .filter(([userId, _]) => this.clientReadyMap[userId])
@@ -155,12 +159,13 @@ class GameLoopWorker {
       .filter(([userId, _]) => !this.clientReadyMap[userId])
       .map(([_, user]) => user);
 
+    const message: GameMessageFromWorker = {
+      event: "waitingClientGameWorldReady",
+      data: { ready, notReady }
+    };
+    await this.publishGameMessage(message);
+
     if (notReady.length > 0) {
-      const message: GameMessageFromWorker = {
-        event: "waitingClientGameWorldReady",
-        data: { ready, notReady }
-      };
-      await this.publishGameMessage(message);
       return false;
     }
     return true;
@@ -169,12 +174,25 @@ class GameLoopWorker {
   async beforeStartRound() {
     let readyToStart = false;
     while (!readyToStart) {
-      await delay(500);
-      const clientReady = await this.checkClientReady();
-      readyToStart = clientReady;
+      try {
+        await delay(500);
+        const clientReady = await this.checkClientReady();
+        readyToStart = clientReady;
+      } catch (error) {
+        return Promise.reject(error);
+      }
     }
+
+    await delay(1000);
+    const message: GameMessageFromWorker = {
+      event: "startRound",
+      data: { room: this.currentRoomData }
+    };
+    await this.publishGameMessage(message);
+
     await delay(3000);
     this.startRound();
+    return undefined;
   }
 
   startRound() {
@@ -186,18 +204,21 @@ class GameLoopWorker {
   }
 
   async start() {
-    await this.gameService.initializeGameRound(this.roomId);
-    const room = await this.getRoom();
-    this.currentRoomData = room;
-
-    const startGameMessage: GameMessageFromWorker = {
-      event: "startGame",
-      data: {
-        room
-      }
-    };
-    await this.publishGameMessage(startGameMessage);
-    await this.beforeStartRound();
+    try {
+      await this.gameService.initializeGameRound(this.roomId);
+      const room = await this.getRoom();
+      this.currentRoomData = room;
+      const startGameMessage: GameMessageFromWorker = {
+        event: "startGame",
+        data: {
+          room
+        }
+      };
+      await this.publishGameMessage(startGameMessage);
+      await this.beforeStartRound();
+    } catch (error) {
+      this.terminate();
+    }
   }
 
   terminate() {
