@@ -1,0 +1,82 @@
+[gd_scene load_steps=6 format=3 uid="uid://c137p1ydxbfg0"]
+
+[ext_resource type="Script" path="res://scripts/menus/invite_landing_menu.gd" id="1_1ywvj"]
+[ext_resource type="StyleBox" uid="uid://sh13v0iog1jv" path="res://assets/main_menu/panel_container.tres" id="1_8du2r"]
+[ext_resource type="FontFile" uid="uid://c1kbjeg1wo7ec" path="res://assets/font/pixelated.ttf" id="2_tcsy8"]
+[ext_resource type="Theme" uid="uid://bcxinudc32lvt" path="res://assets/main_menu/button.tres" id="3_fg21y"]
+[ext_resource type="Texture2D" uid="uid://h0x34d23k63d" path="res://assets/main_menu/arrow_left_solid.svg" id="3_w21wh"]
+
+[node name="InviteLandingMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1ywvj")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+top_level = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -143.0
+offset_top = -138.0
+offset_right = 143.0
+offset_bottom = 138.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="BackButton" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(60, 30)
+layout_mode = 2
+size_flags_horizontal = 0
+theme = ExtResource("3_fg21y")
+text = "Back"
+icon = ExtResource("3_w21wh")
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(286, 250)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("1_8du2r")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="RoomIdDisplay" type="LineEdit" parent="VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_tcsy8")
+theme_override_font_sizes/font_size = 20
+editable = false
+
+[node name="PlayerNameLineEdit" type="LineEdit" parent="VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_tcsy8")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Enter your name"
+
+[node name="QuickPlayButton" type="Button" parent="VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme = ExtResource("3_fg21y")
+theme_override_font_sizes/font_size = 26
+text = "QUICK PLAY"
+
+[connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="text_changed" from="VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/PlayerNameLineEdit" to="." method="_on_player_name_line_edit_text_changed"]
+[connection signal="pressed" from="VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/QuickPlayButton" to="." method="_on_quick_play_button_pressed"]

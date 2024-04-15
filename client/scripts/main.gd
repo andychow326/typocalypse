@@ -70,5 +70,9 @@ func _on_web_socket_client_message_received(message):
 			$LobbyMenu/OnBoardingMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerNameLineEdit.text = (
 				message.user.name
 			)
+			# gdlint: ignore=max-line-length
+			$LobbyMenu/InviteLandingMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/PlayerNameLineEdit.text = (
+				message.user.name
+			)
 		"startGame":
 			state = STATE.GAME_WORLD
