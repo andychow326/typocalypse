@@ -160,4 +160,4 @@ func _target_in_range(target_position: Vector3):
 
 
 func _hit_finished():
-	player_node.hit()
+	player_node.hit(target_player_id)

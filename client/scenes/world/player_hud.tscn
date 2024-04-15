@@ -1,0 +1,83 @@
+[gd_scene load_steps=4 format=3 uid="uid://p2jud0u64ija"]
+
+[ext_resource type="Script" path="res://scripts/world/player_hud.gd" id="1_4dap5"]
+[ext_resource type="FontFile" uid="uid://c1kbjeg1wo7ec" path="res://assets/font/pixelated.ttf" id="1_emsti"]
+[ext_resource type="Texture2D" uid="uid://b083ai1vm5x1t" path="res://assets/hud/heart_full.png" id="2_iqygs"]
+
+[node name="PlayerHUD" type="Control"]
+custom_minimum_size = Vector2(200, 80)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 80.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_4dap5")
+
+[node name="Background" type="Panel" parent="."]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -40.0
+offset_right = 100.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerNumber" type="Label" parent="Background"]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 11.0
+offset_right = 77.0
+offset_bottom = 41.0
+theme_override_fonts/font = ExtResource("1_emsti")
+theme_override_font_sizes/font_size = 24
+vertical_alignment = 1
+
+[node name="PlayerName" type="Label" parent="Background"]
+layout_mode = 0
+offset_left = 74.0
+offset_top = 12.0
+offset_right = 189.0
+offset_bottom = 42.0
+theme_override_fonts/font = ExtResource("1_emsti")
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HealthBar" type="HBoxContainer" parent="Background"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 47.0
+offset_right = 176.0
+offset_bottom = 69.0
+
+[node name="Heart1" type="TextureRect" parent="Background/HealthBar"]
+layout_mode = 2
+texture = ExtResource("2_iqygs")
+expand_mode = 2
+
+[node name="Heart2" type="TextureRect" parent="Background/HealthBar"]
+layout_mode = 2
+texture = ExtResource("2_iqygs")
+expand_mode = 2
+
+[node name="Heart3" type="TextureRect" parent="Background/HealthBar"]
+layout_mode = 2
+texture = ExtResource("2_iqygs")
+expand_mode = 2
+
+[node name="Heart4" type="TextureRect" parent="Background/HealthBar"]
+layout_mode = 2
+texture = ExtResource("2_iqygs")
+expand_mode = 2
+
+[node name="Heart5" type="TextureRect" parent="Background/HealthBar"]
+layout_mode = 2
+texture = ExtResource("2_iqygs")
+expand_mode = 2
