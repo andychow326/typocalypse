@@ -230,7 +230,10 @@ func _physics_process(delta):
 				break
 
 
-func _on_player_hit():
+func _on_player_hit(player_id: String):
 	$UI/HitRect.visible = true
+	for child in $HUDContainer.get_children():
+		if child.player_id == player_id:
+			child.minus_health()
 	await get_tree().create_timer(0.1).timeout
 	$UI/HitRect.visible = false

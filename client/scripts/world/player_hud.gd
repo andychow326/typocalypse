@@ -17,10 +17,24 @@ func set_info(user_id, username: String, number):
 	$Background/PlayerNumber.text = player_number
 
 
-func update_health():
-	health -= 1
+func get_health():
+	#Fetch health from worker code to be added
+	return health
+
+
+func update_health(health):
 	for i in $Background/HealthBar.get_child_count():
 		if health > i:
 			$Background/HealthBar.get_child(i).texture = heart_full
 		else:
 			$Background/HealthBar.get_child(i).texture = heart_empty
+
+
+func minus_health():
+	var health = get_health()
+	update_health(health - 1)
+
+
+func add_health():
+	var health = get_health()
+	update_health(health + 1)
