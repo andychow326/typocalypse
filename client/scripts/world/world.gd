@@ -4,6 +4,7 @@ const Trie = preload("res://scripts/trie.gd")
 
 @export var player_scene: PackedScene
 @export var zombie_scene: PackedScene
+@export var player_hud_scene: PackedScene
 
 var player_positions = [
 	Vector3(-1.5, 0, 16),
@@ -48,10 +49,9 @@ func _on_web_socket_client_message_received(message):
 				$RemainingTimeLabel.text = "%.1f" % (float(message.data.remainingTime) / 1000)
 		"startGame":
 			reset_player_container()
-
+			reset_hud_container()
 			var words: Array = []
 			for zombie in message.data.room.zombies:
-				print(zombie)
 				var zombie_node = zombie_scene.instantiate()
 				zombie_node.position = Vector3(
 					zombie.position.x, zombie.position.y, zombie.position.z
@@ -89,6 +89,13 @@ func _on_web_socket_client_message_received(message):
 				player_node.from_dict(user)
 				player_node.player_hit.connect(_on_player_hit)
 				$PlayerContainer.add_child(player_node)
+
+				#Generate HUD
+				var main_hud = $HUDContainer
+				var player_hud = player_hud_scene.instantiate()
+				player_hud.set_info(user.id, user.name, position_index + 1)
+				main_hud.add_child(player_hud)
+
 				position_index += 1
 
 			$RoundStartLabel.text = "READY"
@@ -107,6 +114,13 @@ func reset_zombie_container():
 	for child in children:
 		child.queue_free()
 		$ZombieContainer.remove_child(child)
+
+
+func reset_hud_container():
+	var main_player_hud = $HUDContainer.get_children()
+	for hud in main_player_hud:
+		hud.queue_free()
+		$HUDContainer.remove_child(hud)
 
 
 func _on_visibility_changed():
