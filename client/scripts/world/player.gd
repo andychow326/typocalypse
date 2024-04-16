@@ -38,5 +38,5 @@ func _input(event):
 		DataStore.web_socket_client.send({"event": "input", "data": {"key": key_label}})
 
 
-func hit():
-	emit_signal("player_hit")
+func hit(target_player_id: String):
+	emit_signal("player_hit", target_player_id)

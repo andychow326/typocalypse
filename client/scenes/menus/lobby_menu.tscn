@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://dhje63qf4sssv"]
+[gd_scene load_steps=8 format=3 uid="uid://dhje63qf4sssv"]
 
 [ext_resource type="PackedScene" uid="uid://ca2k5fkwnlvdr" path="res://scenes/menus/on_boarding_menu.tscn" id="1_nnccw"]
 [ext_resource type="Script" path="res://scripts/menus/lobby_menu.gd" id="1_v5t1r"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bnadp5oi0dvsy" path="res://scenes/menus/waiting_room_menu.tscn" id="4_modle"]
 [ext_resource type="PackedScene" uid="uid://ccaf1462sygk1" path="res://scenes/menus/waiting_room_player.tscn" id="5_1mxpy"]
 [ext_resource type="Texture2D" uid="uid://bksarlftryajo" path="res://assets/main_menu/menu_background.png" id="6_0atu1"]
+[ext_resource type="PackedScene" uid="uid://c137p1ydxbfg0" path="res://scenes/menus/invite_landing_menu.tscn" id="6_tw663"]
 
 [node name="LobbyMenu" type="Control"]
 layout_mode = 3
@@ -26,6 +27,13 @@ layout_mode = 1
 layout_mode = 1
 player_scene = ExtResource("5_1mxpy")
 
+[node name="InviteLandingMenu" parent="." instance=ExtResource("6_tw663")]
+layout_mode = 1
+offset_left = 512.0
+offset_top = 384.0
+offset_right = -512.0
+offset_bottom = -384.0
+
 [node name="MenuBackground" type="Sprite2D" parent="."]
 show_behind_parent = true
 scale = Vector2(1.42618, 1.43017)
@@ -34,6 +42,9 @@ centered = false
 
 [connection signal="create_room_button_pressed" from="OnBoardingMenu" to="." method="_on_on_boarding_menu_create_room_button_pressed"]
 [connection signal="join_room_button_pressed" from="OnBoardingMenu" to="." method="_on_on_boarding_menu_join_room_button_pressed"]
+[connection signal="player_name_changed" from="OnBoardingMenu" to="." method="_on_player_name_changed"]
 [connection signal="quick_play_button_pressed" from="OnBoardingMenu" to="." method="_on_on_boarding_menu_quick_play_button_pressed"]
 [connection signal="back_button_pressed" from="RoomListMenu" to="." method="_on_room_list_menu_back_button_pressed"]
 [connection signal="back_button_pressed" from="WaitingRoomMenu" to="." method="_on_waiting_room_menu_back_button_pressed"]
+[connection signal="back_button_pressed" from="InviteLandingMenu" to="." method="_on_invite_landing_menu_back_button_pressed"]
+[connection signal="player_name_changed" from="InviteLandingMenu" to="." method="_on_player_name_changed"]

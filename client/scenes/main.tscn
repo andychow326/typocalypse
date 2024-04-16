@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://kspnqxcg2srx" path="res://scenes/world/zombie.tscn" id="5_sjskl"]
 [ext_resource type="PackedScene" uid="uid://dps31u17h64m5" path="res://scenes/error/error_dialog_container.tscn" id="6_quks0"]
 [ext_resource type="PackedScene" uid="uid://d4a0d53j508v3" path="res://scenes/modal/modal_container.tscn" id="7_u6qk2"]
+[ext_resource type="PackedScene" uid="uid://p2jud0u64ija" path="res://scenes/world/player_hud.tscn" id="6_wog2a"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_ewlrn")
@@ -16,6 +17,7 @@ script = ExtResource("1_ewlrn")
 [node name="World" parent="." instance=ExtResource("3_5elts")]
 player_scene = ExtResource("4_igpmj")
 zombie_scene = ExtResource("5_sjskl")
+player_hud_scene = ExtResource("6_wog2a")
 
 [node name="ErrorDialogContainer" parent="." instance=ExtResource("6_quks0")]
 

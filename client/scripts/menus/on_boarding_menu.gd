@@ -3,6 +3,11 @@ extends Control
 signal quick_play_button_pressed
 signal create_room_button_pressed
 signal join_room_button_pressed
+signal player_name_changed
+
+
+func set_info(player_name):
+	$PanelContainer/MarginContainer/VBoxContainer/PlayerNameLineEdit.text = player_name
 
 
 func _on_quick_play_button_pressed():
@@ -18,4 +23,4 @@ func _on_join_room_button_pressed():
 
 
 func _on_player_name_line_edit_text_changed(new_text):
-	DataStore.player_name = new_text
+	player_name_changed.emit(new_text)
