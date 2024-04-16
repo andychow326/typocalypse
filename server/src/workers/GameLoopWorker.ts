@@ -4,7 +4,11 @@ import PubSubService from "../services/PubSubService";
 import GameService from "../services/GameService";
 import RoomService from "../services/RoomService";
 import { getRedisConnection } from "../redis";
-import { GameMessageFromWorker, RoomInGame } from "../types";
+import {
+  GameMessageFromClient,
+  GameMessageFromWorker,
+  RoomInGame
+} from "../types";
 import { RoomNotFoundError } from "../errors";
 import { getLogger } from "../logger";
 import { delay } from "../utils/promise";
@@ -20,6 +24,7 @@ interface GameLoopWorkerOptions {
   pubsubService?: PubSubService;
   gameService?: GameService;
   roomService?: RoomService;
+  onTerminate?: () => void;
 }
 
 class GameLoopWorker {
@@ -39,6 +44,10 @@ class GameLoopWorker {
 
   private roomService: RoomService;
 
+  private onTerminate?: () => void;
+
+  private clientReadyMap: Record<string, boolean>;
+
   constructor(roomId: string, options?: GameLoopWorkerOptions) {
     this.roomId = roomId;
     this.redis = options?.redis ?? getRedisConnection();
@@ -46,6 +55,18 @@ class GameLoopWorker {
     this.pubsubService = options?.pubsubService ?? new PubSubService();
     this.gameService = options?.gameService ?? new GameService(this.redis);
     this.roomService = options?.roomService ?? new RoomService(this.redis);
+    this.onTerminate = options?.onTerminate;
+    this.clientReadyMap = {};
+  }
+
+  onClientReady(userId: string) {
+    this.clientReadyMap[userId] = true;
+  }
+
+  async onMessage(userId: string, message: GameMessageFromClient) {
+    if (message.event === "ready") {
+      this.onClientReady(userId);
+    }
   }
 
   async getRoom(): Promise<RoomInGame> {
@@ -123,6 +144,57 @@ class GameLoopWorker {
 
   async gameLoop(_deltaTime: number) {}
 
+  async checkClientReady() {
+    try {
+      const room = await this.getRoom();
+      this.currentRoomData = room;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+
+    const ready = Object.entries(this.currentRoomData.users)
+      .filter(([userId, _]) => this.clientReadyMap[userId])
+      .map(([_, user]) => user);
+    const notReady = Object.entries(this.currentRoomData.users)
+      .filter(([userId, _]) => !this.clientReadyMap[userId])
+      .map(([_, user]) => user);
+
+    const message: GameMessageFromWorker = {
+      event: "waitingClientGameWorldReady",
+      data: { ready, notReady }
+    };
+    await this.publishGameMessage(message);
+
+    if (notReady.length > 0) {
+      return false;
+    }
+    return true;
+  }
+
+  async beforeStartRound() {
+    let readyToStart = false;
+    while (!readyToStart) {
+      try {
+        await delay(500);
+        const clientReady = await this.checkClientReady();
+        readyToStart = clientReady;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    }
+
+    await delay(1000);
+    const message: GameMessageFromWorker = {
+      event: "startRound",
+      data: { room: this.currentRoomData }
+    };
+    await this.publishGameMessage(message);
+
+    await delay(3000);
+    this.startRound();
+    return undefined;
+  }
+
   startRound() {
     this.clock.start();
     this.setSimulationInterval(this.gameLoop.bind(this));
@@ -132,19 +204,21 @@ class GameLoopWorker {
   }
 
   async start() {
-    await this.gameService.initializeGameRound(this.roomId);
-    const room = await this.getRoom();
-    this.currentRoomData = room;
-
-    const startGameMessage: GameMessageFromWorker = {
-      event: "startGame",
-      data: {
-        room
-      }
-    };
-    await this.publishGameMessage(startGameMessage);
-    await delay(3000);
-    this.startRound();
+    try {
+      await this.gameService.initializeGameRound(this.roomId);
+      const room = await this.getRoom();
+      this.currentRoomData = room;
+      const startGameMessage: GameMessageFromWorker = {
+        event: "startGame",
+        data: {
+          room
+        }
+      };
+      await this.publishGameMessage(startGameMessage);
+      await this.beforeStartRound();
+    } catch (error) {
+      this.terminate();
+    }
   }
 
   terminate() {
@@ -152,6 +226,7 @@ class GameLoopWorker {
     this.clock.clear();
     clearInterval(this.simulationInterval);
 
+    this.onTerminate?.();
     logger.info({ roomId: this.roomId }, "game loop worker closed");
   }
 }

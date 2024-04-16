@@ -27,12 +27,15 @@ class GameLogicController {
 
   private gameService: GameService;
 
+  private activeWorkerMap: Record<string, GameLoopWorker>;
+
   constructor() {
     this.redis = getRedisConnection();
     this.pubsubService = new PubSubService();
     this.userService = new UserService(this.redis);
     this.roomService = new RoomService(this.redis);
     this.gameService = new GameService(this.redis);
+    this.activeWorkerMap = {};
   }
 
   gameMessageToString(message: GameMessageFromServer): string {
@@ -246,8 +249,12 @@ class GameLogicController {
       redis: this.redis,
       pubsubService: this.pubsubService,
       gameService: this.gameService,
-      roomService: this.roomService
+      roomService: this.roomService,
+      onTerminate: () => {
+        delete this.activeWorkerMap[roomId];
+      }
     });
+    this.activeWorkerMap[roomId] = worker;
     worker.start();
     logger.info({ userId, roomId }, "instantiate new game loop worker");
   }
@@ -266,6 +273,20 @@ class GameLogicController {
     }
     await this.gameService.handleGameInput(userId, user.room, input);
     await this.publishGameMessage(userId, user.room, message);
+  }
+
+  async onWorkerHandledEvent(userId: string, message: GameMessageFromClient) {
+    const user = await this.userService.getUserByUserId(userId);
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+    if (user.room == null) {
+      throw new RoomNotFoundError(user.room ?? "");
+    }
+    if (user.room in this.activeWorkerMap) {
+      const worker = this.activeWorkerMap[user.room];
+      worker.onMessage(userId, message);
+    }
   }
 
   async onPlayerMessage(
@@ -329,6 +350,9 @@ class GameLogicController {
     if (message.event === "input") {
       await this.onPlayerInput(userId, message.data.key, message);
     }
+
+    // Fallback as worker handled events
+    await this.onWorkerHandledEvent(userId, message);
   }
 }
 

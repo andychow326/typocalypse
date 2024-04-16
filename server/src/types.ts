@@ -32,7 +32,8 @@ export const GameMessageFromClientSchema = t.Union([
     event: t.Union([
       t.Literal("leaveRoom"),
       t.Literal("getRoomStatus"),
-      t.Literal("startGame")
+      t.Literal("startGame"),
+      t.Literal("ready")
     ]),
     data: t.Object({
       roomId: t.String()
@@ -119,7 +120,7 @@ export type GameMessageFromServer = (
 export type GameMessageFromWorker =
   | { event: "ping" }
   | {
-      event: "startGame";
+      event: "startGame" | "startRound";
       data: {
         room: Room;
       };
@@ -129,5 +130,12 @@ export type GameMessageFromWorker =
       data: {
         type: "waitForRoundStart" | "round";
         remainingTime: number;
+      };
+    }
+  | {
+      event: "waitingClientGameWorldReady";
+      data: {
+        ready: User[];
+        notReady: User[];
       };
     };

@@ -125,6 +125,7 @@ func reset_hud_container():
 
 func _on_visibility_changed():
 	if visible:
+		DataStore.web_socket_client.send({"event": "ready", "data": {"roomId": DataStore.room_id}})
 		$RoundStartLabel.visible = true
 		$RemainingTimeLabel.visible = false
 
