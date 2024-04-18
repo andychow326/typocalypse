@@ -42,7 +42,6 @@ centered = false
 
 [connection signal="create_room_button_pressed" from="OnBoardingMenu" to="." method="_on_on_boarding_menu_create_room_button_pressed"]
 [connection signal="join_room_button_pressed" from="OnBoardingMenu" to="." method="_on_on_boarding_menu_join_room_button_pressed"]
-[connection signal="player_name_changed" from="OnBoardingMenu" to="." method="_on_player_name_changed"]
 [connection signal="quick_play_button_pressed" from="OnBoardingMenu" to="." method="_on_on_boarding_menu_quick_play_button_pressed"]
 [connection signal="back_button_pressed" from="RoomListMenu" to="." method="_on_room_list_menu_back_button_pressed"]
 [connection signal="back_button_pressed" from="WaitingRoomMenu" to="." method="_on_waiting_room_menu_back_button_pressed"]
