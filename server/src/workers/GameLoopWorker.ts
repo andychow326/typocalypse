@@ -19,6 +19,14 @@ const DEFAULT_SIMULATION_INTERVAL = 1000 / 60; // 60fps (16.66ms)
 
 type SimulationCallback = (deltaTime: number) => Promise<void>;
 
+interface ClientState {
+  ready: boolean;
+}
+
+const INITIAL_CLIENT_STATE: ClientState = {
+  ready: false
+};
+
 interface GameLoopWorkerOptions {
   redis?: Redis;
   pubsubService?: PubSubService;
@@ -46,7 +54,7 @@ class GameLoopWorker {
 
   private onTerminate?: () => void;
 
-  private clientReadyMap: Record<string, boolean>;
+  private clientStateMap: Record<string, ClientState>;
 
   constructor(roomId: string, options?: GameLoopWorkerOptions) {
     this.roomId = roomId;
@@ -56,11 +64,11 @@ class GameLoopWorker {
     this.gameService = options?.gameService ?? new GameService(this.redis);
     this.roomService = options?.roomService ?? new RoomService(this.redis);
     this.onTerminate = options?.onTerminate;
-    this.clientReadyMap = {};
+    this.clientStateMap = {};
   }
 
   onClientReady(userId: string) {
-    this.clientReadyMap[userId] = true;
+    this.clientStateMap[userId].ready = true;
   }
 
   async onMessage(userId: string, message: GameMessageFromClient) {
@@ -153,10 +161,10 @@ class GameLoopWorker {
     }
 
     const ready = Object.entries(this.currentRoomData.users)
-      .filter(([userId, _]) => this.clientReadyMap[userId])
+      .filter(([userId, _]) => this.clientStateMap[userId].ready)
       .map(([_, user]) => user);
     const notReady = Object.entries(this.currentRoomData.users)
-      .filter(([userId, _]) => !this.clientReadyMap[userId])
+      .filter(([userId, _]) => !this.clientStateMap[userId].ready)
       .map(([_, user]) => user);
 
     const message: GameMessageFromWorker = {
@@ -208,6 +216,12 @@ class GameLoopWorker {
       await this.gameService.initializeGameRound(this.roomId);
       const room = await this.getRoom();
       this.currentRoomData = room;
+      this.clientStateMap = Object.fromEntries(
+        Object.entries(room.users).map(([key, _]) => [
+          key,
+          INITIAL_CLIENT_STATE
+        ])
+      );
       const startGameMessage: GameMessageFromWorker = {
         event: "startGame",
         data: {
