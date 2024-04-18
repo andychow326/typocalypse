@@ -280,10 +280,7 @@ class GameLogicController {
     if (user == null) {
       throw new UserNotFoundError(userId);
     }
-    if (user.room == null) {
-      throw new RoomNotFoundError(user.room ?? "");
-    }
-    if (user.room in this.activeWorkerMap) {
+    if (user.room != null && user.room in this.activeWorkerMap) {
       const worker = this.activeWorkerMap[user.room];
       worker.onMessage(userId, message);
     }
