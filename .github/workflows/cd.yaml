@@ -42,20 +42,38 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push client
+      - name: Build and push client (development)
+        if: github.ref_name == 'master'
         uses: docker/build-push-action@v5
         with:
           context: client
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/typocalypse-client:git-${{ github.sha }}
-      - name: Build and push server
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/typocalypse-client:dev-git-${{ github.sha }}
+      - name: Build and push client (production)
+        if: github.ref_name == 'production'
+        uses: docker/build-push-action@v5
+        with:
+          context: client
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/typocalypse-client:prod-git-${{ github.sha }}
+      - name: Build and push server (development)
+        if: github.ref_name == 'master'
         uses: docker/build-push-action@v5
         with:
           context: server
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/typocalypse-server:git-${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/typocalypse-server:dev-git-${{ github.sha }}
+      - name: Build and push server (production)
+        if: github.ref_name == 'production'
+        uses: docker/build-push-action@v5
+        with:
+          context: server
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/typocalypse-server:prod-git-${{ github.sha }}
 
   deploy:
     if: ${{ (github.ref_name == 'master' || github.ref_name == 'production') && github.event_name == 'push' }}

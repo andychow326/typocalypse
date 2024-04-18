@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: {{ .Values.client.image }}:{{ .Values.git.hash }}
+          image: {{ .Values.client.image }}:{{ .Values.environment }}-{{ .Values.git.hash }}
           resources:
             {{- .Values.client.resources | toYaml | nindent 12 }}
           ports:

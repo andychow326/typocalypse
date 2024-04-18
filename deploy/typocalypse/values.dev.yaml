@@ -1,3 +1,5 @@
+environment: dev
+
 ingress:
   class: nginx
   tlsSecretName: wildcard-typocalypse-online-tls
