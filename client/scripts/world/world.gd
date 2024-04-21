@@ -2,22 +2,19 @@ extends Node3D
 
 const Trie = preload("res://scripts/trie.gd")
 
+signal attack
+
 @export var player_scene: PackedScene
 @export var zombie_scene: PackedScene
 @export var player_hud_scene: PackedScene
 
-var player_positions = [
-	Vector3(-1.5, 0, 16),
-	Vector3(1.5, 0, 16),
-	Vector3(-3, 0, 14),
-	Vector3(3, 0, 14),
-]
 var player_id_to_player_node_id_map: Dictionary
 var player_tries: Dictionary
 var player_active_inputs: Dictionary
 var dead_zombies: Dictionary
 var last_potential_target_zombies: Dictionary
 var game_stated: bool
+var time_to_attack: int
 var bullet = load("res://scenes/world/bullet.tscn")
 
 
@@ -47,17 +44,32 @@ func _on_web_socket_client_message_received(message):
 				$RoundStartLabel.visible = false
 				$RemainingTimeLabel.visible = true
 				$RemainingTimeLabel.text = "%.1f" % (float(message.data.remainingTime) / 1000)
+		"hit":
+			if dead_zombies.has(message.data.zombieId):
+				return
+			for child in $HUDContainer.get_children():
+				if child.player_id == message.data.userId:
+					child.minus_health()
 		"startGame":
 			reset_player_container()
 			reset_hud_container()
+
 			var words: Array = []
 			for zombie in message.data.room.zombies:
+				time_to_attack = zombie.timeToAttackSeconds
 				var zombie_node = zombie_scene.instantiate()
 				zombie_node.position = Vector3(
 					zombie.position.x, zombie.position.y, zombie.position.z
 				)
-				zombie_node.from_dict({"label": zombie.word, "target_player_id": zombie.userId})
-				var word_item = {"zombie_id": len(words)}
+				zombie_node.from_dict(
+					{
+						"zombie_id": zombie.zombieId,
+						"label": zombie.word,
+						"target_player_id": zombie.userId,
+						"time_to_attack": zombie.timeToAttackSeconds
+					}
+				)
+				var word_item = {"zombie_id": zombie.zombieId}
 				word_item.merge({"userId": zombie.userId, "word": zombie.word})
 				words.append(word_item)
 				$ZombieContainer.add_child(zombie_node)
@@ -85,7 +97,7 @@ func _on_web_socket_client_message_received(message):
 				player_id_to_player_node_id_map[user.id] = position_index
 
 				var player_node = player_scene.instantiate()
-				player_node.position = player_positions[position_index]
+				player_node.position = Vector3(user.position.x, user.position.y, user.position.z)
 				player_node.from_dict(user)
 				player_node.player_hit.connect(_on_player_hit)
 				$PlayerContainer.add_child(player_node)
@@ -93,7 +105,7 @@ func _on_web_socket_client_message_received(message):
 				#Generate HUD
 				var main_hud = $HUDContainer
 				var player_hud = player_hud_scene.instantiate()
-				player_hud.set_info(user.id, user.name, position_index + 1)
+				player_hud.set_info(user.id, user.name, position_index + 1, user.health)
 				main_hud.add_child(player_hud)
 
 				position_index += 1
@@ -162,7 +174,10 @@ func on_player_inputted_key(player_id: String, key: String):
 		return
 
 	for zombie in potential_target_zombies:
-		var zombie_node = $ZombieContainer.get_child(zombie.zombie_id)
+		var zombie_node
+		for child in $ZombieContainer.get_children():
+			if child.zombie_id == zombie.zombie_id:
+				zombie_node = child
 		zombie_node.set_active(player_active_inputs[player_id])
 
 		var player_node_id = player_id_to_player_node_id_map[zombie.userId]
@@ -202,6 +217,10 @@ func on_player_inputted_key(player_id: String, key: String):
 			dead_zombies[zombie.zombie_id] = zombie
 			zombie_node.killed()
 			player_active_inputs[player_id] = ""
+			player_tries[player_id].remove_word(zombie.word)
+			await get_tree().create_timer(2).timeout
+			$ZombieContainer.remove_child(zombie_node)
+			zombie_node.queue_free()
 
 	var inactive_zombie_ids = (
 		last_potential_target_zombies[player_id]
