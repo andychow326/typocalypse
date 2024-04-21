@@ -60,6 +60,7 @@ export type RoomWord = {
 };
 
 export type RoomZombie = {
+  zombieId: string;
   userId: string;
   word: string;
   position: {
@@ -67,6 +68,7 @@ export type RoomZombie = {
     y: number;
     z: number;
   };
+  timeToAttackSeconds: number;
 };
 
 export type RoomWaiting = {

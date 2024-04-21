@@ -1,4 +1,5 @@
 import Redis from "ioredis";
+import { randomUUID } from "crypto";
 import {
   RedisBucketKey,
   getRedisBucketKey,
@@ -10,7 +11,11 @@ import {
   RoomNotFoundError,
   UserNotRoomHostError
 } from "../errors";
-import { randomWords, randomPositions } from "../utils/random";
+import {
+  randomWords,
+  randomPositions,
+  randomTimeToAttack
+} from "../utils/random";
 import { Room, RoomWord, RoomZombie } from "../types";
 import { getLogger } from "../logger";
 
@@ -44,10 +49,14 @@ class GameService {
         "gerenate room words and zombies"
       );
       words.forEach((_, i) => {
+        const zombieId = randomUUID();
+        const timeToAttack = randomTimeToAttack() + roundWaitDurationSeconds;
         roomZombies.push({
+          zombieId,
           userId,
           word: words[i],
-          position: positions[i]
+          position: positions[i],
+          timeToAttackSeconds: timeToAttack
         });
       });
 
