@@ -283,11 +283,14 @@ class GameLoopWorker {
       this.clientStateMap = Object.fromEntries(
         Object.entries(room.users).map(([key, _]) => [
           key,
-          INITIAL_CLIENT_STATE
+          { ...INITIAL_CLIENT_STATE }
         ])
       );
       this.zombieStateMap = Object.fromEntries(
-        room.zombies.map((zombie) => [zombie.zombieId, INITIAL_ZOMBIE_STATE])
+        room.zombies.map((zombie) => [
+          zombie.zombieId,
+          { ...INITIAL_ZOMBIE_STATE }
+        ])
       );
       const startGameMessage: GameMessageFromWorker = {
         event: "startGame",
