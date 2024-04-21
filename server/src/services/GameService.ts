@@ -50,12 +50,10 @@ class GameService {
       { x: -4, y: 0, z: 16 }
     ];
 
-    const userHealth = 5;
     const roomZombies: RoomZombie[] = [];
 
     Object.keys(room.users).forEach((userId, i) => {
       room.users[userId].position = userLocation[i];
-      room.users[userId].health = userHealth;
 
       const words = randomWords({ count: 4 });
       const positions = randomPositions(words.length);

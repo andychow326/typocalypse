@@ -63,7 +63,6 @@ export type User = {
     y: number;
     z: number;
   };
-  health?: number;
 };
 
 export type RoomWord = {

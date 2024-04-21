@@ -292,7 +292,15 @@ class GameLoopWorker {
       const startGameMessage: GameMessageFromWorker = {
         event: "startGame",
         data: {
-          room
+          room: {
+            ...room,
+            users: Object.fromEntries(
+              Object.entries(room.users).map(([key, user]) => [
+                key,
+                { ...user, health: this.clientStateMap[key].health }
+              ])
+            )
+          }
         }
       };
       await this.publishGameMessage(startGameMessage);
