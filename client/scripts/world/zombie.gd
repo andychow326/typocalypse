@@ -1,8 +1,8 @@
 extends CharacterBody3D
 
-const SPEED = 2.0
 const ATTACK_RANGE = 3.5
 
+@export var zombie_id: String
 @export var target_player_id: String
 @export var word_label: String
 @export var initial_word_label_container_position: Vector3
@@ -11,6 +11,10 @@ const ATTACK_RANGE = 3.5
 var player_node
 var player_position
 var state_machine
+var time_to_attack
+var ready_to_attack
+var attack
+var speed
 var white = Color("#ffffff")
 var green = Color("#639765")
 
@@ -19,18 +23,24 @@ var green = Color("#639765")
 
 
 func _ready():
+	attack = false
 	word_finished = false
+	ready_to_attack = false
 	$WordLabelContainer.visible = false
 	state_machine = anim_tree.get("parameters/playback")
+	DataStore.web_socket_client.message_received.connect(_on_web_socket_client_message_received)
 
 
 func from_dict(dict: Dictionary):
+	zombie_id = dict.zombie_id
 	target_player_id = dict.target_player_id
 	word_label = dict.label
+	time_to_attack = dict.time_to_attack
 	if DataStore.player_id != target_player_id:
 		$WordLabelContainer/SubViewport/RichTextLabel.add_theme_color_override(
 			"default_color", Color.CORAL
 		)
+		$Armature/Skeleton3D/Body.transparency = 0.2
 		$WordLabelContainer/Sprite3D.modulate.a = 0.75
 	$WordLabelContainer/SubViewport/RichTextLabel.parse_bbcode(set_center_tags(dict.label))
 	$WordLabelContainer/SubViewport.size = Vector2i(
@@ -106,13 +116,16 @@ func move_to_player(amount, game_started: bool, player: CharacterBody3D):
 	velocity = Vector3.ZERO
 
 	match state_machine.get_current_node():
-		"Spawn":
-			$WordLabelContainer.visible = true
 		"Walking":
+			$WordLabelContainer.visible = true
 			#Navigation
 			nav_agent.set_target_position(player_position)
 			var next_nav_point = nav_agent.get_next_path_position()
-			velocity = (next_nav_point - global_transform.origin).normalized() * SPEED
+			var distance = global_position.distance_to(player_node.position) + 2
+			if not speed:
+				speed = distance / (time_to_attack - 0.667)
+				print(speed)
+			velocity = (next_nav_point - global_transform.origin).normalized() * speed
 			rotation.y = lerp_angle(rotation.y, atan2(-velocity.x, -velocity.z), amount * 10)
 			look_at(
 				Vector3(
@@ -120,7 +133,7 @@ func move_to_player(amount, game_started: bool, player: CharacterBody3D):
 				),
 				Vector3.UP
 			)
-			if Engine.get_process_frames() % 40 == 0:
+			if Engine.get_process_frames() % 35 == 0:
 				$WordLabelContainer/SubViewport/RichTextLabel.add_theme_font_size_override(
 					"normal_font_size",
 					(
@@ -134,7 +147,7 @@ func move_to_player(amount, game_started: bool, player: CharacterBody3D):
 					$WordLabelContainer/SubViewport.size.x - 1,
 					$WordLabelContainer/SubViewport.size.y
 				)
-			if Engine.get_process_frames() % 80 == 0:
+			if Engine.get_process_frames() % 70 == 0:
 				$WordLabelContainer/SubViewport.size = Vector2i(
 					$WordLabelContainer/SubViewport.size.x,
 					$WordLabelContainer/SubViewport.size.y - 1
@@ -146,9 +159,22 @@ func move_to_player(amount, game_started: bool, player: CharacterBody3D):
 
 	anim_tree.set("parameters/conditions/spawn", game_started)
 	anim_tree.set("parameters/conditions/death", word_finished)
-	anim_tree.set("parameters/conditions/attack", _target_in_range(player_position))
+	anim_tree.set("parameters/conditions/wait", ready_to_attack)
+	anim_tree.set("parameters/conditions/attack", attack)
 
 	move_and_slide()
+
+
+func _on_web_socket_client_message_received(message):
+	if typeof(message) != TYPE_DICTIONARY:
+		return
+	match message.event:
+		"attack":
+			if message.data.zombieId == zombie_id:
+				attack = true
+		"remainingTime":
+			if message.data.currentTime > time_to_attack * 1000:
+				ready_to_attack = true
 
 
 func killed():
