@@ -210,6 +210,9 @@ func on_player_inputted_key(player_id: String, key: String):
 		get_parent().add_child(bullet_instance)
 
 		if zombie.word == player_active_inputs[player_id]:
+			DataStore.web_socket_client.send(
+				{"event": "killZombie", "data": {"zombieId": zombie_node.zombie_id}}
+			)
 			dead_zombies[zombie.zombie_id] = zombie
 			zombie_node.killed()
 			player_active_inputs[player_id] = ""
