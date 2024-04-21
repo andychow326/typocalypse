@@ -44,6 +44,12 @@ export const GameMessageFromClientSchema = t.Union([
     data: t.Object({
       key: t.String()
     })
+  }),
+  t.Object({
+    event: t.Literal("killZombie"),
+    data: t.Object({
+      zombieId: t.String()
+    })
   })
 ]);
 export type GameMessageFromClient = Static<typeof GameMessageFromClientSchema>;
@@ -52,6 +58,12 @@ export type User = {
   id: string;
   name: string;
   room?: string;
+  position?: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  health?: number;
 };
 
 export type RoomWord = {
@@ -60,6 +72,7 @@ export type RoomWord = {
 };
 
 export type RoomZombie = {
+  zombieId: string;
   userId: string;
   word: string;
   position: {
@@ -67,6 +80,7 @@ export type RoomZombie = {
     y: number;
     z: number;
   };
+  timeToAttackSeconds: number;
 };
 
 export type RoomWaiting = {
@@ -130,6 +144,20 @@ export type GameMessageFromWorker =
       data: {
         type: "waitForRoundStart" | "round";
         remainingTime: number;
+        currentTime: number;
+      };
+    }
+  | {
+      event: "attack";
+      data: {
+        zombieId: string;
+      };
+    }
+  | {
+      event: "hit";
+      data: {
+        userId: string;
+        zombieId: string;
       };
     }
   | {

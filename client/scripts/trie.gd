@@ -21,6 +21,24 @@ func insert(key: String, data):
 	node.data = data
 
 
+func remove_word(key: String):
+	var node = root
+	var parent = null
+	var parentKey = ""
+	var delete_word = []
+
+	for token in key:
+		if not node.children.has(token):
+			return
+		parent = node
+		parentKey = token
+		delete_word.append(node)
+		node = node.children[token]
+	for word in delete_word:
+		word = null
+		print("word removed")
+
+
 func get_potential_candidates_by_node(node: TrieNode, key: String, result_map: Callable):
 	var results = []
 	if node.last:

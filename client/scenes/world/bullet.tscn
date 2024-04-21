@@ -23,7 +23,7 @@ initial_velocity_min = 3.0
 initial_velocity_max = 5.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_1t228"]
-size = Vector3(0.06, 0.06, 0.06)
+size = Vector3(0.08, 0.08, 0.08)
 
 [node name="Bullet" type="Node3D"]
 script = ExtResource("1_4ptya")

@@ -1,4 +1,5 @@
 import { generate } from "random-words";
+import { randomInt } from "crypto";
 
 type RandomWordOptions = {
   minLength?: number;
@@ -27,4 +28,8 @@ export function randomPositions(
     positions.push({ x, y, z });
   }
   return positions;
+}
+
+export function randomTimeToAttack() {
+  return randomInt(10, 14);
 }
