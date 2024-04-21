@@ -133,7 +133,15 @@ export type GameMessageFromServer = (
 export type GameMessageFromWorker =
   | { event: "ping" }
   | {
-      event: "startGame" | "startRound";
+      event: "startGame";
+      data: {
+        users: {
+          [userId: string]: User;
+        };
+      };
+    }
+  | {
+      event: "startRound";
       data: {
         room: Room;
       };

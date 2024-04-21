@@ -216,7 +216,17 @@ class GameLoopWorker {
     await delay(1000);
     const startRoundMessage: GameMessageFromWorker = {
       event: "startRound",
-      data: { room: this.currentRoomData }
+      data: {
+        room: {
+          ...this.currentRoomData,
+          users: Object.fromEntries(
+            Object.entries(this.currentRoomData.users).map(([key, user]) => [
+              key,
+              { ...user, health: this.clientStateMap[key].health }
+            ])
+          )
+        }
+      }
     };
     await this.publishGameMessage(startRoundMessage);
 
@@ -292,15 +302,12 @@ class GameLoopWorker {
       const startGameMessage: GameMessageFromWorker = {
         event: "startGame",
         data: {
-          room: {
-            ...room,
-            users: Object.fromEntries(
-              Object.entries(room.users).map(([key, user]) => [
-                key,
-                { ...user, health: this.clientStateMap[key].health }
-              ])
-            )
-          }
+          users: Object.fromEntries(
+            Object.entries(room.users).map(([key, user]) => [
+              key,
+              { ...user, health: this.clientStateMap[key].health }
+            ])
+          )
         }
       };
       await this.publishGameMessage(startGameMessage);

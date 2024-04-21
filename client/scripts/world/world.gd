@@ -57,6 +57,19 @@ func _on_web_socket_client_message_received(message):
 			reset_player_container()
 			reset_hud_container()
 
+			var position_index = 0
+			for user in message.data.users.values():
+				var player_node = player_scene.instantiate()
+				player_node.position = Vector3(user.position.x, user.position.y, user.position.z)
+				player_node.from_dict(user)
+				$PlayerContainer.add_child(player_node)
+
+				#Generate HUD
+				var main_hud = $HUDContainer
+				var player_hud = player_hud_scene.instantiate()
+				player_hud.set_info(user.id, user.name, position_index + 1, user.health)
+				main_hud.add_child(player_hud)
+		"startRound":
 			var words: Array = []
 			for zombie in message.data.room.zombies:
 				time_to_attack = zombie.timeToAttackSeconds
@@ -98,17 +111,6 @@ func _on_web_socket_client_message_received(message):
 				player_active_inputs[user.id] = ""
 				last_potential_target_zombies[user.id] = []
 				player_id_to_player_node_id_map[user.id] = position_index
-
-				var player_node = player_scene.instantiate()
-				player_node.position = Vector3(user.position.x, user.position.y, user.position.z)
-				player_node.from_dict(user)
-				$PlayerContainer.add_child(player_node)
-
-				#Generate HUD
-				var main_hud = $HUDContainer
-				var player_hud = player_hud_scene.instantiate()
-				player_hud.set_info(user.id, user.name, position_index + 1, user.health)
-				main_hud.add_child(player_hud)
 
 				position_index += 1
 
