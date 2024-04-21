@@ -202,18 +202,8 @@ class GameLoopWorker {
   }
 
   async beforeStartRound() {
-    let readyToStart = false;
-    while (!readyToStart) {
-      try {
-        await delay(500);
-        const clientReady = await this.checkClientReady();
-        readyToStart = clientReady;
-      } catch (error) {
-        return Promise.reject(error);
-      }
-    }
-
     await delay(1000);
+
     const startRoundMessage: GameMessageFromWorker = {
       event: "startRound",
       data: {
@@ -311,6 +301,14 @@ class GameLoopWorker {
         }
       };
       await this.publishGameMessage(startGameMessage);
+
+      let readyToStart = false;
+      while (!readyToStart) {
+        await delay(500);
+        const clientReady = await this.checkClientReady();
+        readyToStart = clientReady;
+      }
+
       await this.beforeStartRound();
     } catch (error) {
       this.terminate();
