@@ -21,10 +21,20 @@ type SimulationCallback = (deltaTime: number) => Promise<void>;
 
 interface ClientState {
   ready: boolean;
+  health: number;
 }
 
 const INITIAL_CLIENT_STATE: ClientState = {
-  ready: false
+  ready: false,
+  health: 5
+};
+
+interface ZombieState {
+  dead: boolean;
+}
+
+const INITIAL_ZOMBIE_STATE: ZombieState = {
+  dead: false
 };
 
 interface GameLoopWorkerOptions {
@@ -56,6 +66,8 @@ class GameLoopWorker {
 
   private clientStateMap: Record<string, ClientState>;
 
+  private zombieStateMap: Record<string, ZombieState>;
+
   constructor(roomId: string, options?: GameLoopWorkerOptions) {
     this.roomId = roomId;
     this.redis = options?.redis ?? getRedisConnection();
@@ -65,10 +77,15 @@ class GameLoopWorker {
     this.roomService = options?.roomService ?? new RoomService(this.redis);
     this.onTerminate = options?.onTerminate;
     this.clientStateMap = {};
+    this.zombieStateMap = {};
   }
 
   onClientReady(userId: string) {
     this.clientStateMap[userId].ready = true;
+  }
+
+  onZombieDead(zombieId: string) {
+    this.zombieStateMap[zombieId].dead = true;
   }
 
   async onMessage(userId: string, message: GameMessageFromClient) {
@@ -76,10 +93,7 @@ class GameLoopWorker {
       this.onClientReady(userId);
     }
     if (message.event === "killZombie") {
-      const filteredZombie = this.currentRoomData.zombies.filter(
-        (zombie) => zombie.zombieId !== message.data.zombieId
-      );
-      this.currentRoomData.zombies = filteredZombie;
+      this.onZombieDead(message.data.zombieId);
     }
   }
 
@@ -213,32 +227,36 @@ class GameLoopWorker {
           zombieId: zombie.zombieId
         }
       };
-      this.clock.setTimeout(() => {
-        this.publishGameMessage(attackMessage);
-      }, zombie.timeToAttackSeconds * 1000);
-    });
+      const attackEndMessage: GameMessageFromWorker = {
+        event: "attackEnd",
+        data: {
+          zombieId: zombie.zombieId
+        }
+      };
 
-    this.currentRoomData.zombies.forEach((zombie) => {
-      this.clock.setTimeout(
-        () => {
-          if (zombie !== null) {
-            const player = Object.values(this.currentRoomData.users).filter(
-              (user) => user.id === zombie.userId
-            );
-            this.currentRoomData.users[zombie.userId].health -= 1;
+      this.clock.setTimeout(() => {
+        this.clock.setInterval(async () => {
+          if (this.zombieStateMap[zombie.zombieId].dead) {
+            return;
+          }
+          await this.publishGameMessage(attackMessage);
+          this.clock.setTimeout(async () => {
+            await this.publishGameMessage(attackEndMessage);
+
+            this.clientStateMap[zombie.userId].health -= 1;
 
             const hitMessage: GameMessageFromWorker = {
               event: "hit",
               data: {
                 userId: zombie.userId,
-                zombieId: zombie.zombieId
+                zombieId: zombie.zombieId,
+                updatedHealth: this.clientStateMap[zombie.userId].health
               }
             };
-            this.publishGameMessage(hitMessage);
-          }
-        },
-        zombie.timeToAttackSeconds * 1000 + 500
-      );
+            await this.publishGameMessage(hitMessage);
+          }, 500);
+        }, 1000);
+      }, zombie.timeToAttackSeconds * 1000);
     });
 
     await delay(3000);
@@ -264,6 +282,9 @@ class GameLoopWorker {
           key,
           INITIAL_CLIENT_STATE
         ])
+      );
+      this.zombieStateMap = Object.fromEntries(
+        room.zombies.map((zombie) => [zombie.zombieId, INITIAL_ZOMBIE_STATE])
       );
       const startGameMessage: GameMessageFromWorker = {
         event: "startGame",

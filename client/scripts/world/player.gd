@@ -1,7 +1,5 @@
 extends CharacterBody3D
 
-signal player_hit
-
 @export var player_id: String
 @export var player_name: String
 
@@ -36,7 +34,3 @@ func _input(event):
 		else:
 			key_label = OS.get_keycode_string(event.keycode).to_lower()
 		DataStore.web_socket_client.send({"event": "input", "data": {"key": key_label}})
-
-
-func hit(target_player_id: String):
-	emit_signal("player_hit", target_player_id)

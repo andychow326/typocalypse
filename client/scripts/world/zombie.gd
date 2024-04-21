@@ -123,7 +123,7 @@ func move_to_player(amount, game_started: bool, player: CharacterBody3D):
 			var next_nav_point = nav_agent.get_next_path_position()
 			var distance = global_position.distance_to(player_node.position) + 2
 			if not speed:
-				speed = distance / (time_to_attack - 0.667)
+				speed = distance / (time_to_attack + 0.667)
 			velocity = (next_nav_point - global_transform.origin).normalized() * speed
 			rotation.y = lerp_angle(rotation.y, atan2(-velocity.x, -velocity.z), amount * 10)
 			look_at(
@@ -171,6 +171,9 @@ func _on_web_socket_client_message_received(message):
 		"attack":
 			if message.data.zombieId == zombie_id:
 				attack = true
+		"attackEnd":
+			if message.data.zombieId == zombie_id:
+				attack = false
 		"remainingTime":
 			if message.data.currentTime > time_to_attack * 1000:
 				ready_to_attack = true
@@ -185,4 +188,4 @@ func _target_in_range(target_position: Vector3):
 
 
 func _hit_finished():
-	player_node.hit(target_player_id)
+	pass

@@ -49,7 +49,10 @@ func _on_web_socket_client_message_received(message):
 				return
 			for child in $HUDContainer.get_children():
 				if child.player_id == message.data.userId:
-					child.minus_health()
+					$UI/HitRect.visible = true
+					child.update_health(message.data.updatedHealth)
+					await get_tree().create_timer(0.1).timeout
+					$UI/HitRect.visible = false
 		"startGame":
 			reset_player_container()
 			reset_hud_container()
@@ -99,7 +102,6 @@ func _on_web_socket_client_message_received(message):
 				var player_node = player_scene.instantiate()
 				player_node.position = Vector3(user.position.x, user.position.y, user.position.z)
 				player_node.from_dict(user)
-				player_node.player_hit.connect(_on_player_hit)
 				$PlayerContainer.add_child(player_node)
 
 				#Generate HUD
@@ -142,6 +144,12 @@ func _on_visibility_changed():
 		$RemainingTimeLabel.visible = false
 
 
+func reset_active_zombies(zombie_ids: Array):
+	var nodes = $ZombieContainer.get_children().filter(func(n): return zombie_ids.has(n.zombie_id))
+	for node in nodes:
+		node.set_active("")
+
+
 func on_player_inputted_key(player_id: String, key: String):
 	if DataStore.player_id == player_id:
 		var player_node_id = player_id_to_player_node_id_map[player_id]
@@ -160,6 +168,11 @@ func on_player_inputted_key(player_id: String, key: String):
 
 	if potential_target_zombies.is_empty():
 		player_active_inputs[player_id] = ""
+		reset_active_zombies(
+			last_potential_target_zombies[player_id].map(
+				func(item: Dictionary): return item.zombie_id
+			)
+		)
 		return
 
 	for zombie in potential_target_zombies:
@@ -229,6 +242,7 @@ func on_player_inputted_key(player_id: String, key: String):
 		)
 		. map(func(item: Dictionary): return item.zombie_id)
 	)
+	reset_active_zombies(inactive_zombie_ids)
 	last_potential_target_zombies[player_id] = potential_target_zombies.filter(
 		func(zombie: Dictionary): return not dead_zombies.has(zombie.zombie_id)
 	)
@@ -245,10 +259,3 @@ func _physics_process(delta):
 			if player.player_id == zombie.target_player_id:
 				zombie.move_to_player(delta, game_stated, player)
 				break
-
-
-func _on_player_hit(player_id: String):
-	if DataStore.player_id == player_id:
-		$UI/HitRect.visible = true
-		await get_tree().create_timer(0.1).timeout
-		$UI/HitRect.visible = false

@@ -148,7 +148,7 @@ export type GameMessageFromWorker =
       };
     }
   | {
-      event: "attack";
+      event: "attack" | "attackEnd";
       data: {
         zombieId: string;
       };
@@ -158,6 +158,7 @@ export type GameMessageFromWorker =
       data: {
         userId: string;
         zombieId: string;
+        updatedHealth: number;
       };
     }
   | {
