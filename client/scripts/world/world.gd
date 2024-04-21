@@ -142,7 +142,6 @@ func _on_visibility_changed():
 		$RemainingTimeLabel.visible = false
 
 
-
 func on_player_inputted_key(player_id: String, key: String):
 	if DataStore.player_id == player_id:
 		var player_node_id = player_id_to_player_node_id_map[player_id]
