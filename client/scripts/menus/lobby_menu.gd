@@ -1,5 +1,7 @@
 extends Control
 
+signal invite_button_pressed
+
 enum STATE {
 	ON_BOARDING,
 	ROOM_LIST,
@@ -88,6 +90,10 @@ func _on_waiting_room_menu_back_button_pressed():
 
 func _on_invite_landing_menu_back_button_pressed():
 	state = STATE.ON_BOARDING
+
+
+func _on_waiting_room_menu_invite_button_pressed():
+	invite_button_pressed.emit()
 
 
 func _process(_delta):

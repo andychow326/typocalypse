@@ -1,0 +1,79 @@
+[gd_scene load_steps=5 format=3 uid="uid://dnu8jvyswimbk"]
+
+[ext_resource type="StyleBox" uid="uid://sh13v0iog1jv" path="res://assets/main_menu/panel_container.tres" id="1_djorq"]
+[ext_resource type="Theme" uid="uid://bod1xtt36j7s6" path="res://assets/main_menu/pixelated_font.tres" id="1_uitq3"]
+[ext_resource type="Theme" uid="uid://bcxinudc32lvt" path="res://assets/main_menu/button.tres" id="3_45kg4"]
+[ext_resource type="Script" path="res://scripts/modal/invite_modal.gd" id="3_h317x"]
+
+[node name="InviteModal" type="PanelContainer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -165.5
+offset_top = -123.0
+offset_right = 165.5
+offset_bottom = 123.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_uitq3")
+theme_override_styles/panel = ExtResource("1_djorq")
+script = ExtResource("3_h317x")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "INVITE YOUR FRIENDS"
+
+[node name="Content" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 14
+theme_override_font_sizes/bold_font_size = 14
+theme_override_font_sizes/italics_font_size = 14
+theme_override_font_sizes/bold_italics_font_size = 14
+theme_override_font_sizes/mono_font_size = 14
+bbcode_enabled = true
+text = "Share the code with them:"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="InviteURLTextEdit" type="TextEdit" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+editable = false
+
+[node name="CopyButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+theme = ExtResource("3_45kg4")
+theme_override_font_sizes/font_size = 18
+text = "COPY"
+
+[node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 10
+theme = ExtResource("3_45kg4")
+theme_override_font_sizes/font_size = 20
+text = "Close"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/CopyButton" to="." method="_on_copy_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]

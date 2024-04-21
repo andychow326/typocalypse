@@ -1,6 +1,7 @@
 extends Control
 
 signal back_button_pressed
+signal invite_button_pressed
 
 @export var player_scene: PackedScene
 
@@ -84,3 +85,7 @@ func _on_back_button_pressed():
 func _on_start_button_pressed():
 	start_button.disabled = true
 	DataStore.web_socket_client.send({"event": "startGame", "data": {"roomId": DataStore.room_id}})
+
+
+func _on_invite_button_pressed():
+	invite_button_pressed.emit()

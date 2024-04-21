@@ -1,6 +1,7 @@
 extends Control
 
 var modal_scene = preload("res://scenes/modal/modal.tscn")
+var invite_modal_scene = preload("res://scenes/modal/invite_modal.tscn")
 var modals: Array[Dictionary]
 
 
@@ -31,6 +32,13 @@ func _on_web_socket_client_message_received(message):
 				add_modal("waitingClientGameWorldReadyModal", node)
 		"startRound":
 			remove_modal("waitingClientGameWorldReadyModal")
+
+
+func _on_invite_button_pressed():
+	var node = invite_modal_scene.instantiate()
+	node.room_id = DataStore.room_id
+	node.close_button_pressed.connect(func(): remove_modal("inviteModal"))
+	add_modal("inviteModal", node)
 
 
 func get_modal_nodes(type: String):

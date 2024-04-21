@@ -83,4 +83,5 @@ text = "START"
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/PlayerListContainer/MarginContainer/VBoxContainer/InviteButton" to="." method="_on_invite_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
