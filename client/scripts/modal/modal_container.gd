@@ -49,6 +49,7 @@ func remove_modal(type: String):
 		var node = modal.node
 		node.queue_free()
 		remove_child(node)
+	modals = modals.filter(func(modal): return modal.type != type)
 
 
 func _process(_delta):
