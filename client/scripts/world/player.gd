@@ -15,7 +15,7 @@ func from_dict(dict: Dictionary):
 
 
 func _ready():
-	look_at(Vector3(0, 0, 0))
+	look_at(Vector3(0, 0, -10))
 	if DataStore.player_id == player_id:
 		$Head/Camera3D.current = true
 
