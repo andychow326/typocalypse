@@ -142,11 +142,6 @@ func _on_visibility_changed():
 		$RemainingTimeLabel.visible = false
 
 
-func reset_active_zombies(indexs: Array):
-	for index in indexs:
-		var node = $ZombieContainer.get_child(index)
-		node.set_active("")
-
 
 func on_player_inputted_key(player_id: String, key: String):
 	if DataStore.player_id == player_id:
@@ -166,11 +161,6 @@ func on_player_inputted_key(player_id: String, key: String):
 
 	if potential_target_zombies.is_empty():
 		player_active_inputs[player_id] = ""
-		reset_active_zombies(
-			last_potential_target_zombies[player_id].map(
-				func(item: Dictionary): return item.zombie_id
-			)
-		)
 		return
 
 	for zombie in potential_target_zombies:
@@ -191,26 +181,32 @@ func on_player_inputted_key(player_id: String, key: String):
 		var zombie_vector = player_node.position.direction_to(zombie_node.position)
 		var zombie_basis = player_node.basis.looking_at(zombie_vector)
 		bullet_instance.transform.basis = basis.slerp(zombie_basis, 1)
-		gun_instance.transform.basis = basis.slerp(zombie_basis, 1)
+		gun_instance.transform.basis = basis.slerp(zombie_basis, 0.5)
 
 		var zombie_angle = atan2(
 			zombie_node.position.x - player_node.position.x,
 			zombie_node.position.z - player_node.position.z
 		)
-		var face_angle = atan2(player_node.position.x, player_node.position.z)
+		var face_angle = atan2(player_node.position.x, player_node.position.z + 10)
 		if zombie_angle < 0:
-			if (zombie_angle + PI) >= 0.35:
-				bullet_instance.rotate_object_local(Vector3.UP, 0 - face_angle - 0.03)
-			elif (zombie_angle + PI) < 0.35 && (zombie_angle + PI) >= 0.25:
-				bullet_instance.rotate_object_local(Vector3.UP, 0 - face_angle - 0.05)
-			elif (zombie_angle + PI) < 0.25 && (zombie_angle + PI) >= 0.10:
-				bullet_instance.rotate_object_local(Vector3.UP, 0 - face_angle - 0.025)
-			elif (zombie_angle + PI) < 0.10 && (zombie_angle + PI) >= 0.02:
-				bullet_instance.rotate_object_local(Vector3.UP, 0.015)
+			if (zombie_angle - face_angle + PI) >= 0.35:
+				bullet_instance.rotate_object_local(Vector3.UP, 0.07)
+			elif (zombie_angle - face_angle + PI) < 0.35 && (zombie_angle + PI) >= 0.25:
+				bullet_instance.rotate_object_local(Vector3.UP, 0.06)
+			elif (zombie_angle - face_angle + PI) < 0.25 && (zombie_angle + PI) >= 0.10:
+				bullet_instance.rotate_object_local(Vector3.UP, 0.04)
+			elif (zombie_angle - face_angle + PI) < 0.10 && (zombie_angle + PI) > 0:
+				bullet_instance.rotate_object_local(Vector3.UP, 0.03)
 			else:
-				pass
-		# elif zombie_angle > 0:
-		# 	bullet_instance.rotate_y(zombie_angle + PI - face_angle)
+				bullet_instance.rotate_object_local(Vector3.UP, face_angle / 10)
+		elif zombie_angle >= 0:
+			if zombie_angle >= 3:
+				bullet_instance.rotate_object_local(Vector3.UP, 0 - face_angle / 6)
+			elif zombie_angle < 3 && zombie_angle >= 2.85:
+				bullet_instance.rotate_object_local(Vector3.UP, 0 - face_angle / 8)
+			elif zombie_angle < 2.85 && zombie_angle >= 2.6:
+				bullet_instance.rotate_object_local(Vector3.UP, 0 - face_angle / 10)
+
 		get_parent().add_child(bullet_instance)
 
 		if zombie.word == player_active_inputs[player_id]:
@@ -231,7 +227,6 @@ func on_player_inputted_key(player_id: String, key: String):
 		)
 		. map(func(item: Dictionary): return item.zombie_id)
 	)
-	reset_active_zombies(inactive_zombie_ids)
 	last_potential_target_zombies[player_id] = potential_target_zombies.filter(
 		func(zombie: Dictionary): return not dead_zombies.has(zombie.zombie_id)
 	)
@@ -252,8 +247,5 @@ func _physics_process(delta):
 
 func _on_player_hit(player_id: String):
 	$UI/HitRect.visible = true
-	for child in $HUDContainer.get_children():
-		if child.player_id == player_id:
-			child.minus_health()
 	await get_tree().create_timer(0.1).timeout
 	$UI/HitRect.visible = false
