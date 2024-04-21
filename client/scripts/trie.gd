@@ -36,7 +36,6 @@ func remove_word(key: String):
 		node = node.children[token]
 	for word in delete_word:
 		word = null
-		print("word removed")
 
 
 func get_potential_candidates_by_node(node: TrieNode, key: String, result_map: Callable):

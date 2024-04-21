@@ -27,7 +27,6 @@ func update_health(health):
 
 
 func minus_health():
-	print(player_health)
 	player_health -= 1
 	update_health(player_health - 1)
 

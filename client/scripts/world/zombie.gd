@@ -124,7 +124,6 @@ func move_to_player(amount, game_started: bool, player: CharacterBody3D):
 			var distance = global_position.distance_to(player_node.position) + 2
 			if not speed:
 				speed = distance / (time_to_attack - 0.667)
-				print(speed)
 			velocity = (next_nav_point - global_transform.origin).normalized() * speed
 			rotation.y = lerp_angle(rotation.y, atan2(-velocity.x, -velocity.z), amount * 10)
 			look_at(
