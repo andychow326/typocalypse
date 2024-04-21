@@ -52,6 +52,12 @@ export type User = {
   id: string;
   name: string;
   room?: string;
+  position?: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  health?: number;
 };
 
 export type RoomWord = {

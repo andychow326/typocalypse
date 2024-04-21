@@ -40,8 +40,23 @@ class GameService {
 
     let pipe = this.redis.multi();
 
+    const roundDurationSeconds = 20;
+    const roundWaitDurationSeconds = 3;
+
+    const userLocation: { x: number; y: number; z: number }[] = [
+      { x: -8, y: 0, z: 18 },
+      { x: 8, y: 0, z: 18 },
+      { x: 4, y: 0, z: 16 },
+      { x: -4, y: 0, z: 16 }
+    ];
+
+    const userHealth = 5;
     const roomZombies: RoomZombie[] = [];
-    Object.keys(room.users).forEach((userId) => {
+
+    Object.keys(room.users).forEach((userId, i) => {
+      room.users[userId].position = userLocation[i];
+      room.users[userId].health = userHealth;
+
       const words = randomWords({ count: 4 });
       const positions = randomPositions(words.length);
       logger.debug(
@@ -75,8 +90,8 @@ class GameService {
       ...room,
       state: "in-game",
       round: 1,
-      roundDurationSeconds: 20,
-      roundWaitDurationSeconds: 3,
+      roundDurationSeconds,
+      roundWaitDurationSeconds,
       zombies: roomZombies
     };
 
