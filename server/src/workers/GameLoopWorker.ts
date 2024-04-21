@@ -236,7 +236,10 @@ class GameLoopWorker {
 
       this.clock.setTimeout(() => {
         this.clock.setInterval(async () => {
-          if (this.zombieStateMap[zombie.zombieId].dead) {
+          if (
+            this.zombieStateMap[zombie.zombieId].dead ||
+            this.clientStateMap[zombie.userId].health <= 0
+          ) {
             return;
           }
           await this.publishGameMessage(attackMessage);
