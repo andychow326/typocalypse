@@ -223,10 +223,9 @@ class GameLoopWorker {
         () => {
           if (zombie !== null) {
             const player = Object.values(this.currentRoomData.users).filter(
-              (user) => user.id == zombie.userId
+              (user) => user.id === zombie.userId
             );
             this.currentRoomData.users[zombie.userId].health -= 1;
-            const { health } = this.currentRoomData.users[zombie.userId];
 
             const hitMessage: GameMessageFromWorker = {
               event: "hit",

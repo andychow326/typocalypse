@@ -1,8 +1,8 @@
 extends Node3D
 
-const Trie = preload("res://scripts/trie.gd")
-
 signal attack
+
+const Trie = preload("res://scripts/trie.gd")
 
 @export var player_scene: PackedScene
 @export var zombie_scene: PackedScene
@@ -248,6 +248,7 @@ func _physics_process(delta):
 
 
 func _on_player_hit(player_id: String):
-	$UI/HitRect.visible = true
-	await get_tree().create_timer(0.1).timeout
-	$UI/HitRect.visible = false
+	if DataStore.player_id == player_id:
+		$UI/HitRect.visible = true
+		await get_tree().create_timer(0.1).timeout
+		$UI/HitRect.visible = false

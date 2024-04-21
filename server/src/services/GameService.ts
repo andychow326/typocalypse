@@ -63,14 +63,14 @@ class GameService {
         { roomId, userId, words },
         "gerenate room words and zombies"
       );
-      words.forEach((_, i) => {
+      words.forEach((_, j) => {
         const zombieId = randomUUID();
         const timeToAttack = randomTimeToAttack() + roundWaitDurationSeconds;
         roomZombies.push({
           zombieId,
           userId,
-          word: words[i],
-          position: positions[i],
+          word: words[j],
+          position: positions[j],
           timeToAttackSeconds: timeToAttack
         });
       });

@@ -24,14 +24,14 @@ func insert(key: String, data):
 func remove_word(key: String):
 	var node = root
 	var parent = null
-	var parentKey = ""
+	var parent_key = ""
 	var delete_word = []
 
 	for token in key:
 		if not node.children.has(token):
 			return
 		parent = node
-		parentKey = token
+		parent_key = token
 		delete_word.append(node)
 		node = node.children[token]
 	for word in delete_word:
