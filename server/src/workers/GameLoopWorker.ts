@@ -121,7 +121,8 @@ class GameLoopWorker {
           type: "waitForRoundStart",
           remainingTime:
             this.currentRoomData.roundWaitDurationSeconds * 1000 -
-            this.clock.elapsedTime
+            this.clock.elapsedTime,
+          currentTime: this.clock.elapsedTime
         }
       });
     } else if (
@@ -136,7 +137,8 @@ class GameLoopWorker {
           remainingTime:
             this.currentRoomData.roundWaitDurationSeconds * 1000 +
             this.currentRoomData.roundDurationSeconds * 1000 -
-            this.clock.elapsedTime
+            this.clock.elapsedTime,
+          currentTime: this.clock.elapsedTime
         }
       });
     }
@@ -184,11 +186,47 @@ class GameLoopWorker {
     }
 
     await delay(1000);
-    const message: GameMessageFromWorker = {
+    const startRoundMessage: GameMessageFromWorker = {
       event: "startRound",
       data: { room: this.currentRoomData }
     };
-    await this.publishGameMessage(message);
+    await this.publishGameMessage(startRoundMessage);
+
+    this.currentRoomData.zombies.forEach((zombie) => {
+      const attackMessage: GameMessageFromWorker = {
+        event: "attack",
+        data: {
+          zombieId: zombie.zombieId
+        }
+      };
+      this.clock.setTimeout(() => {
+        this.publishGameMessage(attackMessage);
+      }, zombie.timeToAttackSeconds * 1000);
+    });
+
+    this.currentRoomData.zombies.forEach((zombie) => {
+      this.clock.setTimeout(
+        () => {
+          if (zombie !== null) {
+            const player = Object.values(this.currentRoomData.users).filter(
+              (user) => user.id == zombie.userId
+            );
+            this.currentRoomData.users[zombie.userId].health -= 1;
+            const { health } = this.currentRoomData.users[zombie.userId];
+
+            const hitMessage: GameMessageFromWorker = {
+              event: "hit",
+              data: {
+                userId: zombie.userId,
+                zombieId: zombie.zombieId
+              }
+            };
+            this.publishGameMessage(hitMessage);
+          }
+        },
+        zombie.timeToAttackSeconds * 1000 + 500
+      );
+    });
 
     await delay(3000);
     this.startRound();

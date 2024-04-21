@@ -138,6 +138,20 @@ export type GameMessageFromWorker =
       data: {
         type: "waitForRoundStart" | "round";
         remainingTime: number;
+        currentTime: number;
+      };
+    }
+  | {
+      event: "attack";
+      data: {
+        zombieId: string;
+      };
+    }
+  | {
+      event: "hit";
+      data: {
+        userId: string;
+        zombieId: string;
       };
     }
   | {
