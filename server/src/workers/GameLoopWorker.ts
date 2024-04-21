@@ -67,6 +67,12 @@ class GameLoopWorker {
     if (message.event === "ready") {
       this.onClientReady(userId);
     }
+    if (message.event === "killZombie") {
+      const filteredZombie = this.currentRoomData.zombies.filter(
+        (zombie) => zombie.zombieId !== message.data.zombieId
+      );
+      this.currentRoomData.zombies = filteredZombie;
+    }
   }
 
   async getRoom(): Promise<RoomInGame> {

@@ -44,6 +44,12 @@ export const GameMessageFromClientSchema = t.Union([
     data: t.Object({
       key: t.String()
     })
+  }),
+  t.Object({
+    event: t.Literal("killZombie"),
+    data: t.Object({
+      zombieId: t.String()
+    })
   })
 ]);
 export type GameMessageFromClient = Static<typeof GameMessageFromClientSchema>;
