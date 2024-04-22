@@ -171,9 +171,7 @@ func _on_web_socket_client_message_received(message):
 		"attack":
 			if message.data.zombieId == zombie_id:
 				attack = true
-		"attackEnd":
-			if message.data.zombieId == zombie_id:
-				attack = false
+				state_machine.start("Attack")
 		"remainingTime":
 			if message.data.currentTime > time_to_attack * 1000:
 				ready_to_attack = true
