@@ -58,6 +58,9 @@ func _on_web_socket_client_message_received(message):
 			reset_player_container()
 			reset_hud_container()
 
+			var current_player_hud
+			var other_player_huds = []
+
 			var position_index = 0
 			for user in message.data.users.values():
 				var player_node = player_scene.instantiate()
@@ -66,10 +69,19 @@ func _on_web_socket_client_message_received(message):
 				$PlayerContainer.add_child(player_node)
 
 				#Generate HUD
-				var main_hud = $HUDContainer
 				var player_hud = player_hud_scene.instantiate()
 				player_hud.set_info(user.id, user.name, position_index + 1, user.health)
-				main_hud.add_child(player_hud)
+
+				if DataStore.player_id == user.id:
+					current_player_hud = player_hud
+				else:
+					other_player_huds.append(player_hud)
+
+				position_index += 1
+
+			$HUDContainer.add_child(current_player_hud)
+			for player_hud in other_player_huds:
+				$HUDContainer.add_child(player_hud)
 		"startRound":
 			var words: Array = []
 			for zombie in message.data.room.zombies:
