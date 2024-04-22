@@ -37,12 +37,17 @@ func _on_web_socket_client_message_received(message):
 			on_player_inputted_key(player_id, key)
 		"remainingTime":
 			if message.data.type == "waitForRoundStart":
-				$RoundStartLabel.text = "[center]%.f[/center]" % (float(message.data.remainingTime + 500) / 1000)
+				$RoundStartLabel.text = (
+					"[center]%.f[/center]" % (float(message.data.remainingTime + 500) / 1000)
+				)
 			if message.data.type == "round":
 				DataStore.game_started = true
 				$RoundStartLabel.visible = false
 				$RemainingTimeLabel.visible = true
-				$RemainingTimeLabel.text = "[center][color=black]%.1f[/color][/center]" % (float(message.data.remainingTime) / 1000)
+				$RemainingTimeLabel.text = (
+					"[center][color=black]%.1f[/color][/center]"
+					% (float(message.data.remainingTime) / 1000)
+				)
 		"hit":
 			if dead_zombies.has(message.data.zombieId):
 				return
@@ -169,12 +174,12 @@ func reset_game():
 	reset_player_container()
 	reset_zombie_container()
 	reset_hud_container()
-	
+
 	$UI/HitRect.visible = false
 	$RoundStartLabel.visible = false
 	$RemainingTimeLabel.visible = false
 	$HUDContainer.visible = false
-	
+
 	DataStore.game_started = false
 
 

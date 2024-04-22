@@ -39,7 +39,7 @@ func _on_web_socket_client_message_received(message):
 		"gameOver":
 			var node = game_over_scene.instantiate()
 			node.add_detail_item("Room ID", message.data.roomId)
-			node.add_detail_item("Round",str(message.data.round))
+			node.add_detail_item("Round", str(message.data.round))
 			var time = message.data.elapsedTime / 1000
 			var minutes = str(int(time / 60))
 			minutes = minutes if len(minutes) == 2 else "0%s" % [minutes]
