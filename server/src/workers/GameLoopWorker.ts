@@ -176,7 +176,18 @@ class GameLoopWorker {
     }
   }
 
-  async gameLoop(_deltaTime: number) {}
+  async gameLoop(_deltaTime: number) {
+    if (
+      Object.entries(this.zombieStateMap).every(([_, zombie]) => zombie.dead)
+    ) {
+      this.clock.stop();
+      this.clock.clear();
+      await this.gameService.nextGameRound(this.roomId);
+      const room = await this.getRoom();
+      this.currentRoomData = room;
+      await this.beforeStartRound();
+    }
+  }
 
   async checkClientReady() {
     try {

@@ -106,6 +106,55 @@ class GameService {
       .exec();
   }
 
+  async nextGameRound(roomId: string) {
+    logger.debug({ roomId }, "next game round");
+    const room = await this.roomService.getRoomStatus(roomId);
+    if (room == null || room.state !== "in-game") {
+      throw new RoomNotFoundError(roomId);
+    }
+
+    const pipe = this.redis.multi();
+
+    const roomZombies: RoomZombie[] = [];
+
+    Object.keys(room.users).forEach((userId, i) => {
+      const words = randomWords({ count: 4 + room.round });
+      const positions = randomPositions(words.length);
+      const timeToAttacks = randomTimeToAttacks(words.length);
+      logger.debug(
+        { roomId, userId, words },
+        "gerenate room words and zombies"
+      );
+      words.forEach((_, j) => {
+        const zombieId = randomUUID();
+        const timeToAttack =
+          timeToAttacks[j] + room.roundWaitDurationSeconds - 1;
+        roomZombies.push({
+          zombieId,
+          userId,
+          word: words[j],
+          position: positions[j],
+          timeToAttackSeconds: timeToAttack
+        });
+      });
+    });
+
+    const updatedRoom: Room = {
+      ...room,
+      round: room.round + 1,
+      zombies: roomZombies
+    };
+
+    await pipe
+      .call(
+        "JSON.SET",
+        getRedisBucketKey(RedisBucketKey.room, roomId),
+        "$",
+        JSON.stringify(updatedRoom)
+      )
+      .exec();
+  }
+
   async handleGameInput(userId: string, roomId: string, input: string) {
     if (input.length !== 1) {
       throw new InputLengthNoMatchedError(input, 1);
