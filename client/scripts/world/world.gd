@@ -22,6 +22,7 @@ func _ready():
 	$UI/HitRect.visible = false
 	$RoundStartLabel.visible = false
 	$RemainingTimeLabel.visible = false
+	$HUDContainer.visible = false
 	DataStore.web_socket_client.message_received.connect(_on_web_socket_client_message_received)
 
 
@@ -83,6 +84,7 @@ func _on_web_socket_client_message_received(message):
 			for player_hud in other_player_huds:
 				$HUDContainer.add_child(player_hud)
 		"startRound":
+			$HUDContainer.visible = true
 			var words: Array = []
 			for zombie in message.data.room.zombies:
 				time_to_attack = zombie.timeToAttackSeconds
