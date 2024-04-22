@@ -262,7 +262,7 @@ class GameLoopWorker {
             };
             await this.publishGameMessage(hitMessage);
           }, 500);
-        }, 1000);
+        }, 2000);
       }, zombie.timeToAttackSeconds * 1000);
     });
 
