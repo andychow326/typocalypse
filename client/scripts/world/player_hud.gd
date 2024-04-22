@@ -14,8 +14,9 @@ func set_info(user_id, username: String, number, health):
 	player_name = username
 	player_number = "P" + str(number)
 	player_health = health
-	$Background/PlayerName.text = player_name
-	$Background/PlayerNumber.text = player_number
+	var color = "green" if DataStore.player_id == player_id else "white"
+	$Background/PlayerNumber.text = "[color=%s]%s[/color]" % [color, player_number]
+	$Background/PlayerName.text = "[right][color=%s]%s[/color][/right]" % [color, player_name]
 
 
 func update_health(health):

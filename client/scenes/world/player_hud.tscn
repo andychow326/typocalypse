@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://p2jud0u64ija"]
+[gd_scene load_steps=3 format=3 uid="uid://p2jud0u64ija"]
 
 [ext_resource type="Script" path="res://scripts/world/player_hud.gd" id="1_4dap5"]
-[ext_resource type="FontFile" uid="uid://c1kbjeg1wo7ec" path="res://assets/font/pixelated.ttf" id="1_emsti"]
 [ext_resource type="Texture2D" uid="uid://b083ai1vm5x1t" path="res://assets/hud/heart_full.png" id="2_iqygs"]
 
 [node name="PlayerHUD" type="Control"]
@@ -29,26 +28,23 @@ offset_bottom = 40.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PlayerNumber" type="Label" parent="Background"]
+[node name="PlayerNumber" type="RichTextLabel" parent="Background"]
 layout_mode = 0
 offset_left = 17.0
 offset_top = 11.0
 offset_right = 77.0
 offset_bottom = 41.0
-theme_override_fonts/font = ExtResource("1_emsti")
-theme_override_font_sizes/font_size = 24
-vertical_alignment = 1
+bbcode_enabled = true
+scroll_active = false
 
-[node name="PlayerName" type="Label" parent="Background"]
+[node name="PlayerName" type="RichTextLabel" parent="Background"]
 layout_mode = 0
 offset_left = 74.0
 offset_top = 12.0
 offset_right = 189.0
 offset_bottom = 42.0
-theme_override_fonts/font = ExtResource("1_emsti")
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 1
+bbcode_enabled = true
+scroll_active = false
 
 [node name="HealthBar" type="HBoxContainer" parent="Background"]
 layout_mode = 0
