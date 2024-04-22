@@ -14,7 +14,7 @@ import {
 import {
   randomWords,
   randomPositions,
-  randomTimeToAttack
+  randomTimeToAttacks
 } from "../utils/random";
 import { Room, RoomWord, RoomZombie } from "../types";
 import { getLogger } from "../logger";
@@ -57,13 +57,14 @@ class GameService {
 
       const words = randomWords({ count: 4 });
       const positions = randomPositions(words.length);
+      const timeToAttacks = randomTimeToAttacks(words.length);
       logger.debug(
         { roomId, userId, words },
         "gerenate room words and zombies"
       );
       words.forEach((_, j) => {
         const zombieId = randomUUID();
-        const timeToAttack = randomTimeToAttack() + roundWaitDurationSeconds;
+        const timeToAttack = timeToAttacks[j] + roundWaitDurationSeconds;
         roomZombies.push({
           zombieId,
           userId,

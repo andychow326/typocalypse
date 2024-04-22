@@ -30,6 +30,9 @@ export function randomPositions(
   return positions;
 }
 
-export function randomTimeToAttack() {
-  return randomInt(10, 14);
+export function randomTimeToAttacks(count: number): number[] {
+  const min = 10;
+  return Array.from(Array(count).keys()).map(
+    (a) => min + a + randomInt(0, 100) / 100
+  );
 }
