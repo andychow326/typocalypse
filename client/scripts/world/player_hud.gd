@@ -19,18 +19,14 @@ func set_info(user_id, username: String, number, health):
 
 
 func update_health(health):
-	for i in $Background/HealthBar.get_child_count():
-		if health >= i:
-			$Background/HealthBar.get_child(i).texture = heart_full
+	player_health = health
+
+
+func _process(_delta):
+	var i = 0
+	for child in $Background/HealthBar.get_children():
+		if player_health > i:
+			child.texture = heart_full
 		else:
-			$Background/HealthBar.get_child(i).texture = heart_empty
-
-
-func minus_health():
-	player_health -= 1
-	update_health(player_health - 1)
-
-
-func add_health():
-	player_health += 1
-	update_health(player_health + 1)
+			child.texture = heart_empty
+		i += 1

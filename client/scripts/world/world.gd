@@ -47,12 +47,14 @@ func _on_web_socket_client_message_received(message):
 		"hit":
 			if dead_zombies.has(message.data.zombieId):
 				return
-			for child in $HUDContainer.get_children():
-				if child.player_id == message.data.userId:
-					$UI/HitRect.visible = true
-					child.update_health(message.data.updatedHealth)
-					await get_tree().create_timer(0.1).timeout
-					$UI/HitRect.visible = false
+			var nodes = $HUDContainer.get_children().filter(
+				func(n): return n.player_id == message.data.userId
+			)
+			if len(nodes) > 0:
+				$UI/HitRect.visible = true
+				await get_tree().create_timer(0.1).timeout
+				$UI/HitRect.visible = false
+				nodes[0].update_health(message.data.updatedHealth)
 		"startGame":
 			reset_player_container()
 			reset_hud_container()
@@ -111,6 +113,13 @@ func _on_web_socket_client_message_received(message):
 				player_active_inputs[user.id] = ""
 				last_potential_target_zombies[user.id] = []
 				player_id_to_player_node_id_map[user.id] = position_index
+
+				var hud_nodes = $HUDContainer.get_children().filter(
+					func(n): return n.player_id == user.id
+				)
+				if len(hud_nodes) > 0:
+					var node = hud_nodes[0]
+					node.update_health(user.health)
 
 				position_index += 1
 
