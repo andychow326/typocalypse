@@ -12,6 +12,7 @@ import {
 import { RoomNotFoundError } from "../errors";
 import { getLogger } from "../logger";
 import { delay } from "../utils/promise";
+import UserService from "../services/UserService";
 
 const logger = getLogger("GameLoopWorker");
 
@@ -22,11 +23,13 @@ type SimulationCallback = (deltaTime: number) => Promise<void>;
 interface ClientState {
   ready: boolean;
   health: number;
+  kills: number;
 }
 
 const INITIAL_CLIENT_STATE: ClientState = {
   ready: false,
-  health: 5
+  health: 5,
+  kills: 0
 };
 
 interface ZombieState {
@@ -42,6 +45,7 @@ interface GameLoopWorkerOptions {
   pubsubService?: PubSubService;
   gameService?: GameService;
   roomService?: RoomService;
+  userService?: UserService;
   onTerminate?: () => void;
 }
 
@@ -62,7 +66,11 @@ class GameLoopWorker {
 
   private roomService: RoomService;
 
+  private userService: UserService;
+
   private onTerminate?: () => void;
+
+  private elapsedTime: number;
 
   private clientStateMap: Record<string, ClientState>;
 
@@ -75,7 +83,9 @@ class GameLoopWorker {
     this.pubsubService = options?.pubsubService ?? new PubSubService();
     this.gameService = options?.gameService ?? new GameService(this.redis);
     this.roomService = options?.roomService ?? new RoomService(this.redis);
+    this.userService = options?.userService ?? new UserService(this.redis);
     this.onTerminate = options?.onTerminate;
+    this.elapsedTime = 0;
     this.clientStateMap = {};
     this.zombieStateMap = {};
   }
@@ -84,7 +94,8 @@ class GameLoopWorker {
     this.clientStateMap[userId].ready = true;
   }
 
-  onZombieDead(zombieId: string) {
+  onZombieDead(userId: string, zombieId: string) {
+    this.clientStateMap[userId].kills += 1;
     this.zombieStateMap[zombieId].dead = true;
   }
 
@@ -93,7 +104,7 @@ class GameLoopWorker {
       this.onClientReady(userId);
     }
     if (message.event === "killZombie") {
-      this.onZombieDead(message.data.zombieId);
+      this.onZombieDead(userId, message.data.zombieId);
     }
   }
 
@@ -176,7 +187,8 @@ class GameLoopWorker {
     }
   }
 
-  async gameLoop(_deltaTime: number) {
+  async gameLoop(deltaTime: number) {
+    this.elapsedTime += deltaTime;
     if (
       Object.entries(this.zombieStateMap).every(([_, zombie]) => zombie.dead)
     ) {
@@ -186,6 +198,38 @@ class GameLoopWorker {
       const room = await this.getRoom();
       this.currentRoomData = room;
       await this.beforeStartRound();
+    }
+    if (
+      this.clock.elapsedTime >=
+        this.currentRoomData.roundWaitDurationSeconds * 1000 +
+          this.currentRoomData.roundDurationSeconds * 1000 ||
+      Object.entries(this.clientStateMap).every(
+        ([_, state]) => state.health <= 0
+      )
+    ) {
+      this.clock.stop();
+      this.clock.clear();
+      const gameOverMessage: GameMessageFromWorker = {
+        event: "gameOver",
+        data: {
+          roomId: this.currentRoomData.id,
+          round: this.currentRoomData.round,
+          elapsedTime: this.elapsedTime,
+          kills: Object.fromEntries(
+            Object.entries(this.clientStateMap).map(([key, state]) => [
+              key,
+              state.kills
+            ])
+          )
+        }
+      };
+      await this.publishGameMessage(gameOverMessage);
+      Object.keys(this.currentRoomData.users).forEach(async (userId) => {
+        const user = await this.userService.getUserByUserId(userId);
+        if (user != null) {
+          await this.roomService.leaveRoom(user, this.roomId);
+        }
+      });
     }
   }
 

@@ -174,4 +174,15 @@ export type GameMessageFromWorker =
         ready: User[];
         notReady: User[];
       };
+    }
+  | {
+      event: "gameOver";
+      data: {
+        roomId: string;
+        round: number;
+        elapsedTime: number;
+        kills: {
+          [userId: string]: number;
+        };
+      };
     };

@@ -76,3 +76,14 @@ func _on_web_socket_client_message_received(message):
 			)
 		"startGame":
 			state = STATE.GAME_WORLD
+
+
+func _on_modal_container_back_to_menu():
+	$World.reset_game()
+	state = STATE.LOBBY_MENU
+
+
+func _on_modal_container_play_again():
+	$World.reset_game()
+	$LobbyMenu.quick_play()
+	state = STATE.LOBBY_MENU

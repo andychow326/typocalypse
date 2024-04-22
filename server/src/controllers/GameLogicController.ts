@@ -250,6 +250,7 @@ class GameLogicController {
       pubsubService: this.pubsubService,
       gameService: this.gameService,
       roomService: this.roomService,
+      userService: this.userService,
       onTerminate: () => {
         delete this.activeWorkerMap[roomId];
       }

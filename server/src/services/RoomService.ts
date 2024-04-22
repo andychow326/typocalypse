@@ -120,6 +120,9 @@ class RoomService {
     if (Object.keys(room.users).length === 4) {
       throw new RoomAlreadyFullError(roomId);
     }
+    if (user.room != null && user.room !== roomId) {
+      await this.leaveRoom(user, user.room);
+    }
     await this.redis
       .multi()
       .call(

@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://b45qxc8250kfr"]
+
+[ext_resource type="Script" path="res://scripts/modal/game_over_modal_detail_item.gd" id="1_3gmgj"]
+
+[node name="GameOverModalDetailItem" type="HBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3gmgj")
+
+[node name="Key" type="RichTextLabel" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme_override_constants/line_separation = 8
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_font_sizes/italics_font_size = 24
+theme_override_font_sizes/bold_italics_font_size = 24
+theme_override_font_sizes/mono_font_size = 24
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="Value" type="RichTextLabel" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_separation = 8
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_font_sizes/italics_font_size = 24
+theme_override_font_sizes/bold_italics_font_size = 24
+theme_override_font_sizes/mono_font_size = 24
+bbcode_enabled = true
+fit_content = true
+scroll_active = false

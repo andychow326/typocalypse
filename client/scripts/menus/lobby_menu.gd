@@ -44,7 +44,7 @@ func _on_web_socket_client_message_received(message):
 			state = STATE.ON_BOARDING
 
 
-func _on_on_boarding_menu_quick_play_button_pressed():
+func quick_play():
 	(
 		DataStore
 		. web_socket_client
@@ -58,6 +58,10 @@ func _on_on_boarding_menu_quick_play_button_pressed():
 			}
 		)
 	)
+
+
+func _on_on_boarding_menu_quick_play_button_pressed():
+	quick_play()
 
 
 func _on_on_boarding_menu_create_room_button_pressed():

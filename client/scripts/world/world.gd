@@ -52,9 +52,9 @@ func _on_web_socket_client_message_received(message):
 			)
 			if len(nodes) > 0:
 				$UI/HitRect.visible = true
+				nodes[0].update_health(message.data.updatedHealth)
 				await get_tree().create_timer(0.1).timeout
 				$UI/HitRect.visible = false
-				nodes[0].update_health(message.data.updatedHealth)
 		"startGame":
 			reset_player_container()
 			reset_hud_container()
@@ -162,6 +162,19 @@ func reset_hud_container():
 	for hud in main_player_hud:
 		hud.queue_free()
 		$HUDContainer.remove_child(hud)
+
+
+func reset_game():
+	reset_player_container()
+	reset_zombie_container()
+	reset_hud_container()
+	
+	$UI/HitRect.visible = false
+	$RoundStartLabel.visible = false
+	$RemainingTimeLabel.visible = false
+	$HUDContainer.visible = false
+	
+	game_stated = false
 
 
 func _on_visibility_changed():

@@ -29,3 +29,5 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 
 [connection signal="invite_button_pressed" from="LobbyMenu" to="ModalContainer" method="_on_invite_button_pressed"]
+[connection signal="back_to_menu" from="ModalContainer" to="." method="_on_modal_container_back_to_menu"]
+[connection signal="play_again" from="ModalContainer" to="." method="_on_modal_container_play_again"]
