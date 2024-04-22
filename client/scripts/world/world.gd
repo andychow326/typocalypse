@@ -124,8 +124,9 @@ func _on_web_socket_client_message_received(message):
 
 			game_stated = false
 			$RoundStartLabel.visible = true
+			$RoundStartLabel.text = "ROUND %d" % [message.data.room.round]
+			await get_tree().create_timer(2).timeout
 			$RoundStartLabel.text = "READY"
-			await get_tree().create_timer(1).timeout
 
 
 func reset_player_container():
