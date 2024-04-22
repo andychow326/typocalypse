@@ -37,7 +37,6 @@ func _on_web_socket_client_message_received(message):
 			on_player_inputted_key(player_id, key)
 		"remainingTime":
 			if message.data.type == "waitForRoundStart":
-				game_stated = false
 				$RoundStartLabel.text = "%.f" % (float(message.data.remainingTime + 500) / 1000)
 			if message.data.type == "round":
 				game_stated = true
@@ -123,6 +122,8 @@ func _on_web_socket_client_message_received(message):
 
 				position_index += 1
 
+			game_stated = false
+			$RoundStartLabel.visible = true
 			$RoundStartLabel.text = "READY"
 			await get_tree().create_timer(1).timeout
 
