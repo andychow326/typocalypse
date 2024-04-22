@@ -208,6 +208,20 @@ class GameLoopWorker {
   async beforeStartRound() {
     await delay(1000);
 
+    this.zombieStateMap = Object.fromEntries(
+      this.currentRoomData.zombies.map((zombie) => [
+        zombie.zombieId,
+        { ...INITIAL_ZOMBIE_STATE }
+      ])
+    );
+
+    this.clientStateMap = Object.fromEntries(
+      Object.entries(this.clientStateMap).map(([key, state]) => [
+        key,
+        { ...state, health: Math.max(0, Math.min(5, state.health + 1)) }
+      ])
+    );
+
     const startRoundMessage: GameMessageFromWorker = {
       event: "startRound",
       data: {
@@ -288,12 +302,6 @@ class GameLoopWorker {
         Object.entries(room.users).map(([key, _]) => [
           key,
           { ...INITIAL_CLIENT_STATE }
-        ])
-      );
-      this.zombieStateMap = Object.fromEntries(
-        room.zombies.map((zombie) => [
-          zombie.zombieId,
-          { ...INITIAL_ZOMBIE_STATE }
         ])
       );
       const startGameMessage: GameMessageFromWorker = {
