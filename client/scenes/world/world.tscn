@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bxqu51ckbq1cb"]
+[gd_scene load_steps=19 format=3 uid="uid://bxqu51ckbq1cb"]
 
 [ext_resource type="Script" path="res://scripts/world/world.gd" id="1_35jya"]
 [ext_resource type="Texture2D" uid="uid://qvlemlsunah3" path="res://assets/earth_texture/ground2.jpg" id="2_bgu66"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://dp2scibkmmlyl" path="res://scenes/world/building_tower.tscn" id="7_pqw5t"]
 [ext_resource type="PackedScene" uid="uid://i0nxfaylr1k3" path="res://scenes/world/fence.tscn" id="8_b0i1q"]
 [ext_resource type="PackedScene" uid="uid://cyf17woq3gpsp" path="res://scenes/world/shadow.tscn" id="9_g83yv"]
+[ext_resource type="Theme" uid="uid://bod1xtt36j7s6" path="res://assets/main_menu/pixelated_font.tres" id="10_6mdmm"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_4mqik"]
 vertices = PackedVector3Array(-29.75, 0.5, -93.5, -39.5, 0.5, -93.5, -39.5, 0.5, -86.25, -39.5, 0.5, 18, -39.5, 0.5, 25.5, -29.75, 0.5, 25.5, 39.5, 0.5, -86.25, 39.5, 0.5, -93.5, 29.5, 0.5, -93.5, 29.5, 0.5, 25.5, 39.5, 0.5, 25.5, 39.5, 0.5, 18, -29.75, 0.5, -93.5, -39.5, 0.5, -86.25, -39.5, 0.5, -78.75, 39.5, 0.5, -78.75, 39.5, 0.5, -86.25, 29.5, 0.5, -93.5, -39.5, 0.5, 10.5, -39.5, 0.5, 18, -29.75, 0.5, 25.5, 29.5, 0.5, 25.5, 39.5, 0.5, 18, 39.5, 0.5, 10.5, -29.75, 0.5, -93.5, -39.5, 0.5, -78.75, -39.5, 0.5, -71.25, 39.5, 0.5, -71.25, 39.5, 0.5, -78.75, 29.5, 0.5, -93.5, -39.5, 0.5, 3, -39.5, 0.5, 10.5, -29.75, 0.5, 25.5, 29.5, 0.5, 25.5, 39.5, 0.5, 10.5, 39.5, 0.5, 3, 39.5, 0.5, -71.25, 29.5, 0.5, -93.5, 19.75, 0.5, -93.5, 39.5, 0.5, -63.75, -19.75, 0.5, -93.5, -29.75, 0.5, -93.5, -39.5, 0.5, -71.25, -39.5, 0.5, -63.75, -39.5, 0.5, 3, -29.75, 0.5, 25.5, -19.75, 0.5, 25.5, -39.5, 0.5, -4.25, 19.75, 0.5, 25.5, 29.5, 0.5, 25.5, 39.5, 0.5, 3, 39.5, 0.5, -4.25, -39.5, 0.5, -19.25, -10, 0.5, 25.5, 0, 0.5, 25.5, -39.5, 0.5, -26.75, 0, 0.5, -93.5, -10, 0.5, -93.5, -39.5, 0.5, -49, -39.5, 0.5, -41.5, 39.5, 0.5, -49, 9.75, 0.5, -93.5, 0, 0.5, -93.5, 39.5, 0.5, -41.5, 9.75, 0.5, 25.5, 39.5, 0.5, -11.75, 39.5, 0.5, -19.25, -39.5, 0.5, -4.25, -19.75, 0.5, 25.5, -10, 0.5, 25.5, -39.5, 0.5, -11.75, -10, 0.5, -93.5, -19.75, 0.5, -93.5, -39.5, 0.5, -63.75, -39.5, 0.5, -56.5, 39.5, 0.5, -56.5, 39.5, 0.5, -63.75, 19.75, 0.5, -93.5, 9.75, 0.5, 25.5, 19.75, 0.5, 25.5, 39.5, 0.5, -4.25, 39.5, 0.5, -11.75, 0, 0.5, 25.5, 9.75, 0.5, 25.5, 39.5, 0.5, -19.25, 39.5, 0.5, -26.75, 39.5, 0.5, -56.5, 19.75, 0.5, -93.5, 9.75, 0.5, -93.5, 39.5, 0.5, -49, 39.5, 0.5, -34, 0, 0.5, -93.5, -39.5, 0.5, -34, -39.5, 0.5, -26.75, 0, 0.5, 25.5, 39.5, 0.5, -26.75, 0, 0.5, -93.5, -39.5, 0.5, -41.5, -39.5, 0.5, -34, -10, 0.5, -93.5, -39.5, 0.5, -56.5, -39.5, 0.5, -49, 39.5, 0.5, -34, 39.5, 0.5, -41.5, 0, 0.5, -93.5, -39.5, 0.5, -19.25, -39.5, 0.5, -11.75, -10, 0.5, 25.5)
@@ -349,29 +350,49 @@ environment = SubResource("Environment_5tdxp")
 [node name="ZombieContainer" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.868, 0)
 
-[node name="RemainingTimeLabel" type="Label" parent="."]
+[node name="RemainingTimeLabel" type="RichTextLabel" parent="."]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
-offset_bottom = 23.0
+offset_left = -256.0
+offset_right = 256.0
+offset_bottom = 54.0
 grow_horizontal = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("10_6mdmm")
+theme_override_font_sizes/normal_font_size = 36
+theme_override_font_sizes/bold_font_size = 36
+theme_override_font_sizes/italics_font_size = 36
+theme_override_font_sizes/bold_italics_font_size = 36
+theme_override_font_sizes/mono_font_size = 36
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
 
-[node name="RoundStartLabel" type="Label" parent="."]
+[node name="RoundStartLabel" type="RichTextLabel" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -11.5
-offset_right = 20.0
-offset_bottom = 11.5
+offset_left = -256.0
+offset_top = -27.0
+offset_right = 256.0
+offset_bottom = 27.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 20
-text = "READY"
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("10_6mdmm")
+theme_override_font_sizes/normal_font_size = 48
+theme_override_font_sizes/bold_font_size = 48
+theme_override_font_sizes/italics_font_size = 48
+theme_override_font_sizes/bold_italics_font_size = 48
+theme_override_font_sizes/mono_font_size = 48
+bbcode_enabled = true
+text = "[center]READY[/center]"
+fit_content = true
 
 [node name="UI" type="Control" parent="."]
 visibility_layer = 4

@@ -38,12 +38,12 @@ func _on_web_socket_client_message_received(message):
 			on_player_inputted_key(player_id, key)
 		"remainingTime":
 			if message.data.type == "waitForRoundStart":
-				$RoundStartLabel.text = "%.f" % (float(message.data.remainingTime + 500) / 1000)
+				$RoundStartLabel.text = "[center]%.f[/center]" % (float(message.data.remainingTime + 500) / 1000)
 			if message.data.type == "round":
 				game_stated = true
 				$RoundStartLabel.visible = false
 				$RemainingTimeLabel.visible = true
-				$RemainingTimeLabel.text = "%.1f" % (float(message.data.remainingTime) / 1000)
+				$RemainingTimeLabel.text = "[center][color=black]%.1f[/color][/center]" % (float(message.data.remainingTime) / 1000)
 		"hit":
 			if dead_zombies.has(message.data.zombieId):
 				return
@@ -138,9 +138,9 @@ func _on_web_socket_client_message_received(message):
 
 			game_stated = false
 			$RoundStartLabel.visible = true
-			$RoundStartLabel.text = "ROUND %d" % [message.data.room.round]
+			$RoundStartLabel.text = "[center]ROUND %d[/center]" % [message.data.room.round]
 			await get_tree().create_timer(2).timeout
-			$RoundStartLabel.text = "READY"
+			$RoundStartLabel.text = "[center]READY[/center]"
 
 
 func reset_player_container():
