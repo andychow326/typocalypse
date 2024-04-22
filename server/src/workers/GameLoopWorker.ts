@@ -120,6 +120,10 @@ class GameLoopWorker {
 
     if (onTickCallback != null) {
       this.simulationInterval = setInterval(async () => {
+        if (!this.clock.running) {
+          clearInterval(this.simulationInterval);
+          return;
+        }
         this.clock.tick();
         await onTickCallback(this.clock.deltaTime);
       }, interval);
