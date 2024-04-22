@@ -307,9 +307,9 @@ class GameLoopWorker {
 
       let readyToStart = false;
       while (!readyToStart) {
-        await delay(500);
         const clientReady = await this.checkClientReady();
         readyToStart = clientReady;
+        await delay(1000);
       }
 
       await this.beforeStartRound();
