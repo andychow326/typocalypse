@@ -13,7 +13,6 @@ var player_tries: Dictionary
 var player_active_inputs: Dictionary
 var dead_zombies: Dictionary
 var last_potential_target_zombies: Dictionary
-var game_stated: bool
 var time_to_attack: int
 var bullet = load("res://scenes/world/bullet.tscn")
 
@@ -31,7 +30,7 @@ func _on_web_socket_client_message_received(message):
 		return
 	match message.event:
 		"input":
-			if not game_stated:
+			if not DataStore.game_started:
 				return
 			var player_id = message.user.id
 			var key = message.data.key
@@ -40,7 +39,7 @@ func _on_web_socket_client_message_received(message):
 			if message.data.type == "waitForRoundStart":
 				$RoundStartLabel.text = "[center]%.f[/center]" % (float(message.data.remainingTime + 500) / 1000)
 			if message.data.type == "round":
-				game_stated = true
+				DataStore.game_started = true
 				$RoundStartLabel.visible = false
 				$RemainingTimeLabel.visible = true
 				$RemainingTimeLabel.text = "[center][color=black]%.1f[/color][/center]" % (float(message.data.remainingTime) / 1000)
@@ -136,11 +135,13 @@ func _on_web_socket_client_message_received(message):
 
 				position_index += 1
 
-			game_stated = false
+			DataStore.game_started = false
 			$RoundStartLabel.visible = true
 			$RoundStartLabel.text = "[center]ROUND %d[/center]" % [message.data.room.round]
 			await get_tree().create_timer(2).timeout
 			$RoundStartLabel.text = "[center]READY[/center]"
+		"gameOver":
+			DataStore.game_started = false
 
 
 func reset_player_container():
@@ -174,7 +175,7 @@ func reset_game():
 	$RemainingTimeLabel.visible = false
 	$HUDContainer.visible = false
 	
-	game_stated = false
+	DataStore.game_started = false
 
 
 func _on_visibility_changed():
@@ -289,7 +290,7 @@ func on_player_inputted_key(player_id: String, key: String):
 
 
 func _physics_process(delta):
-	if not game_stated:
+	if not DataStore.game_started:
 		return
 
 	var zombie_child = $ZombieContainer.get_children()
@@ -297,5 +298,5 @@ func _physics_process(delta):
 	for zombie in zombie_child:
 		for player in player_child:
 			if player.player_id == zombie.target_player_id:
-				zombie.move_to_player(delta, game_stated, player)
+				zombie.move_to_player(delta, DataStore.game_started, player)
 				break

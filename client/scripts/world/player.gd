@@ -24,6 +24,7 @@ func _input(event):
 		or not event is InputEventKey
 		or not event.is_pressed()
 		or DataStore.player_id != player_id
+		or not DataStore.game_started
 	):
 		return
 

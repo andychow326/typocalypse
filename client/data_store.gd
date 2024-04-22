@@ -25,3 +25,4 @@ const WebSocketClient = preload("res://scripts/web_socket_client.gd")
 		file.store_var(value)
 
 @export var room_id: String = ""
+@export var game_started: bool = false
