@@ -1,6 +1,11 @@
-# Typocalypse
+# [Typocalypse](https://typocalypse.online)
 
-Work in progress
+<a href="https://github.com/andychow326/typocalypse/actions" target="_blank">
+    <img src="https://img.shields.io/github/actions/workflow/status/andychow326/typocalypse/ci.yaml?branch=master" alt="GitHub Actions Workflow Status" />
+</a>
+<a href="https://typocalypse.online" target="_blank">
+    <img src="https://img.shields.io/uptimerobot/ratio/m796808839-76b9e694c1ba24e6a20475d9" alt="Uptime Robot ratio (30 days)" />
+</a>
 
 ## Prerequisites
 
