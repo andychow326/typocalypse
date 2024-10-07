@@ -46,6 +46,14 @@ server:
                 operator: In
                 values:
                   - asia-tokyo
+              - key: node-type
+                operator: In
+                values:
+                  - worker
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                  - arm64
 
 client:
   host: typocalypse.online
