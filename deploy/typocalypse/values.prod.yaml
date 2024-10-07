@@ -33,7 +33,7 @@ redis:
 server:
   host: api.typocalypse.online
   image: andychow326/typocalypse-server
-  replicas: 2
+  replicas: 1
   env:
     SESSION_EXPIRATION_SECONDS: 86400
     ROOM_EXPIRATION_SECONDS: 86400
